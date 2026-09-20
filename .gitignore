@@ -1,16 +1,13 @@
-# Operating System files
+# OS junk files
 .DS_Store
 Thumbs.db
+desktop.ini
 
-# IDEs and editors
+# Code editor configurations
 .vscode/
 .idea/
-
-# Environment variables (incase you add API keys later)
-.env
-*.env.local
-
-# Dependency folders (if you use packages later)
-node_modules/
-dist/
-build/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
