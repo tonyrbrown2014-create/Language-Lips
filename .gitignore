@@ -11,3 +11,7 @@ desktop.ini
 *.njsproj
 *.sln
 *.swp
+
+node_modules/
+.DS_Store
+Thumbs.db
