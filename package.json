@@ -2,9 +2,9 @@
   "name": "english-website",
   "version": "1.0.0",
   "scripts": {
-    "start": "superstatic --port $PORT --host 0.0.0.0"
+    "start": "serve -p $PORT"
   },
   "dependencies": {
-    "superstatic": "^9.0.3"
+    "serve": "^14.2.4"
   }
 }
