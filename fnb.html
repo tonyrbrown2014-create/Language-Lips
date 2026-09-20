@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Language Lips — Food &amp; Beverage English</title>
+<style>
+  :root{
+    --bg-main:#f8fafc; --panel-bg:#ffffff; --panel-border:#cbd5e1;
+    --text-primary:#090d16; --text-secondary:#334155; --text-phonetic:#0284c7;
+    --brand-green:#064e3b; --brand-green-accent:#047857;
+    --font-main:Arial,Helvetica,sans-serif;
+    --shadow-sm:0 1px 3px rgba(0,0,0,.06);
+    --shadow-md:0 4px 12px rgba(0,0,0,.08);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;height:100%}
+  body{background:var(--bg-main);color:var(--text-primary);font-family:var(--font-main);-webkit-font-smoothing:antialiased;overflow:hidden}
+
+  .topbar{background:#ffffff;border-bottom:1.5px solid var(--panel-border);box-shadow:var(--shadow-sm);height:60px;flex-shrink:0}
+  .topbar-inner{max-width:1500px;margin:0;padding:0 24px;height:100%;display:flex;align-items:center;gap:14px;flex-wrap:nowrap;overflow-x:auto}
+  .topbar-inner::-webkit-scrollbar{height:0}
+  .topbar-brand{display:flex;align-items:center;gap:10px;margin-right:8px;flex-shrink:0}
+  .logo-mark{width:44px;height:44px;flex-shrink:0;border-radius:50%;background:linear-gradient(135deg,#064e3b 0%,#047857 100%);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:var(--shadow-sm)}
+  .logo-text{display:flex;flex-direction:column;line-height:1.08;justify-content:center}
+  .logo-title{font-size:19px;font-weight:900;color:var(--brand-green);letter-spacing:.02em}
+  .lang-menu{display:flex;gap:5px;flex-wrap:nowrap;margin-left:auto}
+  .lang-item{font-family:var(--font-main);font-size:13px;font-weight:700;padding:7px 12px;background:transparent;border:1px solid transparent;border-radius:6px;color:var(--text-secondary);cursor:pointer;transition:all .15s ease;white-space:nowrap;flex-shrink:0}
+  .lang-item:hover{background:#f0fdf4;color:var(--brand-green);border-color:#d1fae5}
+  .lang-item.active{background:var(--brand-green);color:#fff;border-color:var(--brand-green);box-shadow:var(--shadow-sm)}
+
+  .app{max-width:1500px;margin:0;padding:16px 24px;display:grid;grid-template-columns:320px 1fr;gap:28px;align-items:start;height:calc(100vh - 60px)}
+
+  .side{display:flex;flex-direction:column;gap:10px;height:100%;overflow-y:auto;padding-right:6px}
+  .side::-webkit-scrollbar{width:6px}
+  .side::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+
+  .side-heading{font-size:16px;font-weight:900;color:var(--brand-green);letter-spacing:.02em;margin:0 0 2px;padding:0 2px}
+
+  .level-section{border:1.5px solid var(--panel-border);border-radius:8px;background:var(--panel-bg);overflow:hidden;transition:box-shadow .15s ease}
+  .level-section:hover{box-shadow:var(--shadow-sm)}
+  .level-header{display:flex;justify-content:space-between;align-items:center;width:100%;font-family:var(--font-main);font-size:14px;font-weight:800;padding:12px 14px;background:transparent;border:none;color:var(--brand-green);cursor:pointer;text-align:left;letter-spacing:.03em;transition:background .12s ease}
+  .level-header:hover{background:#f0fdf4}
+  .level-header .arrow{font-size:12px;transition:transform .25s ease;color:var(--brand-green-accent)}
+  .level-section.open .level-header .arrow{transform:rotate(90deg)}
+  .level-body{display:none;padding:0 8px 10px 8px;border-top:1px solid #e2e8f0}
+  .level-section.open .level-body{display:block}
+
+  .dept-list{display:grid;gap:5px;max-height:340px;overflow-y:auto;padding-right:2px;margin-top:6px}
+  .dept-list::-webkit-scrollbar{width:6px}
+  .dept-list::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+  .dept{text-align:left;font-family:var(--font-main);font-size:13px;font-weight:600;color:var(--text-primary);background:#f8fafc;border:1px solid #e2e8f0;padding:8px 10px;cursor:pointer;border-radius:5px;transition:all .12s ease;line-height:1.35}
+  .dept:hover{color:#fff;background:var(--brand-green-accent);border-color:var(--brand-green-accent)}
+  .dept[aria-pressed="true"]{color:#fff;border-color:var(--brand-green);background:var(--brand-green);font-weight:700}
+  .dept .dept-trans{display:block;font-size:11px;font-weight:500;opacity:.75;margin-top:2px;font-style:italic}
+  .dept[aria-pressed="true"] .dept-trans,
+  .dept:hover .dept-trans{opacity:.9}
+
+  .main{height:100%;overflow-y:auto;padding-right:6px;display:flex;flex-direction:column;align-items:stretch}
+  .main::-webkit-scrollbar{width:6px}
+  .main::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+
+  .lips-float{position:relative;width:100%;height:170px;flex-shrink:0;z-index:2;pointer-events:none;margin-bottom:-18px}
+  canvas#waveform{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1}
+  canvas#scene{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:2}
+  .caption-float{position:absolute;top:6px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#94a3b8;z-index:3}
+  .state-label{position:absolute;top:8px;right:12px;font-size:12px;color:var(--text-primary);font-weight:600;background:rgba(241,245,249,.9);border:1px solid var(--panel-border);padding:3px 8px;border-radius:4px;pointer-events:auto;z-index:3}
+  .state-label b{color:var(--brand-green);font-weight:800}
+
+  .stage{position:relative;width:100%;background:#ffffff;border:2px solid var(--panel-border);border-radius:6px;box-shadow:var(--shadow-sm);padding:14px;flex-shrink:0}
+  .subtitle-bar{background:rgba(255,255,255,.98);border:1.5px solid var(--panel-border);border-radius:6px;padding:16px 20px;text-align:center;box-shadow:var(--shadow-md);min-height:88px;display:flex;align-items:center;justify-content:center}
+  .subtitle{font-size:19px;line-height:1.55;color:var(--text-primary);font-weight:700}
+  .subtitle .pronunciation-sub{display:block;font-size:14px;color:var(--text-phonetic);margin-top:8px;font-weight:600;letter-spacing:.01em}
+  .subtitle .translation-sub{display:block;font-size:15px;color:#475569;margin-top:8px;font-weight:600;font-style:italic}
+  .subtitle .said{color:var(--text-secondary)}
+  .subtitle .now{color:var(--brand-green);font-weight:800;text-decoration:underline}
+
+  .subtitle .feedback{display:block;margin-top:12px;padding-top:10px;border-top:1px dashed #cbd5e1;font-size:15px;font-weight:600}
+  .subtitle .feedback.good{color:#047857}
+  .subtitle .feedback.mid{color:#b45309}
+  .subtitle .feedback.bad{color:#b91c1c}
+  .subtitle .feedback .score{font-size:22px;font-weight:900;margin-right:6px}
+  .subtitle .missed{color:#b91c1c;text-decoration:line-through;opacity:.85}
+  .subtitle .heard{color:#64748b;font-style:italic;font-weight:500}
+
+  .avatar-controls{display:flex;gap:10px;margin-top:12px;flex-shrink:0}
+  .fn{font-family:var(--font-main);font-size:15px;font-weight:800;padding:10px 18px;cursor:pointer;text-align:center;background:var(--brand-green);color:#fff;border:1px solid var(--brand-green);border-radius:4px;transition:all .15s ease;flex:1}
+  .fn:hover{background:var(--brand-green-accent);border-color:var(--brand-green-accent)}
+  .fn.secondary{background:#fff;color:var(--brand-green);border:1.5px solid var(--brand-green)}
+  .fn.secondary:hover{background:#f0fdf4}
+  .fn.tertiary{background:#fff;color:var(--text-phonetic);border:1.5px solid var(--text-phonetic)}
+  .fn.tertiary:hover{background:#f0f9ff}
+  .fn.tertiary.active{background:var(--text-phonetic);color:#fff}
+  .fn:disabled{opacity:.45;cursor:not-allowed}
+  .stateline{font-size:13px;font-weight:600;color:var(--text-secondary);margin-top:6px;min-height:1.5em;text-align:center;flex-shrink:0}
+
+  .philosophy-below{margin-top:20px;background:#ffffff;border:1.5px solid var(--panel-border);border-radius:6px;padding:22px 26px;text-align:center;font-size:15px;line-height:1.75;color:var(--text-secondary);font-weight:500;box-shadow:var(--shadow-sm);flex-shrink:0}
+  .philosophy-below .title{font-size:13px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:var(--brand-green);margin-bottom:12px}
+
+  .sector-footer{margin-top:18px;background:#ffffff;border:1.5px solid var(--panel-border);border-radius:6px;padding:14px 18px;box-shadow:var(--shadow-sm);flex-shrink:0;margin-bottom:24px}
+  .sector-footer .label{font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--brand-green-accent);margin-bottom:10px;text-align:center}
+  .sector-links{display:flex;flex-wrap:wrap;gap:6px 10px;justify-content:center}
+  .sector-link{font-family:var(--font-main);font-size:13px;font-weight:700;color:var(--text-secondary);text-decoration:none;padding:5px 10px;border-radius:6px;border:1px solid transparent;transition:all .12s ease}
+  .sector-link:hover{background:#f0fdf4;color:var(--brand-green);border-color:#d1fae5}
+  .sector-link.current{background:var(--brand-green);color:#fff;border-color:var(--brand-green);font-weight:900;cursor:default}
+  .sector-link.current:hover{background:var(--brand-green);color:#fff}
+
+  .home-link{font-family:var(--font-main);font-size:13px;font-weight:700;color:var(--text-secondary);text-decoration:none;padding:7px 12px;border-radius:6px;border:1px solid transparent;transition:all .15s ease;white-space:nowrap;flex-shrink:0}
+  .home-link:hover{background:#f0fdf4;color:var(--brand-green);border-color:#d1fae5}
+
+  .page-footer{text-align:center;font-size:11.5px;color:#94a3b8;padding:12px 0 6px;flex-shrink:0}
+
+  @media (max-width:720px){
+    .app{grid-template-columns:1fr;height:auto}
+    body{overflow:auto}
+    .side{order:2;height:auto;max-height:400px}
+    .main{height:auto;overflow:visible}
+    .lips-float{height:140px}
+    .topbar-inner{padding:0 14px}
+    .lang-menu{margin-left:0;width:100%;justify-content:flex-start}
+    .lang-item{font-size:12px;padding:6px 9px}
+    .subtitle{font-size:16px}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-brand">
+      <div class="logo-mark">👄</div>
+      <div class="logo-text">
+        <span class="logo-title">Language Lips</span>
+      </div>
+    </div>
+    <a class="home-link" href="index.html">🏠 Home</a>
+    <div class="lang-menu" id="langMenu">
+      <button class="lang-item active" data-lang="en">🇬🇧 English</button>
+      <button class="lang-item" data-lang="es">🇪🇸 Español</button>
+      <button class="lang-item" data-lang="fr">🇫🇷 Français</button>
+      <button class="lang-item" data-lang="de">🇩🇪 Deutsch</button>
+      <button class="lang-item" data-lang="it">🇮🇹 Italiano</button>
+      <button class="lang-item" data-lang="pt">🇵🇹 Português</button>
+      <button class="lang-item" data-lang="nl">🇳🇱 Nederlands</button>
+      <button class="lang-item" data-lang="ru">🇷🇺 Русский</button>
+      <button class="lang-item" data-lang="pl">🇵🇱 Polski</button>
+      <button class="lang-item" data-lang="sv">🇸🇪 Svenska</button>
+    </div>
+  </div>
+</div>
+
+<div class="app">
+  <div class="side">
+    <div class="side-heading">Food & Beverage English</div>
+    <div id="levelsContainer"></div>
+  </div>
+
+  <div class="main">
+    <div class="lips-float">
+      <canvas id="waveform"></canvas>
+      <canvas id="scene"></canvas>
+      <div class="caption-float">Mouth · lights up red while speaking</div>
+      <div class="state-label">state: <b id="stateTxt">idle</b></div>
+    </div>
+
+    <div class="stage">
+      <div class="subtitle-bar"><div class="subtitle" id="subtitle">Pick an item from the left, then click <b>Try it</b>.</div></div>
+    </div>
+
+    <div class="avatar-controls">
+      <button class="fn" id="micBtn">🎙 Try it</button>
+      <button class="fn tertiary" id="freeTalkBtn">🗣 Free Talk</button>
+      <button class="fn secondary" id="replayBtn">🔁 Hear model</button>
+    </div>
+    <div class="stateline" id="stateline">Ready.</div>
+
+    <div class="philosophy-below">
+      <div class="title">Food &amp; Beverage English</div>
+      Practical English for cafés, bars, restaurants, and kitchens — greeting guests, taking orders, describing dishes, handling dietary requirements, running the floor, and closing the bill. The everyday phrases that keep service warm and smooth.
+    </div>
+
+    <div class="sector-footer">
+      <div class="label">Choose a Sector</div>
+      <div class="sector-links">
+        <a class="sector-link" href="general.html">General</a>
+        <a class="sector-link" href="business.html">Business</a>
+        <a class="sector-link" href="medical.html">Medical</a>
+        <a class="sector-link" href="retail.html">Retail</a>
+        <span class="sector-link current">Food &amp; Beverage</span>
+        <a class="sector-link" href="hospitality.html">Hospitality</a>
+        <a class="sector-link" href="office.html">Office</a>
+        <a class="sector-link" href="it.html">IT</a>
+        <a class="sector-link" href="logistics.html">Logistics</a>
+        <a class="sector-link" href="academic.html">Academic</a>
+        <a class="sector-link" href="travel.html">Travel</a>
+      </div>
+    </div>
+    <div class="page-footer">© 2026 Language Lips. All rights reserved.</div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+function clamp(v,a,b){return v<a?a:(v>b?b:v);}
+
+var LANGS = {
+  en:{code:'en',label:'English',flag:'🇬🇧'},
+  es:{code:'es',label:'Español',flag:'🇪🇸'},
+  fr:{code:'fr',label:'Français',flag:'🇫🇷'},
+  de:{code:'de',label:'Deutsch',flag:'🇩🇪'},
+  it:{code:'it',label:'Italiano',flag:'🇮🇹'},
+  pt:{code:'pt',label:'Português',flag:'🇵🇹'},
+  nl:{code:'nl',label:'Nederlands',flag:'🇳🇱'},
+  ru:{code:'ru',label:'Русский',flag:'🇷🇺'},
+  pl:{code:'pl',label:'Polski',flag:'🇵🇱'},
+  sv:{code:'sv',label:'Svenska',flag:'🇸🇪'}
+};
+
+/* ============================================================
+   DATA — 15 Food & Beverage English levels
+   ============================================================ */
+var LEVELS=[
+  {
+    id:'words', label:'1 · Words',
+    items:[
+      {text:'Menu', pronunciation:'MEN-yoo', translation:{es:'Menú',fr:'Menu',de:'Speisekarte',it:'Menù',pt:'Ementa',nl:'Menu',ru:'Меню',pl:'Menu',sv:'Meny'}},
+      {text:'Starter', pronunciation:'STAR-ter', translation:{es:'Entrante',fr:'Entrée',de:'Vorspeise',it:'Antipasto',pt:'Entrada',nl:'Voorgerecht',ru:'Закуска',pl:'Przystawka',sv:'Förrätt'}},
+      {text:'Main course', pronunciation:'mayn kors', translation:{es:'Plato principal',fr:'Plat principal',de:'Hauptgericht',it:'Piatto principale',pt:'Prato principal',nl:'Hoofdgerecht',ru:'Основное блюдо',pl:'Danie główne',sv:'Huvudrätt'}},
+      {text:'Dessert', pronunciation:'dih-ZURT', translation:{es:'Postre',fr:'Dessert',de:'Nachtisch',it:'Dolce',pt:'Sobremesa',nl:'Nagerecht',ru:'Десерт',pl:'Deser',sv:'Efterrätt'}},
+      {text:'Drink', pronunciation:'dringk', translation:{es:'Bebida',fr:'Boisson',de:'Getränk',it:'Bevanda',pt:'Bebida',nl:'Drankje',ru:'Напиток',pl:'Napój',sv:'Dryck'}},
+      {text:'Bill', pronunciation:'bil', translation:{es:'Cuenta',fr:'Addition',de:'Rechnung',it:'Conto',pt:'Conta',nl:'Rekening',ru:'Счёт',pl:'Rachunek',sv:'Nota'}},
+      {text:'Order', pronunciation:'OR-der', translation:{es:'Pedido',fr:'Commande',de:'Bestellung',it:'Ordine',pt:'Pedido',nl:'Bestelling',ru:'Заказ',pl:'Zamówienie',sv:'Beställning'}},
+      {text:'Waiter', pronunciation:'WAY-ter', translation:{es:'Camarero',fr:'Serveur',de:'Kellner',it:'Cameriere',pt:'Empregado de mesa',nl:'Ober',ru:'Официант',pl:'Kelner',sv:'Servitör'}},
+      {text:'Chef', pronunciation:'shef', translation:{es:'Chef',fr:'Chef',de:'Koch',it:'Chef',pt:'Chef',nl:'Chef-kok',ru:'Шеф-повар',pl:'Szef kuchni',sv:'Kock'}},
+      {text:'Table', pronunciation:'TAY-bul', translation:{es:'Mesa',fr:'Table',de:'Tisch',it:'Tavolo',pt:'Mesa',nl:'Tafel',ru:'Стол',pl:'Stolik',sv:'Bord'}},
+      {text:'Reservation', pronunciation:'reh-zer-VAY-shun', translation:{es:'Reserva',fr:'Réservation',de:'Reservierung',it:'Prenotazione',pt:'Reserva',nl:'Reservering',ru:'Бронирование',pl:'Rezerwacja',sv:'Bokning'}},
+      {text:'Allergy', pronunciation:'AL-er-jee', translation:{es:'Alergia',fr:'Allergie',de:'Allergie',it:'Allergia',pt:'Alergia',nl:'Allergie',ru:'Аллергия',pl:'Alergia',sv:'Allergi'}},
+      {text:'Vegetarian', pronunciation:'vej-uh-TAIR-ee-un', translation:{es:'Vegetariano',fr:'Végétarien',de:'Vegetarier',it:'Vegetariano',pt:'Vegetariano',nl:'Vegetariër',ru:'Вегетарианец',pl:'Wegetarianin',sv:'Vegetarian'}},
+      {text:'Vegan', pronunciation:'VEE-gun', translation:{es:'Vegano',fr:'Végétalien',de:'Veganer',it:'Vegano',pt:'Vegano',nl:'Veganist',ru:'Веган',pl:'Weganin',sv:'Vegan'}},
+      {text:'Gluten-free', pronunciation:'GLOO-tun free', translation:{es:'Sin gluten',fr:'Sans gluten',de:'Glutenfrei',it:'Senza glutine',pt:'Sem glúten',nl:'Glutenvrij',ru:'Без глютена',pl:'Bezglutenowy',sv:'Glutenfri'}},
+      {text:'Spicy', pronunciation:'SPY-see', translation:{es:'Picante',fr:'Épicé',de:'Scharf',it:'Piccante',pt:'Picante',nl:'Pittig',ru:'Острый',pl:'Ostry',sv:'Stark'}},
+      {text:'Tip', pronunciation:'tip', translation:{es:'Propina',fr:'Pourboire',de:'Trinkgeld',it:'Mancia',pt:'Gorjeta',nl:'Fooi',ru:'Чаевые',pl:'Napiwek',sv:'Dricks'}},
+      {text:'Takeaway', pronunciation:'TAYK-uh-way', translation:{es:'Para llevar',fr:'À emporter',de:'Zum Mitnehmen',it:'Da asporto',pt:'Para levar',nl:'Afhaal',ru:'На вынос',pl:'Na wynos',sv:'Take away'}},
+      {text:'Cutlery', pronunciation:'KUT-luh-ree', translation:{es:'Cubiertos',fr:'Couverts',de:'Besteck',it:'Posate',pt:'Cutelaria',nl:'Bestek',ru:'Приборы',pl:'Sztućce',sv:'Bestick'}},
+      {text:'Napkin', pronunciation:'NAP-kin', translation:{es:'Servilleta',fr:'Serviette',de:'Serviette',it:'Tovagliolo',pt:'Guardanapo',nl:'Servet',ru:'Салфетка',pl:'Serwetka',sv:'Servett'}}
+    ]
+  },
+  {
+    id:'phrases', label:'2 · Phrases',
+    items:[
+      {text:'Table for two, please.', pronunciation:'TAY-bul for too, pleez', translation:{es:'Mesa para dos, por favor.',fr:'Table pour deux, s\'il vous plaît.',de:'Einen Tisch für zwei, bitte.',it:'Tavolo per due, per favore.',pt:'Mesa para dois, por favor.',nl:'Een tafel voor twee, alstublieft.',ru:'Столик на двоих, пожалуйста.',pl:'Stolik dla dwóch osób, proszę.',sv:'Bord för två, tack.'}},
+      {text:'Are you ready to order?', pronunciation:'ar yoo RED-ee too OR-der', translation:{es:'¿Están listos para pedir?',fr:'Êtes-vous prêts à commander ?',de:'Möchten Sie bestellen?',it:'Siete pronti per ordinare?',pt:'Estão prontos para pedir?',nl:'Wilt u bestellen?',ru:'Вы готовы сделать заказ?',pl:'Czy są Państwo gotowi złożyć zamówienie?',sv:'Är ni redo att beställa?'}},
+      {text:'Could we have a few more minutes?', pronunciation:'kood wee hav uh fyoo mor MIN-its', translation:{es:'¿Nos da unos minutos más?',fr:'Pouvons-nous avoir quelques minutes ?',de:'Können wir noch ein paar Minuten haben?',it:'Possiamo avere qualche minuto in più?',pt:'Podemos ter mais alguns minutos?',nl:'Kunnen we nog even hebben?',ru:'Можно нам ещё пару минут?',pl:'Czy możemy mieć jeszcze kilka minut?',sv:'Kan vi få några minuter till?'}},
+      {text:'What would you recommend?', pronunciation:'wut wood yoo rek-uh-MEND', translation:{es:'¿Qué recomienda?',fr:'Que recommandez-vous ?',de:'Was empfehlen Sie?',it:'Cosa consiglia?',pt:'O que recomenda?',nl:'Wat raadt u aan?',ru:'Что вы порекомендуете?',pl:'Co Pan/Pani poleca?',sv:'Vad rekommenderar du?'}},
+      {text:'I\'ll have the...', pronunciation:'eyel hav thuh', translation:{es:'Yo tomaré...',fr:'Je vais prendre...',de:'Ich nehme...',it:'Prendo...',pt:'Vou querer...',nl:'Ik neem...',ru:'Я возьму...',pl:'Poproszę...',sv:'Jag tar...'}},
+      {text:'Anything to drink?', pronunciation:'EN-ee-thing too dringk', translation:{es:'¿Algo de beber?',fr:'Quelque chose à boire ?',de:'Etwas zu trinken?',it:'Qualcosa da bere?',pt:'Algo para beber?',nl:'Iets te drinken?',ru:'Что-нибудь выпить?',pl:'Coś do picia?',sv:'Något att dricka?'}},
+      {text:'How would you like your steak?', pronunciation:'how wood yoo lyk yor stayk', translation:{es:'¿Cómo quiere el filete?',fr:'Comment voulez-vous votre steak ?',de:'Wie möchten Sie Ihr Steak?',it:'Come desidera la bistecca?',pt:'Como quer o bife?',nl:'Hoe wilt u uw steak?',ru:'Как прожарить ваш стейк?',pl:'Jak wysmażyć stek?',sv:'Hur vill du ha din biff?'}},
+      {text:'Still or sparkling?', pronunciation:'stil or SPAR-kling', translation:{es:'¿Sin gas o con gas?',fr:'Plate ou pétillante ?',de:'Still oder mit Kohlensäure?',it:'Naturale o frizzante?',pt:'Sem gás ou com gás?',nl:'Plat of bruisend?',ru:'Без газа или с газом?',pl:'Niegazowana czy gazowana?',sv:'Still eller kolsyrad?'}},
+      {text:'Is everything alright?', pronunciation:'iz EV-ree-thing awl-ryt', translation:{es:'¿Todo bien?',fr:'Tout va bien ?',de:'Alles in Ordnung?',it:'Tutto bene?',pt:'Está tudo bem?',nl:'Is alles naar wens?',ru:'Всё в порядке?',pl:'Czy wszystko w porządku?',sv:'Är allt bra?'}},
+      {text:'Would you like any dessert?', pronunciation:'wood yoo lyk EN-ee dih-ZURT', translation:{es:'¿Quieren postre?',fr:'Voulez-vous un dessert ?',de:'Möchten Sie einen Nachtisch?',it:'Desiderate un dolce?',pt:'Desejam sobremesa?',nl:'Wilt u een nagerecht?',ru:'Хотите десерт?',pl:'Czy Państwo chcą deser?',sv:'Vill ni ha efterrätt?'}},
+      {text:'Could we have the bill, please?', pronunciation:'kood wee hav thuh bil, pleez', translation:{es:'¿Nos trae la cuenta, por favor?',fr:'L\'addition, s\'il vous plaît.',de:'Die Rechnung, bitte.',it:'Il conto, per favore.',pt:'A conta, por favor.',nl:'De rekening, alstublieft.',ru:'Счёт, пожалуйста.',pl:'Rachunek, proszę.',sv:'Notan, tack.'}},
+      {text:'Can I pay by card?', pronunciation:'kan eye pay by kard', translation:{es:'¿Puedo pagar con tarjeta?',fr:'Puis-je payer par carte ?',de:'Kann ich mit Karte zahlen?',it:'Posso pagare con carta?',pt:'Posso pagar com cartão?',nl:'Kan ik met kaart betalen?',ru:'Можно оплатить картой?',pl:'Czy mogę zapłacić kartą?',sv:'Kan jag betala med kort?'}},
+      {text:'Do you have any allergies?', pronunciation:'doo yoo hav EN-ee AL-er-jeez', translation:{es:'¿Tienen alguna alergia?',fr:'Avez-vous des allergies ?',de:'Haben Sie Allergien?',it:'Avete allergie?',pt:'Têm alguma alergia?',nl:'Hebt u allergieën?',ru:'У вас есть аллергии?',pl:'Czy mają Państwo alergie?',sv:'Har ni några allergier?'}},
+      {text:'I\'m allergic to nuts.', pronunciation:'eyem uh-LUR-jik too nuts', translation:{es:'Soy alérgico a los frutos secos.',fr:'Je suis allergique aux noix.',de:'Ich bin allergisch gegen Nüsse.',it:'Sono allergico alla frutta secca.',pt:'Sou alérgico a frutos secos.',nl:'Ik ben allergisch voor noten.',ru:'У меня аллергия на орехи.',pl:'Mam alergię na orzechy.',sv:'Jag är allergisk mot nötter.'}},
+      {text:'Enjoy your meal.', pronunciation:'en-JOY yor meel', translation:{es:'¡Que aproveche!',fr:'Bon appétit !',de:'Guten Appetit!',it:'Buon appetito!',pt:'Bom apetite!',nl:'Eet smakelijk!',ru:'Приятного аппетита!',pl:'Smacznego!',sv:'Smaklig måltid!'}}
+    ]
+  },
+  {
+    id:'sentences', label:'3 · Sentences',
+    items:[
+      {text:'Do you have a reservation with us this evening?', pronunciation:'doo yoo hav uh reh-zer-VAY-shun with us this EEV-ning', translation:{es:'¿Tienen reserva con nosotros esta noche?',fr:'Avez-vous une réservation chez nous ce soir ?',de:'Haben Sie heute Abend eine Reservierung bei uns?',it:'Avete una prenotazione da noi stasera?',pt:'Têm reserva connosco esta noite?',nl:'Hebt u vanavond een reservering bij ons?',ru:'У вас есть бронь на сегодняшний вечер?',pl:'Czy mają Państwo u nas rezerwację na dziś wieczór?',sv:'Har ni en bokning hos oss ikväll?'}},
+      {text:'I would like to book a table for four at eight o\'clock.', pronunciation:'eye wood lyk too book uh TAY-bul for for at ayt uh-KLOK', translation:{es:'Quisiera reservar una mesa para cuatro a las ocho.',fr:'Je voudrais réserver une table pour quatre à huit heures.',de:'Ich möchte einen Tisch für vier um acht Uhr reservieren.',it:'Vorrei prenotare un tavolo per quattro alle otto.',pt:'Gostaria de reservar uma mesa para quatro às oito.',nl:'Ik wil graag een tafel voor vier reserveren om acht uur.',ru:'Я хотел бы забронировать столик на четверых на восемь часов.',pl:'Chciałbym zarezerwować stolik dla czterech osób na ósmą.',sv:'Jag skulle vilja boka ett bord för fyra klockan åtta.'}},
+      {text:'We have a table by the window if you prefer.', pronunciation:'wee hav uh TAY-bul by thuh WIN-doh if yoo prih-FUR', translation:{es:'Tenemos una mesa junto a la ventana si prefiere.',fr:'Nous avons une table près de la fenêtre si vous préférez.',de:'Wir haben einen Tisch am Fenster, wenn Sie möchten.',it:'Abbiamo un tavolo vicino alla finestra se preferisce.',pt:'Temos uma mesa à janela se preferir.',nl:'We hebben een tafel bij het raam als u dat prettiger vindt.',ru:'У нас есть столик у окна, если предпочитаете.',pl:'Mamy stolik przy oknie, jeśli Pan/Pani woli.',sv:'Vi har ett bord vid fönstret om du föredrar det.'}},
+      {text:'Today\'s special is grilled salmon with seasonal vegetables.', pronunciation:'tuh-DAYZ SPESH-ul iz grild SAM-un with SEE-zun-ul VEJ-tuh-bulz', translation:{es:'El plato del día es salmón a la parrilla con verduras de temporada.',fr:'Le plat du jour est un saumon grillé avec des légumes de saison.',de:'Das Tagesgericht ist gegrillter Lachs mit saisonalem Gemüse.',it:'Il piatto del giorno è salmone alla griglia con verdure di stagione.',pt:'O prato do dia é salmão grelhado com legumes da época.',nl:'De dagschotel is gegrilde zalm met seizoensgroenten.',ru:'Блюдо дня — лосось на гриле с сезонными овощами.',pl:'Danie dnia to grillowany łosoś z sezonowymi warzywami.',sv:'Dagens rätt är grillad lax med säsongens grönsaker.'}},
+      {text:'Could I see the wine list, please?', pronunciation:'kood eye see thuh wyn list, pleez', translation:{es:'¿Puedo ver la carta de vinos?',fr:'Puis-je voir la carte des vins ?',de:'Könnte ich die Weinkarte sehen?',it:'Posso vedere la carta dei vini?',pt:'Posso ver a carta de vinhos?',nl:'Mag ik de wijnkaart zien?',ru:'Можно посмотреть винную карту?',pl:'Czy mogę zobaczyć kartę win?',sv:'Kan jag få se vinlistan?'}},
+      {text:'How long will the wait be?', pronunciation:'how long wil thuh wayt bee', translation:{es:'¿Cuánto hay que esperar?',fr:'Combien de temps faut-il attendre ?',de:'Wie lange ist die Wartezeit?',it:'Quanto tempo dobbiamo aspettare?',pt:'Quanto tempo de espera?',nl:'Hoe lang is de wachttijd?',ru:'Сколько ждать?',pl:'Jak długo trzeba czekać?',sv:'Hur lång är väntetiden?'}},
+      {text:'We\'re fully booked this evening.', pronunciation:'weer FUL-ee bukt this EEV-ning', translation:{es:'Estamos completos esta noche.',fr:'Nous sommes complets ce soir.',de:'Wir sind heute Abend ausgebucht.',it:'Siamo al completo stasera.',pt:'Estamos lotados esta noite.',nl:'We zijn vanavond volgeboekt.',ru:'На сегодняшний вечер всё занято.',pl:'Jesteśmy dziś wieczorem w pełni zajęci.',sv:'Vi är fullbokade ikväll.'}},
+      {text:'Would you like to start with a starter?', pronunciation:'wood yoo lyk too start with uh STAR-ter', translation:{es:'¿Quieren empezar con un entrante?',fr:'Voulez-vous commencer par une entrée ?',de:'Möchten Sie mit einer Vorspeise beginnen?',it:'Volete iniziare con un antipasto?',pt:'Querem começar com uma entrada?',nl:'Wilt u met een voorgerecht beginnen?',ru:'Хотите начать с закуски?',pl:'Czy chcą Państwo zacząć od przystawki?',sv:'Vill ni börja med en förrätt?'}},
+      {text:'The kitchen closes in half an hour.', pronunciation:'thuh KICH-un KLOH-ziz in haf an OW-er', translation:{es:'La cocina cierra en media hora.',fr:'La cuisine ferme dans une demi-heure.',de:'Die Küche schließt in einer halben Stunde.',it:'La cucina chiude tra mezz\'ora.',pt:'A cozinha fecha dentro de meia hora.',nl:'De keuken sluit over een half uur.',ru:'Кухня закрывается через полчаса.',pl:'Kuchnia zamyka się za pół godziny.',sv:'Köket stänger om en halvtimme.'}},
+      {text:'I\'ll bring your drinks right away.', pronunciation:'eyel bring yor dringks ryt uh-WAY', translation:{es:'Les traigo las bebidas enseguida.',fr:'Je vous apporte les boissons tout de suite.',de:'Ich bringe Ihre Getränke sofort.',it:'Porto subito le bevande.',pt:'Trago já as vossas bebidas.',nl:'Ik breng uw drankjes meteen.',ru:'Сейчас принесу ваши напитки.',pl:'Zaraz przyniosę Państwa napoje.',sv:'Jag kommer med era drycker direkt.'}},
+      {text:'Would you like the bill together or separately?', pronunciation:'wood yoo lyk thuh bil tuh-GETH-er or SEP-rut-lee', translation:{es:'¿La cuenta junta o por separado?',fr:'L\'addition ensemble ou séparément ?',de:'Die Rechnung zusammen oder getrennt?',it:'Il conto insieme o separato?',pt:'A conta junta ou separada?',nl:'De rekening samen of apart?',ru:'Счёт вместе или отдельно?',pl:'Rachunek razem czy osobno?',sv:'Notan tillsammans eller separat?'}},
+      {text:'Please keep the change.', pronunciation:'pleez keep thuh chaynj', translation:{es:'Quédese con el cambio.',fr:'Gardez la monnaie.',de:'Stimmt so.',it:'Tenga il resto.',pt:'Fique com o troco.',nl:'Houd het wisselgeld.',ru:'Сдачи не надо.',pl:'Proszę zatrzymać resztę.',sv:'Behåll växeln.'}},
+      {text:'Everything was delicious, thank you.', pronunciation:'EV-ree-thing wuz dih-LISH-us, thank yoo', translation:{es:'Todo estaba delicioso, gracias.',fr:'Tout était délicieux, merci.',de:'Alles war köstlich, danke.',it:'Era tutto delizioso, grazie.',pt:'Estava tudo delicioso, obrigado.',nl:'Alles was heerlijk, bedankt.',ru:'Всё было очень вкусно, спасибо.',pl:'Wszystko było pyszne, dziękuję.',sv:'Allt var utsökt, tack.'}},
+      {text:'Please come back and see us again soon.', pronunciation:'pleez kum bak and see us uh-GEN soon', translation:{es:'Vuelvan pronto a visitarnos.',fr:'Revenez nous voir bientôt.',de:'Besuchen Sie uns bald wieder.',it:'Tornate presto a trovarci.',pt:'Voltem a visitar-nos em breve.',nl:'Kom snel weer langs.',ru:'Приходите к нам снова.',pl:'Proszę nas wkrótce odwiedzić.',sv:'Välkomna tillbaka snart.'}}
+    ]
+  },
+  {
+    id:'greeting', label:'4 · Greeting & Seating',
+    items:[
+      {text:'Good evening, welcome.', pronunciation:'good EEV-ning, WEL-kum', translation:{es:'Buenas noches, bienvenidos.',fr:'Bonsoir, bienvenue.',de:'Guten Abend, willkommen.',it:'Buonasera, benvenuti.',pt:'Boa noite, bem-vindos.',nl:'Goedenavond, welkom.',ru:'Добрый вечер, добро пожаловать.',pl:'Dobry wieczór, witamy.',sv:'God kväll, välkommen.'}},
+      {text:'Do you have a reservation?', pronunciation:'doo yoo hav uh reh-zer-VAY-shun', translation:{es:'¿Tienen reserva?',fr:'Avez-vous une réservation ?',de:'Haben Sie eine Reservierung?',it:'Avete una prenotazione?',pt:'Têm reserva?',nl:'Hebt u een reservering?',ru:'У вас есть бронь?',pl:'Czy mają Państwo rezerwację?',sv:'Har ni en bokning?'}},
+      {text:'Under what name?', pronunciation:'UN-der wut naym', translation:{es:'¿A qué nombre?',fr:'À quel nom ?',de:'Auf welchen Namen?',it:'A che nome?',pt:'Em que nome?',nl:'Op welke naam?',ru:'На чьё имя?',pl:'Na jakie nazwisko?',sv:'Under vilket namn?'}},
+      {text:'How many in your party?', pronunciation:'how MEN-ee in yor PAR-tee', translation:{es:'¿Cuántos son?',fr:'Combien de personnes ?',de:'Wie viele Personen sind Sie?',it:'Quante persone siete?',pt:'Quantas pessoas são?',nl:'Met hoeveel personen bent u?',ru:'Сколько вас человек?',pl:'Ile osób w Państwa grupie?',sv:'Hur många är ni?'}},
+      {text:'This way, please.', pronunciation:'this way, pleez', translation:{es:'Por aquí, por favor.',fr:'Par ici, s\'il vous plaît.',de:'Hier entlang, bitte.',it:'Da questa parte, per favore.',pt:'Por aqui, por favor.',nl:'Deze kant op, alstublieft.',ru:'Сюда, пожалуйста.',pl:'Tędy, proszę.',sv:'Den här vägen tack.'}},
+      {text:'Please follow me.', pronunciation:'pleez FOL-oh mee', translation:{es:'Sígame, por favor.',fr:'Suivez-moi, s\'il vous plaît.',de:'Bitte folgen Sie mir.',it:'Mi segua, per favore.',pt:'Siga-me, por favor.',nl:'Volg mij alstublieft.',ru:'Пройдите за мной, пожалуйста.',pl:'Proszę za mną.',sv:'Följ med mig tack.'}},
+      {text:'Is this table alright?', pronunciation:'iz this TAY-bul awl-ryt', translation:{es:'¿Les va bien esta mesa?',fr:'Cette table vous convient-elle ?',de:'Ist dieser Tisch in Ordnung?',it:'Va bene questo tavolo?',pt:'Esta mesa está bem?',nl:'Is deze tafel goed?',ru:'Этот столик подойдёт?',pl:'Czy ten stolik jest w porządku?',sv:'Passar detta bord?'}},
+      {text:'Would you prefer inside or outside?', pronunciation:'wood yoo prih-FUR in-SYD or owt-SYD', translation:{es:'¿Prefieren dentro o fuera?',fr:'Préférez-vous à l\'intérieur ou en terrasse ?',de:'Möchten Sie lieber drinnen oder draußen?',it:'Preferite dentro o fuori?',pt:'Preferem dentro ou fora?',nl:'Wilt u binnen of buiten zitten?',ru:'Вы предпочитаете внутри или снаружи?',pl:'Wolą Państwo w środku czy na zewnątrz?',sv:'Föredrar ni inne eller ute?'}},
+      {text:'We\'ll need the table back by nine.', pronunciation:'wel need thuh TAY-bul bak by nyn', translation:{es:'Necesitaremos la mesa a las nueve.',fr:'Nous aurons besoin de la table pour neuf heures.',de:'Wir brauchen den Tisch bis neun Uhr.',it:'Ci servirà il tavolo per le nove.',pt:'Precisamos da mesa até às nove.',nl:'We hebben de tafel om negen uur weer nodig.',ru:'Столик нужен нам обратно к девяти.',pl:'Będziemy potrzebować stolika z powrotem na dziewiątą.',sv:'Vi behöver bordet tillbaka till nio.'}},
+      {text:'Please take a seat at the bar.', pronunciation:'pleez tayk uh seet at thuh bar', translation:{es:'Tomen asiento en la barra.',fr:'Asseyez-vous au bar, s\'il vous plaît.',de:'Bitte setzen Sie sich an die Bar.',it:'Si accomodino al bancone.',pt:'Sente-se ao balcão.',nl:'Gaat u aan de bar zitten.',ru:'Присядьте за барной стойкой.',pl:'Proszę usiąść przy barze.',sv:'Sätt er vid baren tack.'}},
+      {text:'I\'m afraid we\'re fully booked.', pronunciation:'eyem uh-FRAYD weer FUL-ee bukt', translation:{es:'Me temo que estamos completos.',fr:'Je crains que nous soyons complets.',de:'Ich fürchte, wir sind ausgebucht.',it:'Temo che siamo al completo.',pt:'Receio que estejamos lotados.',nl:'Ik ben bang dat we volgeboekt zijn.',ru:'Боюсь, у нас всё занято.',pl:'Obawiam się, że jesteśmy w pełni zajęci.',sv:'Tyvärr är vi fullbokade.'}},
+      {text:'The wait is about twenty minutes.', pronunciation:'thuh wayt iz uh-BOWT TWEN-tee MIN-its', translation:{es:'La espera es de unos veinte minutos.',fr:'L\'attente est d\'environ vingt minutes.',de:'Die Wartezeit beträgt etwa zwanzig Minuten.',it:'L\'attesa è di circa venti minuti.',pt:'A espera é de cerca de vinte minutos.',nl:'De wachttijd is ongeveer twintig minuten.',ru:'Ожидание около двадцати минут.',pl:'Czas oczekiwania to około dwudziestu minut.',sv:'Väntetiden är cirka tjugo minuter.'}},
+      {text:'We can seat you at the bar while you wait.', pronunciation:'wee kan seet yoo at thuh bar wyl yoo wayt', translation:{es:'Podemos sentarles en la barra mientras esperan.',fr:'Nous pouvons vous installer au bar en attendant.',de:'Wir können Sie an der Bar unterbringen, während Sie warten.',it:'Possiamo sistemarvi al bancone mentre aspettate.',pt:'Podemos acomodá-los ao balcão enquanto esperam.',nl:'We kunnen u aan de bar plaatsen terwijl u wacht.',ru:'Можем посадить вас за барной стойкой, пока ждёте.',pl:'Możemy posadzić Państwa przy barze, gdy czekacie.',sv:'Vi kan sätta er vid baren medan ni väntar.'}},
+      {text:'Would you like to leave your number?', pronunciation:'wood yoo lyk too leev yor NUM-ber', translation:{es:'¿Quieren dejarnos su número?',fr:'Voulez-vous laisser votre numéro ?',de:'Möchten Sie Ihre Nummer hinterlassen?',it:'Volete lasciare il vostro numero?',pt:'Querem deixar o vosso número?',nl:'Wilt u uw nummer achterlaten?',ru:'Хотите оставить свой номер?',pl:'Czy chcą Państwo zostawić numer?',sv:'Vill ni lämna ert nummer?'}},
+      {text:'Enjoy your evening.', pronunciation:'en-JOY yor EEV-ning', translation:{es:'Disfruten de la velada.',fr:'Bonne soirée.',de:'Genießen Sie Ihren Abend.',it:'Buona serata.',pt:'Boa noite.',nl:'Fijne avond.',ru:'Приятного вечера.',pl:'Miłego wieczoru.',sv:'Ha en trevlig kväll.'}}
+    ]
+  },
+  {
+    id:'taking-order', label:'5 · Taking Orders',
+    items:[
+      {text:'Are you ready to order?', pronunciation:'ar yoo RED-ee too OR-der', translation:{es:'¿Están listos para pedir?',fr:'Êtes-vous prêts à commander ?',de:'Möchten Sie bestellen?',it:'Siete pronti per ordinare?',pt:'Estão prontos para pedir?',nl:'Wilt u bestellen?',ru:'Вы готовы сделать заказ?',pl:'Czy są Państwo gotowi złożyć zamówienie?',sv:'Är ni redo att beställa?'}},
+      {text:'Would you like a few more minutes?', pronunciation:'wood yoo lyk uh fyoo mor MIN-its', translation:{es:'¿Quieren unos minutos más?',fr:'Voulez-vous quelques minutes de plus ?',de:'Möchten Sie noch ein paar Minuten?',it:'Volete qualche minuto in più?',pt:'Querem mais alguns minutos?',nl:'Wilt u nog even?',ru:'Хотите ещё пару минут?',pl:'Potrzebują Państwo jeszcze kilka minut?',sv:'Vill ni ha några minuter till?'}},
+      {text:'What would you like to start with?', pronunciation:'wut wood yoo lyk too start with', translation:{es:'¿Con qué quieren empezar?',fr:'Par quoi souhaitez-vous commencer ?',de:'Womit möchten Sie beginnen?',it:'Con cosa volete iniziare?',pt:'Com o que querem começar?',nl:'Waarmee wilt u beginnen?',ru:'С чего хотите начать?',pl:'Od czego chcą Państwo zacząć?',sv:'Vad vill ni börja med?'}},
+      {text:'And for your main course?', pronunciation:'and for yor mayn kors', translation:{es:'¿Y de plato principal?',fr:'Et en plat principal ?',de:'Und als Hauptgericht?',it:'E per il piatto principale?',pt:'E para prato principal?',nl:'En als hoofdgerecht?',ru:'А на основное блюдо?',pl:'A na danie główne?',sv:'Och till huvudrätt?'}},
+      {text:'Anything to drink with that?', pronunciation:'EN-ee-thing too dringk with that', translation:{es:'¿Algo de beber con eso?',fr:'Quelque chose à boire avec ça ?',de:'Etwas zu trinken dazu?',it:'Qualcosa da bere con quello?',pt:'Algo para beber com isso?',nl:'Iets te drinken erbij?',ru:'Что-нибудь выпить к этому?',pl:'Coś do picia do tego?',sv:'Något att dricka till det?'}},
+      {text:'Still or sparkling water?', pronunciation:'stil or SPAR-kling WOR-ter', translation:{es:'¿Agua sin gas o con gas?',fr:'Eau plate ou pétillante ?',de:'Stilles oder sprudelndes Wasser?',it:'Acqua naturale o frizzante?',pt:'Água sem gás ou com gás?',nl:'Plat of bruisend water?',ru:'Вода без газа или с газом?',pl:'Woda niegazowana czy gazowana?',sv:'Still eller kolsyrat vatten?'}},
+      {text:'Would you like any sides?', pronunciation:'wood yoo lyk EN-ee sydz', translation:{es:'¿Quieren algún acompañamiento?',fr:'Voulez-vous un accompagnement ?',de:'Möchten Sie Beilagen?',it:'Volete dei contorni?',pt:'Querem acompanhamentos?',nl:'Wilt u bijgerechten?',ru:'Хотите гарнир?',pl:'Czy chcą Państwo dodatki?',sv:'Vill ni ha något tillbehör?'}},
+      {text:'How would you like that cooked?', pronunciation:'how wood yoo lyk that kookt', translation:{es:'¿Cómo lo quiere cocinado?',fr:'Quelle cuisson souhaitez-vous ?',de:'Wie möchten Sie es gebraten?',it:'Come lo desidera cotto?',pt:'Como quer isso cozinhado?',nl:'Hoe wilt u dat gebakken?',ru:'Как прожарить?',pl:'Jak to przyrządzić?',sv:'Hur vill du ha det tillagat?'}},
+      {text:'Rare, medium, or well-done?', pronunciation:'rair MEE-dee-um or wel-dun', translation:{es:'¿Poco hecho, al punto o muy hecho?',fr:'Saignant, à point ou bien cuit ?',de:'Blutig, medium oder durch?',it:'Al sangue, media o ben cotta?',pt:'Mal passado, ao ponto ou bem passado?',nl:'Rood, medium of doorbakken?',ru:'С кровью, среднепрожаренный или хорошо прожаренный?',pl:'Krwisty, średnio wysmażony czy dobrze wysmażony?',sv:'Rå, medium eller genomstekt?'}},
+      {text:'I\'ll repeat your order to be sure.', pronunciation:'eyel rih-PEET yor OR-der too bee shoor', translation:{es:'Repetiré su pedido para asegurarme.',fr:'Je répète votre commande pour être sûr.',de:'Ich wiederhole Ihre Bestellung zur Sicherheit.',it:'Ripeto il suo ordine per sicurezza.',pt:'Vou repetir o pedido para ter a certeza.',nl:'Ik herhaal uw bestelling voor de zekerheid.',ru:'Повторю ваш заказ, чтобы убедиться.',pl:'Powtórzę zamówienie dla pewności.',sv:'Jag upprepar er beställning för säkerhets skull.'}},
+      {text:'Anything else?', pronunciation:'EN-ee-thing els', translation:{es:'¿Algo más?',fr:'Autre chose ?',de:'Sonst noch etwas?',it:'Altro?',pt:'Mais alguma coisa?',nl:'Nog iets anders?',ru:'Что-нибудь ещё?',pl:'Coś jeszcze?',sv:'Något mer?'}},
+      {text:'Your order will be with you shortly.', pronunciation:'yor OR-der wil bee with yoo SHORT-lee', translation:{es:'Su pedido llegará en breve.',fr:'Votre commande arrive bientôt.',de:'Ihre Bestellung kommt gleich.',it:'Il suo ordine arriverà a breve.',pt:'O seu pedido chegará em breve.',nl:'Uw bestelling komt eraan.',ru:'Ваш заказ скоро будет готов.',pl:'Państwa zamówienie wkrótce będzie gotowe.',sv:'Er beställning kommer strax.'}},
+      {text:'Sorry, we\'re out of that today.', pronunciation:'SOR-ee, weer owt uv that tuh-DAY', translation:{es:'Lo siento, hoy no queda de eso.',fr:'Désolé, nous n\'en avons plus aujourd\'hui.',de:'Entschuldigung, das ist heute aus.',it:'Mi dispiace, oggi è finito.',pt:'Desculpe, hoje já não temos disso.',nl:'Sorry, dat is vandaag op.',ru:'Извините, сегодня это закончилось.',pl:'Przepraszam, dziś tego nie mamy.',sv:'Tyvärr, det är slut idag.'}},
+      {text:'Would you like me to suggest an alternative?', pronunciation:'wood yoo lyk mee too sug-JEST an awl-TUR-nuh-tiv', translation:{es:'¿Quiere que le sugiera una alternativa?',fr:'Voulez-vous que je vous suggère une alternative ?',de:'Soll ich Ihnen eine Alternative vorschlagen?',it:'Vuole che le suggerisca un\'alternativa?',pt:'Quer que sugira uma alternativa?',nl:'Wilt u dat ik een alternatief voorstel?',ru:'Хотите, я предложу альтернативу?',pl:'Czy mam zaproponować alternatywę?',sv:'Vill du att jag föreslår ett alternativ?'}},
+      {text:'Perfect. I\'ll get that started for you.', pronunciation:'PUR-fikt. eyel get that STAR-ted for yoo', translation:{es:'Perfecto. Lo pongo en marcha.',fr:'Parfait. Je lance ça pour vous.',de:'Perfekt. Ich gebe das in Auftrag.',it:'Perfetto. Lo faccio partire subito.',pt:'Perfeito. Vou já tratar disso.',nl:'Perfect. Ik zet het in gang.',ru:'Отлично. Я передам заказ на кухню.',pl:'Świetnie. Przekazuję zamówienie.',sv:'Perfekt. Jag sätter igång det.'}}
+    ]
+  },
+  {
+    id:'menu', label:'6 · Menu & Dishes',
+    items:[
+      {text:'Starter', pronunciation:'STAR-ter', translation:{es:'Entrante',fr:'Entrée',de:'Vorspeise',it:'Antipasto',pt:'Entrada',nl:'Voorgerecht',ru:'Закуска',pl:'Przystawka',sv:'Förrätt'}},
+      {text:'Soup of the day', pronunciation:'soop uv thuh day', translation:{es:'Sopa del día',fr:'Soupe du jour',de:'Tagessuppe',it:'Zuppa del giorno',pt:'Sopa do dia',nl:'Soep van de dag',ru:'Суп дня',pl:'Zupa dnia',sv:'Dagens soppa'}},
+      {text:'Main course', pronunciation:'mayn kors', translation:{es:'Plato principal',fr:'Plat principal',de:'Hauptgericht',it:'Piatto principale',pt:'Prato principal',nl:'Hoofdgerecht',ru:'Основное блюдо',pl:'Danie główne',sv:'Huvudrätt'}},
+      {text:'Side dish', pronunciation:'syd dish', translation:{es:'Guarnición',fr:'Accompagnement',de:'Beilage',it:'Contorno',pt:'Acompanhamento',nl:'Bijgerecht',ru:'Гарнир',pl:'Dodatek',sv:'Tillbehör'}},
+      {text:'Grilled', pronunciation:'grild', translation:{es:'A la parrilla',fr:'Grilé',de:'Gegrillt',it:'Alla griglia',pt:'Grelhado',nl:'Gegrild',ru:'На гриле',pl:'Grillowany',sv:'Grillad'}},
+      {text:'Roasted', pronunciation:'ROHS-ted', translation:{es:'Asado',fr:'Rôti',de:'Gebraten',it:'Arrostito',pt:'Assado',nl:'Geroosterd',ru:'Запечённый',pl:'Pieczony',sv:'Rostad'}},
+      {text:'Fried', pronunciation:'fryd', translation:{es:'Frito',fr:'Frit',de:'Frittiert',it:'Fritto',pt:'Frito',nl:'Gefrituurd',ru:'Жареный',pl:'Smażony',sv:'Friterad'}},
+      {text:'Steamed', pronunciation:'steemd', translation:{es:'Al vapor',fr:'À la vapeur',de:'Gedämpft',it:'Al vapore',pt:'A vapor',nl:'Gestoomd',ru:'На пару',pl:'Na parze',sv:'Ångad'}},
+      {text:'Rare', pronunciation:'rair', translation:{es:'Poco hecho',fr:'Saignant',de:'Blutig',it:'Al sangue',pt:'Mal passado',nl:'Rood',ru:'С кровью',pl:'Krwisty',sv:'Rå'}},
+      {text:'Medium', pronunciation:'MEE-dee-um', translation:{es:'Al punto',fr:'À point',de:'Medium',it:'Media',pt:'Ao ponto',nl:'Medium',ru:'Среднепрожаренный',pl:'Średnio wysmażony',sv:'Medium'}},
+      {text:'Well-done', pronunciation:'wel-dun', translation:{es:'Muy hecho',fr:'Bien cuit',de:'Durch',it:'Ben cotta',pt:'Bem passado',nl:'Doorbakken',ru:'Хорошо прожаренный',pl:'Dobrze wysmażony',sv:'Genomstekt'}},
+      {text:'Vegetarian option', pronunciation:'vej-uh-TAIR-ee-un OP-shun', translation:{es:'Opción vegetariana',fr:'Option végétarienne',de:'Vegetarische Option',it:'Opzione vegetariana',pt:'Opção vegetariana',nl:'Vegetarische optie',ru:'Вегетарианское блюдо',pl:'Opcja wegetariańska',sv:'Vegetariskt alternativ'}},
+      {text:'Gluten-free option', pronunciation:'GLOO-tun free OP-shun', translation:{es:'Opción sin gluten',fr:'Option sans gluten',de:'Glutenfreie Option',it:'Opzione senza glutine',pt:'Opção sem glúten',nl:'Glutenvrije optie',ru:'Безглютеновое блюдо',pl:'Opcja bezglutenowa',sv:'Glutenfritt alternativ'}},
+      {text:'Daily special', pronunciation:'DAY-lee SPESH-ul', translation:{es:'Especial del día',fr:'Plat du jour',de:'Tagesangebot',it:'Piatto del giorno',pt:'Especial do dia',nl:'Dagschotel',ru:'Блюдо дня',pl:'Danie dnia',sv:'Dagens rätt'}},
+      {text:'Chef\'s recommendation', pronunciation:'shefs rek-uh-men-DAY-shun', translation:{es:'Recomendación del chef',fr:'Recommandation du chef',de:'Empfehlung des Küchenchefs',it:'Consiglio dello chef',pt:'Recomendação do chef',nl:'Aanbeveling van de chef',ru:'Рекомендация шеф-повара',pl:'Rekomendacja szefa kuchni',sv:'Kockens rekommendation'}},
+      {text:'Children\'s menu', pronunciation:'CHIL-drunz MEN-yoo', translation:{es:'Menú infantil',fr:'Menu enfant',de:'Kindermenü',it:'Menù bambini',pt:'Menu infantil',nl:'Kindermenu',ru:'Детское меню',pl:'Menu dla dzieci',sv:'Barnmeny'}}
+    ]
+  },
+  {
+    id:'drinks', label:'7 · Drinks & Bar',
+    items:[
+      {text:'Still water', pronunciation:'stil WOR-ter', translation:{es:'Agua sin gas',fr:'Eau plate',de:'Stilles Wasser',it:'Acqua naturale',pt:'Água sem gás',nl:'Plat water',ru:'Вода без газа',pl:'Woda niegazowana',sv:'Stilla vatten'}},
+      {text:'Sparkling water', pronunciation:'SPAR-kling WOR-ter', translation:{es:'Agua con gas',fr:'Eau pétillante',de:'Sprudelwasser',it:'Acqua frizzante',pt:'Água com gás',nl:'Bruisend water',ru:'Газированная вода',pl:'Woda gazowana',sv:'Kolsyrat vatten'}},
+      {text:'House wine', pronunciation:'hows wyn', translation:{es:'Vino de la casa',fr:'Vin maison',de:'Hauswein',it:'Vino della casa',pt:'Vinho da casa',nl:'Huiswijn',ru:'Домашнее вино',pl:'Wino domowe',sv:'Husets vin'}},
+      {text:'Red wine', pronunciation:'red wyn', translation:{es:'Vino tinto',fr:'Vin rouge',de:'Rotwein',it:'Vino rosso',pt:'Vinho tinto',nl:'Rode wijn',ru:'Красное вино',pl:'Czerwone wino',sv:'Rött vin'}},
+      {text:'White wine', pronunciation:'wyt wyn', translation:{es:'Vino blanco',fr:'Vin blanc',de:'Weißwein',it:'Vino bianco',pt:'Vinho branco',nl:'Witte wijn',ru:'Белое вино',pl:'Białe wino',sv:'Vitt vin'}},
+      {text:'Draught beer', pronunciation:'draft beer', translation:{es:'Cerveza de barril',fr:'Bière pression',de:'Fassbier',it:'Birra alla spina',pt:'Cerveja de pressão',nl:'Tapbier',ru:'Разливное пиво',pl:'Piwo lane',sv:'Fatöl'}},
+      {text:'Bottle of beer', pronunciation:'BOT-ul uv beer', translation:{es:'Botella de cerveza',fr:'Bouteille de bière',de:'Flasche Bier',it:'Bottiglia di birra',pt:'Garrafa de cerveja',nl:'Flesje bier',ru:'Бутылка пива',pl:'Butelka piwa',sv:'Flaska öl'}},
+      {text:'Soft drink', pronunciation:'soft dringk', translation:{es:'Refresco',fr:'Boisson gazeuse',de:'Erfrischungsgetränk',it:'Bibita',pt:'Refrigerante',nl:'Frisdrank',ru:'Безалкогольный напиток',pl:'Napój gazowany',sv:'Läsk'}},
+      {text:'Orange juice', pronunciation:'OR-inj joos', translation:{es:'Zumo de naranja',fr:'Jus d\'orange',de:'Orangensaft',it:'Succo d\'arancia',pt:'Sumo de laranja',nl:'Sinaasappelsap',ru:'Апельсиновый сок',pl:'Sok pomarańczowy',sv:'Apelsinjuice'}},
+      {text:'Coffee', pronunciation:'KOF-ee', translation:{es:'Café',fr:'Café',de:'Kaffee',it:'Caffè',pt:'Café',nl:'Koffie',ru:'Кофе',pl:'Kawa',sv:'Kaffe'}},
+      {text:'Espresso', pronunciation:'es-PRES-oh', translation:{es:'Espresso',fr:'Expresso',de:'Espresso',it:'Espresso',pt:'Espresso',nl:'Espresso',ru:'Эспрессо',pl:'Espresso',sv:'Espresso'}},
+      {text:'Cappuccino', pronunciation:'kap-uh-CHEE-noh', translation:{es:'Capuchino',fr:'Cappuccino',de:'Cappuccino',it:'Cappuccino',pt:'Cappuccino',nl:'Cappuccino',ru:'Капучино',pl:'Cappuccino',sv:'Cappuccino'}},
+      {text:'Tea', pronunciation:'tee', translation:{es:'Té',fr:'Thé',de:'Tee',it:'Tè',pt:'Chá',nl:'Thee',ru:'Чай',pl:'Herbata',sv:'Te'}},
+      {text:'Herbal tea', pronunciation:'HUR-bul tee', translation:{es:'Infusión',fr:'Tisane',de:'Kräutertee',it:'Tisana',pt:'Chá de ervas',nl:'Kruidenthee',ru:'Травяной чай',pl:'Herbata ziołowa',sv:'Örtte'}},
+      {text:'On the rocks', pronunciation:'on thuh roks', translation:{es:'Con hielo',fr:'Avec des glaçons',de:'Mit Eis',it:'Con ghiaccio',pt:'Com gelo',nl:'Met ijs',ru:'Со льдом',pl:'Z lodem',sv:'Med is'}}
+    ]
+  },
+  {
+    id:'dietary', label:'8 · Dietary Requirements',
+    items:[
+      {text:'I\'m vegetarian.', pronunciation:'eyem vej-uh-TAIR-ee-un', translation:{es:'Soy vegetariano.',fr:'Je suis végétarien.',de:'Ich bin Vegetarier.',it:'Sono vegetariano.',pt:'Sou vegetariano.',nl:'Ik ben vegetariër.',ru:'Я вегетарианец.',pl:'Jestem wegetarianinem.',sv:'Jag är vegetarian.'}},
+      {text:'I\'m vegan.', pronunciation:'eyem VEE-gun', translation:{es:'Soy vegano.',fr:'Je suis végétalien.',de:'Ich bin Veganer.',it:'Sono vegano.',pt:'Sou vegano.',nl:'Ik ben veganist.',ru:'Я веган.',pl:'Jestem weganinem.',sv:'Jag är vegan.'}},
+      {text:'I\'m gluten-intolerant.', pronunciation:'eyem GLOO-tun in-TOL-er-unt', translation:{es:'Soy intolerante al gluten.',fr:'Je suis intolérant au gluten.',de:'Ich bin glutenunverträglich.',it:'Sono intollerante al glutine.',pt:'Sou intolerante ao glúten.',nl:'Ik ben glutenintolerant.',ru:'У меня непереносимость глютена.',pl:'Mam nietolerancję glutenu.',sv:'Jag är glutenintolerant.'}},
+      {text:'I\'m lactose-intolerant.', pronunciation:'eyem LAK-tohs in-TOL-er-unt', translation:{es:'Soy intolerante a la lactosa.',fr:'Je suis intolérant au lactose.',de:'Ich bin laktoseintolerant.',it:'Sono intollerante al lattosio.',pt:'Sou intolerante à lactose.',nl:'Ik ben lactose-intolerant.',ru:'У меня непереносимость лактозы.',pl:'Mam nietolerancję laktozy.',sv:'Jag är laktosintolerant.'}},
+      {text:'I have a nut allergy.', pronunciation:'eye hav uh nut AL-er-jee', translation:{es:'Tengo alergia a los frutos secos.',fr:'J\'ai une allergie aux noix.',de:'Ich habe eine Nussallergie.',it:'Ho un\'allergia alla frutta secca.',pt:'Tenho alergia a frutos secos.',nl:'Ik heb een notenallergie.',ru:'У меня аллергия на орехи.',pl:'Mam alergię na orzechy.',sv:'Jag har nötallergi.'}},
+      {text:'I have a shellfish allergy.', pronunciation:'eye hav uh SHEL-fish AL-er-jee', translation:{es:'Tengo alergia al marisco.',fr:'J\'ai une allergie aux fruits de mer.',de:'Ich habe eine Schalentierallergie.',it:'Ho un\'allergia ai frutti di mare.',pt:'Tenho alergia a marisco.',nl:'Ik heb een schaaldierenallergie.',ru:'У меня аллергия на морепродукты.',pl:'Mam alergię na owoce morza.',sv:'Jag har skaldjursallergi.'}},
+      {text:'Does this contain dairy?', pronunciation:'duz this kun-TAYN DAIR-ee', translation:{es:'¿Esto contiene lácteos?',fr:'Cela contient-il des produits laitiers ?',de:'Enthält das Milchprodukte?',it:'Contiene latticini?',pt:'Isto contém lacticínios?',nl:'Bevat dit zuivel?',ru:'Это содержит молочные продукты?',pl:'Czy to zawiera nabiał?',sv:'Innehåller detta mejeriprodukter?'}},
+      {text:'Does this contain nuts?', pronunciation:'duz this kun-TAYN nuts', translation:{es:'¿Esto contiene frutos secos?',fr:'Cela contient-il des noix ?',de:'Enthält das Nüsse?',it:'Contiene frutta secca?',pt:'Isto contém frutos secos?',nl:'Bevat dit noten?',ru:'Это содержит орехи?',pl:'Czy to zawiera orzechy?',sv:'Innehåller detta nötter?'}},
+      {text:'Is this dish spicy?', pronunciation:'iz this dish SPY-see', translation:{es:'¿Este plato es picante?',fr:'Ce plat est-il épicé ?',de:'Ist dieses Gericht scharf?',it:'Questo piatto è piccante?',pt:'Este prato é picante?',nl:'Is dit gerecht pittig?',ru:'Это блюдо острое?',pl:'Czy to danie jest ostre?',sv:'Är denna rätt stark?'}},
+      {text:'Could it be made without cheese?', pronunciation:'kood it bee mayd with-OWT cheez', translation:{es:'¿Se puede hacer sin queso?',fr:'Peut-on le faire sans fromage ?',de:'Kann es ohne Käse gemacht werden?',it:'Si può fare senza formaggio?',pt:'Pode ser feito sem queijo?',nl:'Kan het zonder kaas?',ru:'Можно без сыра?',pl:'Czy można bez sera?',sv:'Kan den göras utan ost?'}},
+      {text:'Could it be made without onions?', pronunciation:'kood it bee mayd with-OWT UN-yunz', translation:{es:'¿Se puede hacer sin cebolla?',fr:'Peut-on le faire sans oignons ?',de:'Kann es ohne Zwiebeln gemacht werden?',it:'Si può fare senza cipolla?',pt:'Pode ser feito sem cebola?',nl:'Kan het zonder ui?',ru:'Можно без лука?',pl:'Czy można bez cebuli?',sv:'Kan den göras utan lök?'}},
+      {text:'Is there a vegan option?', pronunciation:'iz thair uh VEE-gun OP-shun', translation:{es:'¿Hay opción vegana?',fr:'Y a-t-il une option végétalienne ?',de:'Gibt es eine vegane Option?',it:'C\'è un\'opzione vegana?',pt:'Há opção vegana?',nl:'Is er een veganistische optie?',ru:'Есть веганская опция?',pl:'Czy jest opcja wegańska?',sv:'Finns det ett veganskt alternativ?'}},
+      {text:'I can\'t eat pork.', pronunciation:'eye kant eet pork', translation:{es:'No puedo comer cerdo.',fr:'Je ne mange pas de porc.',de:'Ich kann kein Schweinefleisch essen.',it:'Non posso mangiare maiale.',pt:'Não posso comer porco.',nl:'Ik kan geen varkensvlees eten.',ru:'Я не ем свинину.',pl:'Nie jem wieprzowiny.',sv:'Jag kan inte äta fläsk.'}},
+      {text:'I don\'t eat meat.', pronunciation:'eye dohnt eet meet', translation:{es:'No como carne.',fr:'Je ne mange pas de viande.',de:'Ich esse kein Fleisch.',it:'Non mangio carne.',pt:'Não como carne.',nl:'Ik eet geen vlees.',ru:'Я не ем мясо.',pl:'Nie jem mięsa.',sv:'Jag äter inte kött.'}},
+      {text:'Thank you for checking.', pronunciation:'thank yoo for CHEK-ing', translation:{es:'Gracias por comprobarlo.',fr:'Merci d\'avoir vérifié.',de:'Danke für die Nachfrage.',it:'Grazie per aver verificato.',pt:'Obrigado por verificar.',nl:'Bedankt voor het navragen.',ru:'Спасибо, что уточнили.',pl:'Dziękuję za sprawdzenie.',sv:'Tack för att du kollade.'}}
+    ]
+  },
+  {
+    id:'serving', label:'9 · Serving & Check-back',
+    items:[
+      {text:'Here\'s your starter.', pronunciation:'heerz yor STAR-ter', translation:{es:'Aquí tienen su entrante.',fr:'Voici votre entrée.',de:'Hier ist Ihre Vorspeise.',it:'Ecco il suo antipasto.',pt:'Aqui está a vossa entrada.',nl:'Hier is uw voorgerecht.',ru:'Вот ваша закуска.',pl:'Oto Państwa przystawka.',sv:'Här är er förrätt.'}},
+      {text:'Here\'s your main course.', pronunciation:'heerz yor mayn kors', translation:{es:'Aquí tienen su plato principal.',fr:'Voici votre plat principal.',de:'Hier ist Ihr Hauptgericht.',it:'Ecco il suo piatto principale.',pt:'Aqui está o vosso prato principal.',nl:'Hier is uw hoofdgerecht.',ru:'Вот ваше основное блюдо.',pl:'Oto Państwa danie główne.',sv:'Här är er huvudrätt.'}},
+      {text:'Mind your fingers — the plate is hot.', pronunciation:'mynd yor FING-gerz — thuh playt iz hot', translation:{es:'Cuidado con los dedos, el plato está caliente.',fr:'Attention, l\'assiette est chaude.',de:'Vorsicht, der Teller ist heiß.',it:'Attenzione, il piatto è caldo.',pt:'Cuidado, o prato está quente.',nl:'Let op, het bord is heet.',ru:'Осторожно, тарелка горячая.',pl:'Uwaga, talerz jest gorący.',sv:'Akta fingrarna — tallriken är varm.'}},
+      {text:'Would you like some fresh pepper?', pronunciation:'wood yoo lyk sum fresh PEP-er', translation:{es:'¿Quieren pimienta recién molida?',fr:'Voulez-vous du poivre frais ?',de:'Möchten Sie frischen Pfeffer?',it:'Volete del pepe fresco?',pt:'Querem pimenta fresca?',nl:'Wilt u verse peper?',ru:'Хотите свежемолотый перец?',pl:'Czy chcą Państwo świeżego pieprzu?',sv:'Vill ni ha färsk peppar?'}},
+      {text:'Could I get you anything else?', pronunciation:'kood eye get yoo EN-ee-thing els', translation:{es:'¿Les traigo algo más?',fr:'Puis-je vous apporter autre chose ?',de:'Kann ich Ihnen noch etwas bringen?',it:'Posso portarvi qualcos\'altro?',pt:'Posso trazer mais alguma coisa?',nl:'Kan ik nog iets voor u halen?',ru:'Могу я принести что-нибудь ещё?',pl:'Czy mogę coś jeszcze przynieść?',sv:'Kan jag hämta något mer?'}},
+      {text:'How is everything?', pronunciation:'how iz EV-ree-thing', translation:{es:'¿Qué tal todo?',fr:'Tout se passe bien ?',de:'Wie ist alles?',it:'Come va tutto?',pt:'Está tudo bem?',nl:'Hoe is alles?',ru:'Как всё?',pl:'Jak wszystko?',sv:'Hur är allt?'}},
+      {text:'Is everything to your satisfaction?', pronunciation:'iz EV-ree-thing too yor sat-is-FAK-shun', translation:{es:'¿Todo es de su agrado?',fr:'Tout est-il à votre convenance ?',de:'Sind Sie zufrieden?',it:'Tutto di suo gradimento?',pt:'Está tudo do vosso agrado?',nl:'Is alles naar wens?',ru:'Всё вас устраивает?',pl:'Czy wszystko Państwu odpowiada?',sv:'Är allt till belåtenhet?'}},
+      {text:'Sorry for the wait.', pronunciation:'SOR-ee for thuh wayt', translation:{es:'Perdonen la espera.',fr:'Désolé pour l\'attente.',de:'Entschuldigung für die Wartezeit.',it:'Scusi per l\'attesa.',pt:'Desculpem a espera.',nl:'Sorry voor het wachten.',ru:'Извините за ожидание.',pl:'Przepraszam za czekanie.',sv:'Ursäkta väntetiden.'}},
+      {text:'Can I take these plates?', pronunciation:'kan eye tayk theez playts', translation:{es:'¿Puedo retirar estos platos?',fr:'Puis-je débarrasser ces assiettes ?',de:'Kann ich diese Teller abräumen?',it:'Posso portare via i piatti?',pt:'Posso retirar estes pratos?',nl:'Mag ik deze borden meenemen?',ru:'Можно убрать тарелки?',pl:'Czy mogę zabrać talerze?',sv:'Får jag ta dessa tallrikar?'}},
+      {text:'Would you like a break before dessert?', pronunciation:'wood yoo lyk uh brayk bih-FOR dih-ZURT', translation:{es:'¿Quieren una pausa antes del postre?',fr:'Voulez-vous une pause avant le dessert ?',de:'Möchten Sie eine Pause vor dem Nachtisch?',it:'Volete una pausa prima del dolce?',pt:'Querem uma pausa antes da sobremesa?',nl:'Wilt u een pauze voor het nagerecht?',ru:'Хотите паузу перед десертом?',pl:'Czy chcą Państwo przerwę przed deserem?',sv:'Vill ni ha en paus före efterrätten?'}},
+      {text:'Would you like coffee with your dessert?', pronunciation:'wood yoo lyk KOF-ee with yor dih-ZURT', translation:{es:'¿Café con el postre?',fr:'Un café avec votre dessert ?',de:'Kaffee zum Nachtisch?',it:'Caffè con il dolce?',pt:'Café com a sobremesa?',nl:'Koffie bij het nagerecht?',ru:'Кофе к десерту?',pl:'Kawę do deseru?',sv:'Kaffe till efterrätten?'}},
+      {text:'Sorry, I spilled a little.', pronunciation:'SOR-ee, eye spild uh LIT-ul', translation:{es:'Perdón, he derramado un poco.',fr:'Désolé, j\'en ai renversé un peu.',de:'Entschuldigung, ich habe etwas verschüttet.',it:'Scusi, ne ho versato un po\'.',pt:'Desculpe, entornei um pouco.',nl:'Sorry, ik heb wat gemorst.',ru:'Извините, я немного пролил.',pl:'Przepraszam, trochę rozlałem.',sv:'Ursäkta, jag spillde lite.'}},
+      {text:'I\'ll bring a fresh one.', pronunciation:'eyel bring uh fresh wun', translation:{es:'Le traigo uno nuevo.',fr:'Je vous en apporte un autre.',de:'Ich bringe Ihnen einen neuen.',it:'Gliene porto uno nuovo.',pt:'Trago-lhe um novo.',nl:'Ik breng een nieuwe.',ru:'Сейчас принесу новый.',pl:'Przyniosę świeży.',sv:'Jag hämtar en ny.'}},
+      {text:'Enjoy.', pronunciation:'en-JOY', translation:{es:'Disfruten.',fr:'Bonne dégustation.',de:'Guten Appetit.',it:'Buon appetito.',pt:'Bom apetite.',nl:'Eet smakelijk.',ru:'Приятного аппетита.',pl:'Smacznego.',sv:'Smaklig måltid.'}},
+      {text:'Take your time.', pronunciation:'tayk yor tym', translation:{es:'Tómense su tiempo.',fr:'Prenez votre temps.',de:'Lassen Sie sich Zeit.',it:'Prendetevi il vostro tempo.',pt:'Levem o vosso tempo.',nl:'Neem de tijd.',ru:'Не спешите.',pl:'Proszę się nie spieszyć.',sv:'Ta er tid.'}}
+    ]
+  },
+  {
+    id:'bill', label:'10 · Bill & Payment',
+    items:[
+      {text:'Would you like the bill now?', pronunciation:'wood yoo lyk thuh bil now', translation:{es:'¿Quieren la cuenta ahora?',fr:'Voulez-vous l\'addition maintenant ?',de:'Möchten Sie jetzt die Rechnung?',it:'Volete il conto ora?',pt:'Querem a conta agora?',nl:'Wilt u de rekening nu?',ru:'Хотите счёт сейчас?',pl:'Czy chcą Państwo teraz rachunek?',sv:'Vill ni ha notan nu?'}},
+      {text:'I\'ll bring the bill right away.', pronunciation:'eyel bring thuh bil ryt uh-WAY', translation:{es:'Les traigo la cuenta enseguida.',fr:'Je vous apporte l\'addition tout de suite.',de:'Ich bringe die Rechnung sofort.',it:'Porto subito il conto.',pt:'Trago já a conta.',nl:'Ik breng de rekening meteen.',ru:'Сейчас принесу счёт.',pl:'Zaraz przyniosę rachunek.',sv:'Jag kommer med notan direkt.'}},
+      {text:'Together or separately?', pronunciation:'tuh-GETH-er or SEP-rut-lee', translation:{es:'¿Juntos o por separado?',fr:'Ensemble ou séparément ?',de:'Zusammen oder getrennt?',it:'Insieme o separati?',pt:'Junto ou separado?',nl:'Samen of apart?',ru:'Вместе или раздельно?',pl:'Razem czy osobno?',sv:'Tillsammans eller separat?'}},
+      {text:'Card or cash?', pronunciation:'kard or kash', translation:{es:'¿Tarjeta o efectivo?',fr:'Carte ou espèces ?',de:'Karte oder Bargeld?',it:'Carta o contanti?',pt:'Cartão ou dinheiro?',nl:'Kaart of contant?',ru:'Карта или наличные?',pl:'Karta czy gotówka?',sv:'Kort eller kontant?'}},
+      {text:'Please insert your card.', pronunciation:'pleez in-SURT yor kard', translation:{es:'Inserte su tarjeta, por favor.',fr:'Veuillez insérer votre carte.',de:'Bitte stecken Sie Ihre Karte ein.',it:'Inserisca la sua carta.',pt:'Insira o seu cartão.',nl:'Steek uw kaart in.',ru:'Вставьте карту, пожалуйста.',pl:'Proszę włożyć kartę.',sv:'Sätt in ditt kort.'}},
+      {text:'Please enter your PIN.', pronunciation:'pleez EN-ter yor pin', translation:{es:'Introduzca su PIN.',fr:'Veuillez saisir votre code.',de:'Bitte geben Sie Ihre PIN ein.',it:'Inserisca il suo PIN.',pt:'Introduza o seu PIN.',nl:'Voer uw pincode in.',ru:'Введите PIN-код.',pl:'Proszę wpisać PIN.',sv:'Ange din PIN-kod.'}},
+      {text:'Would you like a receipt?', pronunciation:'wood yoo lyk uh rih-SEET', translation:{es:'¿Quieren recibo?',fr:'Voulez-vous un reçu ?',de:'Möchten Sie einen Beleg?',it:'Volete la ricevuta?',pt:'Querem recibo?',nl:'Wilt u een bon?',ru:'Вам нужен чек?',pl:'Czy chcą Państwo paragon?',sv:'Vill ni ha kvitto?'}},
+      {text:'Is service included?', pronunciation:'iz SUR-vis in-KLOO-ded', translation:{es:'¿Está incluido el servicio?',fr:'Le service est-il inclus ?',de:'Ist das Service inbegriffen?',it:'Il servizio è incluso?',pt:'O serviço está incluído?',nl:'Is de bediening inbegrepen?',ru:'Обслуживание включено?',pl:'Czy obsługa jest wliczona?',sv:'Ingår service?'}},
+      {text:'The service charge is ten percent.', pronunciation:'thuh SUR-vis charj iz ten per-SENT', translation:{es:'El cargo por servicio es del diez por ciento.',fr:'Le service est de dix pour cent.',de:'Die Servicegebühr beträgt zehn Prozent.',it:'Il costo del servizio è del dieci per cento.',pt:'A taxa de serviço é de dez por cento.',nl:'De servicekosten zijn tien procent.',ru:'Плата за обслуживание — десять процентов.',pl:'Opłata za obsługę to dziesięć procent.',sv:'Servicen är tio procent.'}},
+      {text:'Please leave a tip if you enjoyed your meal.', pronunciation:'pleez leev uh tip if yoo en-JOYD yor meel', translation:{es:'Deje una propina si disfrutó de la comida.',fr:'Laissez un pourboire si vous avez apprécié.',de:'Bitte hinterlassen Sie ein Trinkgeld, wenn es Ihnen geschmeckt hat.',it:'Lasci una mancia se le è piaciuto.',pt:'Deixe gorjeta se gostou da refeição.',nl:'Laat een fooi achter als u genoten hebt.',ru:'Оставьте чаевые, если вам понравилось.',pl:'Proszę zostawić napiwek, jeśli posiłek smakował.',sv:'Lämna dricks om du tyckte om maten.'}},
+      {text:'Would you like to add a tip?', pronunciation:'wood yoo lyk too ad uh tip', translation:{es:'¿Quieren añadir propina?',fr:'Voulez-vous ajouter un pourboire ?',de:'Möchten Sie Trinkgeld hinzufügen?',it:'Volete aggiungere la mancia?',pt:'Querem adicionar gorjeta?',nl:'Wilt u een fooi toevoegen?',ru:'Хотите добавить чаевые?',pl:'Czy chcą Państwo dodać napiwek?',sv:'Vill ni lägga till dricks?'}},
+      {text:'The payment didn\'t go through.', pronunciation:'thuh PAY-munt DID-unt goh throo', translation:{es:'El pago no se ha procesado.',fr:'Le paiement n\'est pas passé.',de:'Die Zahlung wurde nicht durchgeführt.',it:'Il pagamento non è andato a buon fine.',pt:'O pagamento não foi aceite.',nl:'De betaling is niet doorgekomen.',ru:'Платёж не прошёл.',pl:'Płatność nie przeszła.',sv:'Betalningen gick inte igenom.'}},
+      {text:'Let\'s try that again.', pronunciation:'lets try that uh-GEN', translation:{es:'Intentémoslo otra vez.',fr:'Essayons à nouveau.',de:'Versuchen wir es noch einmal.',it:'Proviamo di nuovo.',pt:'Vamos tentar novamente.',nl:'Laten we het opnieuw proberen.',ru:'Попробуем ещё раз.',pl:'Spróbujmy ponownie.',sv:'Låt oss försöka igen.'}},
+      {text:'Thank you for dining with us.', pronunciation:'thank yoo for DY-ning with us', translation:{es:'Gracias por cenar con nosotros.',fr:'Merci d\'avoir dîné chez nous.',de:'Danke, dass Sie bei uns gegessen haben.',it:'Grazie per aver cenato da noi.',pt:'Obrigado por jantar connosco.',nl:'Bedankt voor uw bezoek.',ru:'Спасибо, что поужинали у нас.',pl:'Dziękujemy za wspólną kolację.',sv:'Tack för att ni åt hos oss.'}},
+      {text:'Please come again soon.', pronunciation:'pleez kum uh-GEN soon', translation:{es:'Vuelvan pronto.',fr:'Revenez bientôt.',de:'Kommen Sie bald wieder.',it:'Tornate presto.',pt:'Voltem em breve.',nl:'Kom snel terug.',ru:'Приходите ещё.',pl:'Zapraszamy wkrótce ponownie.',sv:'Välkomna snart igen.'}}
+    ]
+  },
+  {
+    id:'kitchen', label:'11 · Kitchen & Preparation',
+    items:[
+      {text:'Order in!', pronunciation:'OR-der in', translation:{es:'¡Pedido!',fr:'Commande !',de:'Bestellung!',it:'Ordine!',pt:'Pedido!',nl:'Bestelling!',ru:'Заказ!',pl:'Zamówienie!',sv:'Beställning!'}},
+      {text:'Table five, two steaks.', pronunciation:'TAY-bul fyv, too stayks', translation:{es:'Mesa cinco, dos filetes.',fr:'Table cinq, deux steaks.',de:'Tisch fünf, zwei Steaks.',it:'Tavolo cinque, due bistecche.',pt:'Mesa cinco, dois bifes.',nl:'Tafel vijf, twee steaks.',ru:'Стол пять, два стейка.',pl:'Stolik pięć, dwa steki.',sv:'Bord fem, två biffar.'}},
+      {text:'Ready to serve.', pronunciation:'RED-ee too surv', translation:{es:'Listo para servir.',fr:'Prêt à servir.',de:'Servierbereit.',it:'Pronto da servire.',pt:'Pronto a servir.',nl:'Klaar om te serveren.',ru:'Готово к подаче.',pl:'Gotowe do podania.',sv:'Klart att servera.'}},
+      {text:'Two minutes, chef.', pronunciation:'too MIN-its, shef', translation:{es:'Dos minutos, chef.',fr:'Deux minutes, chef.',de:'Zwei Minuten, Chef.',it:'Due minuti, chef.',pt:'Dois minutos, chef.',nl:'Twee minuten, chef.',ru:'Две минуты, шеф.',pl:'Dwie minuty, szefie.',sv:'Två minuter, kock.'}},
+      {text:'We\'re out of salmon.', pronunciation:'weer owt uv SAM-un', translation:{es:'No nos queda salmón.',fr:'Nous n\'avons plus de saumon.',de:'Wir haben keinen Lachs mehr.',it:'Siamo senza salmone.',pt:'Estamos sem salmão.',nl:'We hebben geen zalm meer.',ru:'У нас закончился лосось.',pl:'Skończył się łosoś.',sv:'Vi har slut på lax.'}},
+      {text:'The chicken is undercooked.', pronunciation:'thuh CHIK-in iz un-der-KUKT', translation:{es:'El pollo está poco hecho.',fr:'Le poulet est pas assez cuit.',de:'Das Hähnchen ist nicht durch.',it:'Il pollo è poco cotto.',pt:'O frango está mal passado.',nl:'De kip is niet gaar.',ru:'Курица недожарена.',pl:'Kurczak jest niedogotowany.',sv:'Kycklingen är inte genomstekt.'}},
+      {text:'Send it back.', pronunciation:'send it bak', translation:{es:'Devuélvelo.',fr:'Renvoyez-le.',de:'Schick es zurück.',it:'Rimandalo indietro.',pt:'Devolve.',nl:'Stuur het terug.',ru:'Отправь обратно.',pl:'Odeślij to.',sv:'Skicka tillbaka den.'}},
+      {text:'Allergies on table twelve.', pronunciation:'AL-er-jeez on TAY-bul twelv', translation:{es:'Alergias en la mesa doce.',fr:'Allergies à la table douze.',de:'Allergien an Tisch zwölf.',it:'Allergie al tavolo dodici.',pt:'Alergias na mesa doze.',nl:'Allergieën aan tafel twaalf.',ru:'Аллергии за столом двенадцать.',pl:'Alergie przy stoliku dwanaście.',sv:'Allergier vid bord tolv.'}},
+      {text:'Behind you, hot pan!', pronunciation:'bih-HYND yoo, hot pan', translation:{es:'¡Detrás de ti, sartén caliente!',fr:'Derrière vous, poêle chaude !',de:'Achtung, heiße Pfanne!',it:'Dietro di voi, padella calda!',pt:'Atenção, sertã quente!',nl:'Achter u, hete pan!',ru:'Осторожно, горячая сковорода!',pl:'Uwaga, gorąca patelnia!',sv:'Bakom dig, het panna!'}},
+      {text:'Hands!', pronunciation:'handz', translation:{es:'¡Paso!',fr:'Attention !',de:'Vorsicht!',it:'Attenzione!',pt:'Com licença!',nl:'Pas op!',ru:'Осторожно!',pl:'Uwaga!',sv:'Akta!'}},
+      {text:'Service!', pronunciation:'SUR-vis', translation:{es:'¡Servicio!',fr:'Service !',de:'Service!',it:'Servizio!',pt:'Serviço!',nl:'Service!',ru:'Обслуживание!',pl:'Obsługa!',sv:'Service!'}},
+      {text:'Plating up.', pronunciation:'PLAY-ting up', translation:{es:'Emplatando.',fr:'Dressage en cours.',de:'Wird angerichtet.',it:'Impiatto.',pt:'A empratar.',nl:'Aan het opmaken.',ru:'Собираю блюдо.',pl:'Nakładam na talerz.',sv:'Lägger upp.'}},
+      {text:'The kitchen is closing.', pronunciation:'thuh KICH-un iz KLOH-zing', translation:{es:'La cocina está cerrando.',fr:'La cuisine ferme.',de:'Die Küche schließt.',it:'La cucina sta chiudendo.',pt:'A cozinha está a fechar.',nl:'De keuken gaat sluiten.',ru:'Кухня закрывается.',pl:'Kuchnia się zamyka.',sv:'Köket stänger.'}},
+      {text:'Last orders, please.', pronunciation:'last OR-derz, pleez', translation:{es:'Últimos pedidos, por favor.',fr:'Dernières commandes, s\'il vous plaît.',de:'Letzte Bestellungen, bitte.',it:'Ultime ordinazioni, per favore.',pt:'Últimos pedidos, por favor.',nl:'Laatste bestellingen, alstublieft.',ru:'Последние заказы, пожалуйста.',pl:'Ostatnie zamówienia, proszę.',sv:'Sista beställningar, tack.'}},
+      {text:'Clean down and restock.', pronunciation:'kleen down and ree-STOK', translation:{es:'Limpia y reabastece.',fr:'Nettoyez et réapprovisionnez.',de:'Reinigen und auffüllen.',it:'Pulisci e rifornisci.',pt:'Limpa e reabastece.',nl:'Schoonmaken en bijvullen.',ru:'Уберите и пополните запасы.',pl:'Posprzątaj i uzupełnij.',sv:'Städa och fylla på.'}},
+      {text:'Well done, everyone.', pronunciation:'wel dun, EV-ree-wun', translation:{es:'Buen trabajo, equipo.',fr:'Bravo à tous.',de:'Gut gemacht, alle zusammen.',it:'Ben fatto a tutti.',pt:'Bom trabalho, equipa.',nl:'Goed gedaan, allemaal.',ru:'Отлично сработано, всем спасибо.',pl:'Dobra robota, wszyscy.',sv:'Bra jobbat allihop.'}}
+    ]
+  },
+  {
+    id:'complaints', label:'12 · Complaints & Fixes',
+    items:[
+      {text:'This isn\'t what I ordered.', pronunciation:'this IZ-unt wut eye OR-derd', translation:{es:'Esto no es lo que pedí.',fr:'Ce n\'est pas ce que j\'ai commandé.',de:'Das ist nicht, was ich bestellt habe.',it:'Non è quello che ho ordinato.',pt:'Isto não é o que pedi.',nl:'Dit is niet wat ik besteld heb.',ru:'Это не то, что я заказывал.',pl:'To nie to, co zamówiłem.',sv:'Detta är inte vad jag beställde.'}},
+      {text:'The food is cold.', pronunciation:'thuh food iz kohld', translation:{es:'La comida está fría.',fr:'La nourriture est froide.',de:'Das Essen ist kalt.',it:'Il cibo è freddo.',pt:'A comida está fria.',nl:'Het eten is koud.',ru:'Еда холодная.',pl:'Jedzenie jest zimne.',sv:'Maten är kall.'}},
+      {text:'This tastes off.', pronunciation:'this taysts of', translation:{es:'Esto sabe mal.',fr:'Ce n\'est pas bon.',de:'Das schmeckt komisch.',it:'Ha un sapore strano.',pt:'Isto sabe mal.',nl:'Dit smaakt niet goed.',ru:'Это отдаёт чем-то не тем.',pl:'To dziwnie smakuje.',sv:'Det här smakar illa.'}},
+      {text:'There\'s something missing.', pronunciation:'thairz SUM-thing MIS-ing', translation:{es:'Falta algo.',fr:'Il manque quelque chose.',de:'Da fehlt etwas.',it:'Manca qualcosa.',pt:'Falta alguma coisa.',nl:'Er mist iets.',ru:'Чего-то не хватает.',pl:'Czegoś brakuje.',sv:'Något saknas.'}},
+      {text:'I ordered it without cheese.', pronunciation:'eye OR-derd it with-OWT cheez', translation:{es:'Lo pedí sin queso.',fr:'Je l\'ai commandé sans fromage.',de:'Ich habe es ohne Käse bestellt.',it:'L\'ho ordinato senza formaggio.',pt:'Pedi sem queijo.',nl:'Ik heb het zonder kaas besteld.',ru:'Я заказывал без сыра.',pl:'Zamawiałem bez sera.',sv:'Jag beställde den utan ost.'}},
+      {text:'We\'ve been waiting a long time.', pronunciation:'weev bin WAY-ting uh long tym', translation:{es:'Llevamos mucho tiempo esperando.',fr:'Nous attendons depuis longtemps.',de:'Wir warten schon lange.',it:'Stiamo aspettando da molto tempo.',pt:'Estamos à espera há muito tempo.',nl:'We wachten al lang.',ru:'Мы ждём уже долго.',pl:'Czekamy już długo.',sv:'Vi har väntat länge.'}},
+      {text:'I\'m sorry about that.', pronunciation:'eyem SOR-ee uh-BOWT that', translation:{es:'Lo siento.',fr:'Je suis désolé.',de:'Das tut mir leid.',it:'Mi dispiace.',pt:'Peço desculpa.',nl:'Het spijt me.',ru:'Мне очень жаль.',pl:'Bardzo mi przykro.',sv:'Jag beklagar det.'}},
+      {text:'Let me fix that for you right away.', pronunciation:'let mee fiks that for yoo ryt uh-WAY', translation:{es:'Permítame solucionarlo enseguida.',fr:'Laissez-moi arranger ça tout de suite.',de:'Ich kümmere mich sofort darum.',it:'Faccio subito correggere.',pt:'Vou resolver isso já.',nl:'Ik los dat meteen voor u op.',ru:'Сейчас всё исправлю.',pl:'Zaraz to naprawię.',sv:'Jag ordnar det direkt.'}},
+      {text:'Would you like a replacement?', pronunciation:'wood yoo lyk uh rih-PLAYS-munt', translation:{es:'¿Quiere que le traiga otro?',fr:'Voulez-vous un autre plat ?',de:'Möchten Sie einen Ersatz?',it:'Vuole un sostituto?',pt:'Quer uma substituição?',nl:'Wilt u een vervanging?',ru:'Хотите, чтобы принесли другое?',pl:'Czy przynieść coś innego?',sv:'Vill ni ha en ersättning?'}},
+      {text:'I\'ll take it off the bill.', pronunciation:'eyel tayk it of thuh bil', translation:{es:'Lo quito de la cuenta.',fr:'Je le retire de l\'addition.',de:'Ich nehme es von der Rechnung.',it:'Lo tolgo dal conto.',pt:'Vou retirar da conta.',nl:'Ik haal het van de rekening.',ru:'Я уберу это из счёта.',pl:'Usunę to z rachunku.',sv:'Jag tar bort det från notan.'}},
+      {text:'Can I offer you a complimentary drink?', pronunciation:'kan eye OF-er yoo uh kom-plih-MEN-tuh-ree dringk', translation:{es:'¿Le invito a una bebida?',fr:'Puis-je vous offrir une boisson ?',de:'Darf ich Ihnen ein Getränk anbieten?',it:'Posso offrirle un drink?',pt:'Posso oferecer-lhe uma bebida?',nl:'Mag ik u een drankje aanbieden?',ru:'Могу я предложить вам напиток за счёт заведения?',pl:'Czy mogę zaproponować Państwu napój od firmy?',sv:'Får jag bjuda på en dryck?'}},
+      {text:'Thank you for your patience.', pronunciation:'thank yoo for yor PAY-shuns', translation:{es:'Gracias por su paciencia.',fr:'Merci de votre patience.',de:'Danke für Ihre Geduld.',it:'Grazie per la pazienza.',pt:'Obrigado pela paciência.',nl:'Bedankt voor uw geduld.',ru:'Спасибо за терпение.',pl:'Dziękuję za cierpliwość.',sv:'Tack för ert tålamod.'}},
+      {text:'We hope you\'ll give us another chance.', pronunciation:'wee hohp yool giv us uh-NUTH-er chans', translation:{es:'Esperamos que nos den otra oportunidad.',fr:'Nous espérons que vous nous donnerez une autre chance.',de:'Wir hoffen, Sie geben uns noch eine Chance.',it:'Speriamo che ci dia un\'altra possibilità.',pt:'Esperamos que nos deem outra oportunidade.',nl:'We hopen dat u ons nog een kans geeft.',ru:'Надеемся, вы дадите нам ещё один шанс.',pl:'Mamy nadzieję, że dadzą nam Państwo jeszcze jedną szansę.',sv:'Vi hoppas att ni ger oss en ny chans.'}},
+      {text:'I\'ll speak to the kitchen about this.', pronunciation:'eyel speek too thuh KICH-un uh-BOWT this', translation:{es:'Hablaré con la cocina sobre esto.',fr:'Je vais en parler en cuisine.',de:'Ich spreche mit der Küche darüber.',it:'Ne parlerò con la cucina.',pt:'Vou falar com a cozinha sobre isto.',nl:'Ik spreek hierover met de keuken.',ru:'Я поговорю об этом с кухней.',pl:'Porozmawiam o tym z kuchnią.',sv:'Jag ska ta upp det med köket.'}},
+      {text:'We\'ll make sure it doesn\'t happen again.', pronunciation:'wel mayk shoor it DUZ-unt HAP-un uh-GEN', translation:{es:'Nos aseguraremos de que no vuelva a ocurrir.',fr:'Nous ferons en sorte que cela ne se reproduise pas.',de:'Wir sorgen dafür, dass das nicht wieder passiert.',it:'Faremo in modo che non accada più.',pt:'Vamos garantir que não volte a acontecer.',nl:'We zorgen dat het niet meer gebeurt.',ru:'Мы проследим, чтобы это не повторилось.',pl:'Dopilnujemy, żeby to się nie powtórzyło.',sv:'Vi ser till att det inte händer igen.'}},
+      {text:'Thanks for letting us know.', pronunciation:'thanks for LET-ing us noh', translation:{es:'Gracias por avisarnos.',fr:'Merci de nous l\'avoir signalé.',de:'Danke für den Hinweis.',it:'Grazie per avercelo segnalato.',pt:'Obrigado por nos avisar.',nl:'Bedankt voor het melden.',ru:'Спасибо, что сообщили.',pl:'Dziękujemy za informację.',sv:'Tack för att ni sa till.'}}
+    ]
+  },
+  {
+    id:'reservation', label:'13 · Reservations & Booking',
+    items:[
+      {text:'I\'d like to make a reservation.', pronunciation:'eyed lyk too mayk uh reh-zer-VAY-shun', translation:{es:'Quisiera hacer una reserva.',fr:'Je voudrais faire une réservation.',de:'Ich möchte eine Reservierung machen.',it:'Vorrei fare una prenotazione.',pt:'Gostaria de fazer uma reserva.',nl:'Ik wil graag een reservering maken.',ru:'Я хотел бы забронировать столик.',pl:'Chciałbym dokonać rezerwacji.',sv:'Jag skulle vilja boka ett bord.'}},
+      {text:'For what date and time?', pronunciation:'for wut dayt and tym', translation:{es:'¿Para qué fecha y hora?',fr:'Pour quelle date et à quelle heure ?',de:'Für welches Datum und welche Uhrzeit?',it:'Per quale data e ora?',pt:'Para que data e hora?',nl:'Voor welke datum en tijd?',ru:'На какую дату и время?',pl:'Na jaką datę i godzinę?',sv:'För vilket datum och vilken tid?'}},
+      {text:'How many people will it be?', pronunciation:'how MEN-ee PEE-pul wil it bee', translation:{es:'¿Cuántas personas serán?',fr:'Combien de personnes serez-vous ?',de:'Für wie viele Personen?',it:'Per quante persone?',pt:'Para quantas pessoas?',nl:'Voor hoeveel personen?',ru:'На сколько человек?',pl:'Dla ilu osób?',sv:'För hur många personer?'}},
+      {text:'Under what name should I book it?', pronunciation:'UN-der wut naym shood eye book it', translation:{es:'¿A qué nombre hago la reserva?',fr:'À quel nom dois-je réserver ?',de:'Auf welchen Namen soll ich buchen?',it:'A che nome devo prenotare?',pt:'Em que nome devo reservar?',nl:'Op welke naam moet ik boeken?',ru:'На какое имя забронировать?',pl:'Na jakie nazwisko mam zarezerwować?',sv:'Under vilket namn ska jag boka?'}},
+      {text:'Can I take a contact number?', pronunciation:'kan eye tayk uh KON-takt NUM-ber', translation:{es:'¿Me da un número de contacto?',fr:'Puis-je avoir un numéro de contact ?',de:'Kann ich eine Kontaktnummer haben?',it:'Posso avere un numero di contatto?',pt:'Pode dar-me um número de contacto?',nl:'Mag ik een contactnummer?',ru:'Можно контактный номер?',pl:'Czy mogę prosić o numer kontaktowy?',sv:'Kan jag få ett telefonnummer?'}},
+      {text:'We\'ll hold the table for fifteen minutes.', pronunciation:'wel hohld thuh TAY-bul for FIF-teen MIN-its', translation:{es:'Guardaremos la mesa quince minutos.',fr:'Nous garderons la table quinze minutes.',de:'Wir halten den Tisch fünfzehn Minuten frei.',it:'Teniamo il tavolo per quindici minuti.',pt:'Guardamos a mesa durante quinze minutos.',nl:'We houden de tafel vijftien minuten vast.',ru:'Мы придержим столик пятнадцать минут.',pl:'Przetrzymamy stolik przez piętnaście minut.',sv:'Vi håller bordet i femton minuter.'}},
+      {text:'I\'m afraid that slot is fully booked.', pronunciation:'eyem uh-FRAYD that slot iz FUL-ee bukt', translation:{es:'Me temo que esa franja está completa.',fr:'Je crains que ce créneau soit complet.',de:'Leider ist dieser Zeitraum ausgebucht.',it:'Temo che quella fascia sia al completo.',pt:'Receio que esse horário esteja lotado.',nl:'Dat tijdslot is helaas volgeboekt.',ru:'Боюсь, это время уже занято.',pl:'Obawiam się, że ten termin jest już zajęty.',sv:'Tyvärr är den tiden fullbokad.'}},
+      {text:'Would you like the earlier or later sitting?', pronunciation:'wood yoo lyk thee UR-lee-er or LAY-ter SIT-ing', translation:{es:'¿Prefiere el turno anterior o el posterior?',fr:'Préférez-vous le premier ou le second service ?',de:'Möchten Sie die frühere oder spätere Sitzung?',it:'Preferisce il primo o il secondo turno?',pt:'Prefere o turno mais cedo ou mais tarde?',nl:'Wilt u de vroege of late shift?',ru:'Вы предпочитаете раннюю или позднюю посадку?',pl:'Woli Pan/Pani wcześniejszą czy późniejszą turę?',sv:'Vill ni ha den tidigare eller senare sittningen?'}},
+      {text:'Could I have your email confirmation?', pronunciation:'kood eye hav yor EE-mayl kon-fer-MAY-shun', translation:{es:'¿Me da su email de confirmación?',fr:'Puis-je avoir votre email de confirmation ?',de:'Könnte ich Ihre Bestätigungs-E-Mail haben?',it:'Posso avere la sua email di conferma?',pt:'Pode dar-me o seu email de confirmação?',nl:'Mag ik uw bevestigingsmail?',ru:'Можно ваш адрес электронной почты для подтверждения?',pl:'Czy mogę prosić o e-mail potwierdzający?',sv:'Kan jag få din bekräftelse via e-post?'}},
+      {text:'We look forward to seeing you.', pronunciation:'wee look FOR-werd too SEE-ing yoo', translation:{es:'Esperamos verles pronto.',fr:'Nous avons hâte de vous voir.',de:'Wir freuen uns auf Ihren Besuch.',it:'Non vediamo l\'ora di vedervi.',pt:'Esperamos vê-los em breve.',nl:'We kijken ernaar uit u te zien.',ru:'Ждём вас с нетерпением.',pl:'Czekamy na Państwa wizytę.',sv:'Vi ser fram emot att träffa er.'}},
+      {text:'I\'m calling to cancel our booking.', pronunciation:'eyem KAW-ling too KAN-sul our BUK-ing', translation:{es:'Llamo para cancelar nuestra reserva.',fr:'J\'appelle pour annuler notre réservation.',de:'Ich rufe an, um unsere Reservierung zu stornieren.',it:'Chiamo per annullare la nostra prenotazione.',pt:'Estou a ligar para cancelar a nossa reserva.',nl:'Ik bel om onze reservering te annuleren.',ru:'Звоню, чтобы отменить нашу бронь.',pl:'Dzwonię, aby odwołać naszą rezerwację.',sv:'Jag ringer för att avboka vår bokning.'}},
+      {text:'Can we move it to a different day?', pronunciation:'kan wee moov it too uh DIF-runt day', translation:{es:'¿Podemos cambiarla a otro día?',fr:'Pouvons-nous la déplacer à un autre jour ?',de:'Können wir sie auf einen anderen Tag verschieben?',it:'Possiamo spostarla a un altro giorno?',pt:'Podemos alterá-la para outro dia?',nl:'Kunnen we het naar een andere dag verplaatsen?',ru:'Можно перенести на другой день?',pl:'Czy możemy przenieść na inny dzień?',sv:'Kan vi flytta den till en annan dag?'}},
+      {text:'We have a large party of twelve.', pronunciation:'wee hav uh larj PAR-tee uv twelv', translation:{es:'Somos un grupo grande de doce.',fr:'Nous sommes un grand groupe de douze.',de:'Wir sind eine große Gruppe von zwölf Personen.',it:'Siamo un gruppo numeroso di dodici.',pt:'Somos um grupo grande de doze.',nl:'We zijn een grote groep van twaalf.',ru:'У нас большая группа из двенадцати человек.',pl:'Jesteśmy dużą grupą dwunastu osób.',sv:'Vi är ett stort sällskap på tolv.'}},
+      {text:'Could we have a table outside?', pronunciation:'kood wee hav uh TAY-bul owt-SYD', translation:{es:'¿Podríamos tener una mesa fuera?',fr:'Pourrions-nous avoir une table en terrasse ?',de:'Könnten wir einen Tisch draußen haben?',it:'Potremmo avere un tavolo fuori?',pt:'Podemos ter uma mesa fora?',nl:'Kunnen we een tafel buiten krijgen?',ru:'Можно столик на улице?',pl:'Czy możemy dostać stolik na zewnątrz?',sv:'Kan vi få ett bord ute?'}},
+      {text:'Thank you for choosing us.', pronunciation:'thank yoo for CHOO-zing us', translation:{es:'Gracias por elegirnos.',fr:'Merci de nous avoir choisis.',de:'Danke, dass Sie uns gewählt haben.',it:'Grazie per averci scelto.',pt:'Obrigado por nos escolher.',nl:'Bedankt dat u voor ons gekozen hebt.',ru:'Спасибо, что выбрали нас.',pl:'Dziękujemy za wybór.',sv:'Tack för att ni valde oss.'}}
+    ]
+  },
+  {
+    id:'coffee', label:'14 · Coffee & Café',
+    items:[
+      {text:'What can I get you?', pronunciation:'wut kan eye get yoo', translation:{es:'¿Qué le pongo?',fr:'Que puis-je vous servir ?',de:'Was darf ich Ihnen bringen?',it:'Cosa le porto?',pt:'O que lhe apetece?',nl:'Wat mag ik u brengen?',ru:'Что будете заказывать?',pl:'Co dla Pana/Pani?',sv:'Vad får det vara?'}},
+      {text:'Small, medium, or large?', pronunciation:'smawl MEE-dee-um or larj', translation:{es:'¿Pequeño, mediano o grande?',fr:'Petit, moyen ou grand ?',de:'Klein, mittel oder groß?',it:'Piccolo, medio o grande?',pt:'Pequeno, médio ou grande?',nl:'Klein, medium of groot?',ru:'Маленький, средний или большой?',pl:'Mały, średni czy duży?',sv:'Liten, mellan eller stor?'}},
+      {text:'For here or to take away?', pronunciation:'for heer or too tayk uh-WAY', translation:{es:'¿Para tomar aquí o para llevar?',fr:'Sur place ou à emporter ?',de:'Zum Hieressen oder zum Mitnehmen?',it:'Da consumare qui o da asporto?',pt:'Para aqui ou para levar?',pt2:'',nl:'Hier of om mee te nemen?',ru:'Здесь или с собой?',pl:'Na miejscu czy na wynos?',sv:'Här eller take away?'}},
+      {text:'Regular or decaf?', pronunciation:'REG-yuh-ler or DEE-kaf', translation:{es:'¿Normal o descafeinado?',fr:'Normal ou décaféiné ?',de:'Normal oder entkoffeiniert?',it:'Normale o decaffeinato?',pt:'Normal ou descafeinado?',nl:'Normaal of decaf?',ru:'Обычный или без кофеина?',pl:'Zwykła czy bezkofeinowa?',sv:'Vanlig eller koffeinfri?'}},
+      {text:'Any milk?', pronunciation:'EN-ee milk', translation:{es:'¿Con leche?',fr:'Avec du lait ?',de:'Mit Milch?',it:'Con latte?',pt:'Com leite?',nl:'Met melk?',ru:'С молоком?',pl:'Z mlekiem?',sv:'Med mjölk?'}},
+      {text:'Oat, soy, or almond milk?', pronunciation:'oht soy or AH-mund milk', translation:{es:'¿Leche de avena, soja o almendra?',fr:'Lait d\'avoine, soja ou amande ?',de:'Hafer-, Soja- oder Mandelmilch?',it:'Latte d\'avena, soia o mandorla?',pt:'Leite de aveia, soja ou amêndoa?',nl:'Haver-, soja- of amandelmelk?',ru:'Овсяное, соевое или миндальное молоко?',pl:'Mleko owsiane, sojowe czy migdałowe?',sv:'Havre-, soja- eller mandelmjölk?'}},
+      {text:'Any sugar?', pronunciation:'EN-ee SHUG-er', translation:{es:'¿Con azúcar?',fr:'Avec du sucre ?',de:'Mit Zucker?',it:'Con zucchero?',pt:'Com açúcar?',nl:'Met suiker?',ru:'С сахаром?',pl:'Z cukrem?',sv:'Med socker?'}},
+      {text:'Would you like it extra hot?', pronunciation:'wood yoo lyk it EKS-truh hot', translation:{es:'¿Lo quiere extra caliente?',fr:'Le voulez-vous très chaud ?',de:'Möchten Sie es extra heiß?',it:'Lo vuole extra caldo?',pt:'Quer extra quente?',nl:'Wilt u het extra heet?',ru:'Хотите очень горячий?',pl:'Czy ma być bardzo gorący?',sv:'Vill du ha den extra varm?'}},
+      {text:'Would you like a pastry with that?', pronunciation:'wood yoo lyk uh PAY-stree with that', translation:{es:'¿Quiere un bollo con eso?',fr:'Voulez-vous une pâtisserie avec ça ?',de:'Möchten Sie ein Gebäck dazu?',it:'Vuole una pasta con quello?',pt:'Quer um pastel com isso?',nl:'Wilt u een gebakje erbij?',ru:'Хотите выпечку к этому?',pl:'Czy chcą Państwo ciastko do tego?',sv:'Vill du ha en bakelse till?'}},
+      {text:'Eat in or takeaway?', pronunciation:'eet in or TAYK-uh-way', translation:{es:'¿Para comer aquí o para llevar?',fr:'Sur place ou à emporter ?',de:'Zum Hieressen oder zum Mitnehmen?',it:'Da consumare qui o da asporto?',pt:'Para comer aqui ou para levar?',nl:'Hier eten of meenemen?',ru:'Едите здесь или с собой?',pl:'Na miejscu czy na wynos?',sv:'Äta här eller ta med?'}},
+      {text:'Your name for the cup?', pronunciation:'yor naym for thuh kup', translation:{es:'¿Su nombre para el vaso?',fr:'Votre prénom pour le gobelet ?',de:'Ihr Name für den Becher?',it:'Il suo nome per il bicchiere?',pt:'O seu nome para o copo?',nl:'Uw naam voor de beker?',ru:'Ваше имя для стакана?',pl:'Imię na kubku?',sv:'Ditt namn på muggen?'}},
+      {text:'It\'ll be ready in a moment.', pronunciation:'it-ul bee RED-ee in uh MOH-ment', translation:{es:'Estará listo en un momento.',fr:'Ce sera prêt dans un instant.',de:'Es ist gleich fertig.',it:'Sarà pronto tra un attimo.',pt:'Estará pronto num instante.',nl:'Het is zo klaar.',ru:'Будет готово через минуту.',pl:'Będzie gotowe za chwilę.',sv:'Det är klart om ett ögonblick.'}},
+      {text:'Careful, the lid is hot.', pronunciation:'KAIR-ful, thuh lid iz hot', translation:{es:'Cuidado, la tapa está caliente.',fr:'Attention, le couvercle est chaud.',de:'Vorsicht, der Deckel ist heiß.',it:'Attenzione, il coperchio è caldo.',pt:'Cuidado, a tampa está quente.',nl:'Voorzichtig, het deksel is heet.',ru:'Осторожно, крышка горячая.',pl:'Uwaga, pokrywka jest gorąca.',sv:'Akta, locket är varmt.'}},
+      {text:'Enjoy your coffee.', pronunciation:'en-JOY yor KOF-ee', translation:{es:'Disfrute su café.',fr:'Bon café.',de:'Genießen Sie Ihren Kaffee.',it:'Buon caffè.',pt:'Bom café.',nl:'Geniet van uw koffie.',ru:'Наслаждайтесь кофе.',pl:'Smacznej kawy.',sv:'Njut av ditt kaffe.'}},
+      {text:'Have a lovely day.', pronunciation:'hav uh LUV-lee day', translation:{es:'Que tenga un buen día.',fr:'Bonne journée.',de:'Einen schönen Tag.',it:'Buona giornata.',pt:'Tenha um bom dia.',nl:'Fijne dag.',ru:'Хорошего дня.',pl:'Miłego dnia.',sv:'Ha en fin dag.'}}
+    ]
+  },
+  {
+    id:'closing', label:'15 · End of Service',
+    items:[
+      {text:'Is there anything else I can get you?', pronunciation:'iz thair EN-ee-thing els eye kan get yoo', translation:{es:'¿Les traigo algo más?',fr:'Puis-je vous apporter autre chose ?',de:'Kann ich Ihnen noch etwas bringen?',it:'Posso portarvi altro?',pt:'Posso trazer mais alguma coisa?',nl:'Kan ik nog iets voor u halen?',ru:'Могу я принести вам что-нибудь ещё?',pl:'Czy mogę coś jeszcze przynieść?',sv:'Kan jag hämta något mer?'}},
+      {text:'Please take your time.', pronunciation:'pleez tayk yor tym', translation:{es:'Tómense su tiempo.',fr:'Prenez votre temps.',de:'Lassen Sie sich Zeit.',it:'Prendetevi il vostro tempo.',pt:'Levem o vosso tempo.',nl:'Neem de tijd.',ru:'Не спешите.',pl:'Proszę się nie spieszyć.',sv:'Ta er tid.'}},
+      {text:'We close in half an hour.', pronunciation:'wee klohz in haf an OW-er', translation:{es:'Cerramos en media hora.',fr:'Nous fermons dans une demi-heure.',de:'Wir schließen in einer halben Stunde.',it:'Chiudiamo tra mezz\'ora.',pt:'Fechamos dentro de meia hora.',nl:'We sluiten over een half uur.',ru:'Мы закрываемся через полчаса.',pl:'Zamykamy za pół godziny.',sv:'Vi stänger om en halvtimme.'}},
+      {text:'We\'re closing now, thank you.', pronunciation:'weer KLOH-zing now, thank yoo', translation:{es:'Estamos cerrando, gracias.',fr:'Nous fermons, merci.',de:'Wir schließen jetzt, danke.',it:'Stiamo chiudendo, grazie.',pt:'Estamos a fechar, obrigado.',nl:'We gaan sluiten, bedankt.',ru:'Мы закрываемся, спасибо.',pl:'Zamykamy, dziękujemy.',sv:'Vi stänger nu, tack.'}},
+      {text:'Thank you for a lovely evening.', pronunciation:'thank yoo for uh LUV-lee EEV-ning', translation:{es:'Gracias por una velada estupenda.',fr:'Merci pour cette belle soirée.',de:'Danke für einen schönen Abend.',it:'Grazie per la bella serata.',pt:'Obrigado pela bela noite.',nl:'Bedankt voor een fijne avond.',ru:'Спасибо за прекрасный вечер.',pl:'Dziękuję za miły wieczór.',sv:'Tack för en trevlig kväll.'}},
+      {text:'Please mind the step on your way out.', pronunciation:'pleez mynd thuh step on yor way owt', translation:{es:'Cuidado con el escalón al salir.',fr:'Attention à la marche en sortant.',de:'Bitte achten Sie beim Hinausgehen auf die Stufe.',it:'Faccia attenzione al gradino all\'uscita.',pt:'Cuidado com o degrau à saída.',nl:'Let op de tree bij het weggaan.',ru:'Осторожно, ступенька на выходе.',pl:'Proszę uważać na schodek przy wyjściu.',sv:'Akta trappsteget på väg ut.'}},
+      {text:'Could I call you a taxi?', pronunciation:'kood eye kawl yoo uh TAK-see', translation:{es:'¿Le llamo un taxi?',fr:'Puis-je vous appeler un taxi ?',de:'Soll ich Ihnen ein Taxi rufen?',it:'Posso chiamarle un taxi?',pt:'Posso chamar-lhe um táxi?',nl:'Zal ik een taxi voor u bellen?',ru:'Вызвать вам такси?',pl:'Czy zamówić Państwu taksówkę?',sv:'Ska jag ringa en taxi åt er?'}},
+      {text:'Please take an umbrella, it\'s raining.', pronunciation:'pleez tayk an um-BREL-uh, its RAY-ning', translation:{es:'Coja un paraguas, está lloviendo.',fr:'Prenez un parapluie, il pleut.',de:'Nehmen Sie einen Schirm, es regnet.',it:'Prenda un ombrello, sta piovendo.',pt:'Leve um guarda-chuva, está a chover.',nl:'Neem een paraplu mee, het regent.',ru:'Возьмите зонт, идёт дождь.',pl:'Proszę wziąć parasol, pada deszcz.',sv:'Ta en umbrella, det regnar.'}},
+      {text:'Come back and see us soon.', pronunciation:'kum bak and see us soon', translation:{es:'Vuelvan a visitarnos pronto.',fr:'Revenez nous voir bientôt.',de:'Besuchen Sie uns bald wieder.',it:'Tornate presto a trovarci.',pt:'Voltem a visitar-nos em breve.',nl:'Kom snel weer langs.',ru:'Заходите к нам снова.',pl:'Proszę nas wkrótce odwiedzić.',sv:'Kom tillbaka snart.'}},
+      {text:'It was a pleasure to serve you.', pronunciation:'it wuz uh PLEZH-er too surv yoo', translation:{es:'Ha sido un placer servirles.',fr:'Ce fut un plaisir de vous servir.',de:'Es war uns eine Freude, Sie zu bedienen.',it:'È stato un piacere servirvi.',pt:'Foi um prazer servi-los.',nl:'Het was een genoegen u te bedienen.',ru:'Было приятно вас обслуживать.',pl:'To była przyjemność Państwa obsługiwać.',sv:'Det var ett nöje att servera er.'}},
+      {text:'Wishing you a safe journey home.', pronunciation:'WISH-ing yoo uh sayf JUR-nee hohm', translation:{es:'Que tengan un buen viaje a casa.',fr:'Bon retour chez vous.',de:'Gute Heimreise.',it:'Buon rientro a casa.',pt:'Boa viagem de regresso.',nl:'Goede reis naar huis.',ru:'Хорошей дороги домой.',pl:'Szczęśliwej drogi do domu.',sv:'Önskar er en säker hemresa.'}},
+      {text:'Good night.', pronunciation:'good nyt', translation:{es:'Buenas noches.',fr:'Bonne nuit.',de:'Gute Nacht.',it:'Buona notte.',pt:'Boa noite.',nl:'Goedenacht.',ru:'Спокойной ночи.',pl:'Dobranoc.',sv:'God natt.'}},
+      {text:'Take care.', pronunciation:'tayk kair', translation:{es:'Cuídense.',fr:'Prenez soin de vous.',de:'Passen Sie auf sich auf.',it:'Abbi cura di te.',pt:'Cuide-se.',nl:'Zorg goed voor uzelf.',ru:'Берегите себя.',pl:'Proszę o siebie dbać.',sv:'Ta hand om dig.'}},
+      {text:'See you next time.', pronunciation:'see yoo nekst tym', translation:{es:'Hasta la próxima.',fr:'À la prochaine.',de:'Bis zum nächsten Mal.',it:'Alla prossima.',pt:'Até à próxima.',nl:'Tot de volgende keer.',ru:'До следующего раза.',pl:'Do zobaczenia następnym razem.',sv:'Vi ses nästa gång.'}},
+      {text:'Thank you and goodbye.', pronunciation:'thank yoo and good-BY', translation:{es:'Gracias y adiós.',fr:'Merci et au revoir.',de:'Danke und auf Wiedersehen.',it:'Grazie e arrivederci.',pt:'Obrigado e adeus.',nl:'Bedankt en tot ziens.',ru:'Спасибо и до свидания.',pl:'Dziękuję i do widzenia.',sv:'Tack och hej då.'}},
+      {text:'Please leave your review online.', pronunciation:'pleez leev yor rih-VYOO on-lyn', translation:{es:'Deje su opinión en línea, por favor.',fr:'Laissez votre avis en ligne.',de:'Bitte hinterlassen Sie Ihre Bewertung online.',it:'Lasci la sua recensione online.',pt:'Deixe a sua opinião online.',nl:'Laat uw beoordeling online achter.',ru:'Оставьте свой отзыв в интернете.',pl:'Proszę zostawić opinię online.',sv:'Lämna gärna ett omdöme online.'}}
+    ]
+  }
+];
+
+/* --- Part 1 ends here. Paste Part 2 immediately below this line. --- */
+
+/* ============================================================
+   MOUTH OUTLINE
+   ============================================================ */
+function getMouthOutlinePaths(){
+  var W=0.52,thU=0.16,thL=0.18,N=60;
+  function upperOuter(u){var x=u*W;var fall=1-Math.pow(Math.abs(u),2.0);var bow=0.040*Math.exp(-Math.pow(u/0.22,2))-0.012*Math.exp(-Math.pow(u/0.06,2));var off=thU*(1-Math.pow(Math.abs(u),2.2)*0.45);return[x,(0.02*fall+bow)+off];}
+  function upperInner(u){var x=u*W;var fall=1-Math.pow(Math.abs(u),2.0);var bow=0.040*Math.exp(-Math.pow(u/0.22,2))-0.012*Math.exp(-Math.pow(u/0.06,2));return[x,0.02*fall+bow];}
+  function lowerInner(u){var x=u*W;var fall=1-Math.pow(Math.abs(u),2.0);var belly=0.022*Math.exp(-Math.pow(u/0.45,2));return[x,-0.02*fall-belly];}
+  function lowerOuter(u){var x=u*W;var fall=1-Math.pow(Math.abs(u),2.0);var belly=0.022*Math.exp(-Math.pow(u/0.45,2));var off=thL*(1-Math.pow(Math.abs(u),2.2)*0.45);return[x,(-0.02*fall-belly)-off];}
+  var upperPath=[],lowerPath=[],innerCenterPath=[];
+  for(var i=0;i<=N;i++){var u=-1+2*i/N;upperPath.push(upperOuter(u));}
+  for(var j=N;j>=0;j--){var u2=-1+2*j/N;upperPath.push(upperInner(u2));innerCenterPath.push(upperInner(u2));}
+  for(var k=0;k<=N;k++){var u3=-1+2*k/N;lowerPath.push(lowerInner(u3));innerCenterPath.push(lowerInner(u3));}
+  for(var l=N;l>=0;l--){var u4=-1+2*l/N;lowerPath.push(lowerOuter(u4));}
+  return{upper:upperPath,lower:lowerPath,center:innerCenterPath};
+}
+
+/* ============================================================
+   STATE
+   ============================================================ */
+var state='idle';
+var amp=0,ampTarget=0;
+var flashUntil=0, flashColor='green';
+
+function setState(s){state=s;document.getElementById('stateTxt').textContent=s;}
+
+var stage=document.querySelector('.lips-float');
+var canvas=document.getElementById('scene');
+var ctx=canvas.getContext('2d');
+var DPR=Math.min(window.devicePixelRatio||1,1.5);
+
+function resize(){var r=stage.getBoundingClientRect();canvas.width=Math.round(r.width*DPR);canvas.height=Math.round(r.height*DPR);}
+window.addEventListener('resize',resize);
+window.addEventListener('load',resize);
+
+var mouthPaths=getMouthOutlinePaths();
+
+function drawMouth(){
+  var W=canvas.width,H=canvas.height;
+  var S=H/1.85;
+  var cx=W*0.5;
+  var cy=H*0.52;
+
+  ctx.clearRect(0,0,W,H);
+  var fillColor=null;
+
+  if(state==='speaking' || state==='listening'){
+    var intensity = clamp(amp, 0.15, 1);
+    var r = Math.round(220 - intensity * 40);
+    var g = Math.round(38  + intensity * 20);
+    var b = Math.round(38  + intensity * 20);
+    fillColor = 'rgba(' + r + ',' + g + ',' + b + ',' + (0.55 + intensity * 0.35) + ')';
+  }
+
+  if(performance.now() < flashUntil){
+    var progress = (flashUntil - performance.now()) / 1200;
+    var alpha = 0.55 + progress * 0.35;
+    fillColor = flashColor==='green' ? 'rgba(4, 120, 87, ' + alpha + ')' : 'rgba(185, 28, 28, ' + alpha + ')';
+  }
+
+  if(fillColor){
+    ctx.fillStyle = fillColor;
+    ctx.beginPath();
+    for(var c=0;c<mouthPaths.center.length;c++){
+      var pxC=cx+mouthPaths.center[c][0]*S;
+      var pyC=cy-mouthPaths.center[c][1]*S;
+      if(c===0)ctx.moveTo(pxC,pyC);else ctx.lineTo(pxC,pyC);
+    }
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  ctx.strokeStyle='#064e3b';
+  ctx.lineWidth=3.2*DPR;
+  ctx.shadowBlur=0;
+
+  function renderPath(pts){
+    ctx.beginPath();
+    for(var i=0;i<pts.length;i++){
+      var px=cx+pts[i][0]*S;
+      var py=cy-pts[i][1]*S;
+      if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+    }
+    ctx.closePath();
+    ctx.stroke();
+  }
+  renderPath(mouthPaths.upper);
+  renderPath(mouthPaths.lower);
+}
+
+/* ============================================================
+   WAVEFORM
+   ============================================================ */
+var waveCanvas=document.getElementById('waveform');
+var waveCtx=waveCanvas.getContext('2d');
+var waveDPR=Math.min(window.devicePixelRatio||1,1.5);
+var waveOffset=0;
+var waveIntensity=0;
+var waveCurrentIntensity=0;
+var waveColor='grey';
+
+function resizeWave(){var r=waveCanvas.getBoundingClientRect();waveCanvas.width=Math.round(r.width*waveDPR);waveCanvas.height=Math.round(r.height*waveDPR);}
+window.addEventListener('resize',resizeWave);
+
+function drawWaveform(){
+  var W=waveCanvas.width, H=waveCanvas.height;
+  var cy=H/2;
+  waveCtx.clearRect(0,0,W,H);
+
+  waveCurrentIntensity += (waveIntensity - waveCurrentIntensity) * 0.12;
+
+  var maxAmp = (H*0.22) * waveCurrentIntensity;
+
+  var barW = 1.6 * waveDPR;
+  var gap = 3.2 * waveDPR;
+  var bars = Math.max(1, Math.floor(W / (barW + gap)));
+  var rowW = bars*(barW+gap) - gap;
+  var startX = (W - rowW) / 2;
+
+  var baseColor;
+  if(waveColor==='red')        baseColor = 'rgba(185,28,28,';
+  else if(waveColor==='green') baseColor = 'rgba(4,120,87,';
+  else                          baseColor = 'rgba(100,116,139,';
+
+  for(var i=0;i<bars;i++){
+    var t = bars>1 ? i / (bars-1) : 0.5;
+    var edge = Math.abs(t-0.5)*2;
+    var env = Math.pow(edge, 1.35);
+    var a = Math.sin((t*6) + waveOffset) * 0.5
+          + Math.sin((t*13) + waveOffset*1.7) * 0.3
+          + Math.sin((t*2.4) - waveOffset*0.9) * 0.4;
+    var h = Math.abs(a) * maxAmp * env;
+    h = Math.max(h, 1.0 * waveDPR * env);
+
+    var x = startX + i * (barW + gap);
+    var alpha = (0.4 + 0.6*waveCurrentIntensity) * env;
+    waveCtx.fillStyle = baseColor + alpha + ')';
+    waveCtx.fillRect(x, cy-h, barW, h*2);
+  }
+
+  waveOffset += 0.08 + waveCurrentIntensity*0.35;
+  requestAnimationFrame(drawWaveform);
+}
+resizeWave();
+requestAnimationFrame(drawWaveform);
+
+setInterval(function(){
+  if(state==='speaking' || state==='listening'){
+    waveIntensity = 0.55 + Math.sin(Date.now()*0.012)*0.35 + Math.random()*0.1;
+    waveColor = 'green';
+  } else if(state==='success'){ waveIntensity = 0.9; waveColor = 'green'; }
+  else if(state==='fail')    { waveIntensity = 0.9; waveColor = 'red'; }
+  else                       { waveIntensity = 0.04; waveColor = 'grey'; }
+}, 100);
+
+/* ============================================================
+   ANIMATION LOOP
+   ============================================================ */
+var last=0;
+function frame(ts){
+  var dt=last?Math.min(ts-last,48):16;last=ts;
+  amp+=(ampTarget-amp)*clamp(dt/140,0,1);
+  drawMouth();
+  requestAnimationFrame(frame);
+}
+resize();
+requestAnimationFrame(frame);
+
+setInterval(function(){
+  ampTarget=(state==='speaking'||state==='listening')?(0.3+Math.sin(Date.now()*0.012)*0.4+Math.random()*0.3):0;
+},100);
+
+/* ============================================================
+   SCORING
+   ============================================================ */
+function normalize(s){
+  return s.toLowerCase()
+    .replace(/[.,!?;:"'¿¡—–\-\(\)\[\]]/g,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+function levenshtein(a,b){
+  if(a===b) return 0;
+  if(!a.length) return b.length;
+  if(!b.length) return a.length;
+  var v0=[],v1=[];
+  for(var i=0;i<=b.length;i++) v0[i]=i;
+  for(var i=0;i<a.length;i++){
+    v1[0]=i+1;
+    for(var j=0;j<b.length;j++){
+      var cost = (a[i]===b[j]) ? 0 : 1;
+      v1[j+1] = Math.min(v1[j]+1, v0[j+1]+1, v0[j]+cost);
+    }
+    var tmp=v0; v0=v1; v1=tmp;
+  }
+  return v0[b.length];
+}
+function wordsMatch(a,b){
+  if(a===b) return true;
+  var maxDist = Math.max(1, Math.floor(Math.max(a.length, b.length) / 3));
+  return levenshtein(a,b) <= maxDist;
+}
+function scoreAttempt(targetText, heardText){
+  var tWords = normalize(targetText).split(' ').filter(Boolean);
+  var hWords = normalize(heardText).split(' ').filter(Boolean);
+  if(!tWords.length) return {score:0,matched:0,total:0,missed:[],heard:hWords};
+
+  var usedHeard = new Array(hWords.length).fill(false);
+  var matched=0, missed=[];
+  for(var i=0;i<tWords.length;i++){
+    var tw = tWords[i];
+    var found = false;
+    var tryOrder = [];
+    if(i < hWords.length) tryOrder.push(i);
+    for(var k=1;k<hWords.length;k++){
+      if(i-k >= 0) tryOrder.push(i-k);
+      if(i+k < hWords.length) tryOrder.push(i+k);
+    }
+    for(var k=0;k<hWords.length;k++) if(tryOrder.indexOf(k)<0) tryOrder.push(k);
+    for(var ti=0;ti<tryOrder.length;ti++){
+      var hi=tryOrder[ti];
+      if(usedHeard[hi]) continue;
+      if(wordsMatch(tw, hWords[hi])){ usedHeard[hi]=true; matched++; found=true; break; }
+    }
+    if(!found) missed.push(tw);
+  }
+  return {score:Math.round((matched/tWords.length)*100), matched:matched, total:tWords.length, missed:missed, heard:hWords};
+}
+
+/* ============================================================
+   VOICES
+   ============================================================ */
+var VOICES = { primary:null, secondary:null };
+
+function pickVoices(){
+  if(!('speechSynthesis' in window)) return;
+  var all = speechSynthesis.getVoices() || [];
+  if(!all.length){ setTimeout(pickVoices, 300); return; }
+
+  var english = all.filter(function(v){
+    return v.lang && v.lang.toLowerCase().indexOf('en')===0;
+  });
+  if(!english.length){ VOICES.primary = null; VOICES.secondary = null; return; }
+
+  var femaleNames = ['samantha','zira','victoria','karen','moira','tessa','fiona','serena','ava','allison','susan','jenny','aria'];
+  var maleNames   = ['alex','daniel','david','fred','tom','oliver','george','rishi','ryan','guy','mark'];
+
+  var female = english.find(function(v){
+    var n = (v.name||'').toLowerCase();
+    return femaleNames.some(function(f){ return n.indexOf(f) !== -1; });
+  });
+  var male = english.find(function(v){
+    var n = (v.name||'').toLowerCase();
+    return maleNames.some(function(m){ return n.indexOf(m) !== -1; });
+  });
+
+  if(female && male){
+    VOICES.primary = female;
+    VOICES.secondary = male;
+  } else if(english.length >= 2){
+    VOICES.primary = english[0];
+    VOICES.secondary = english[1];
+  } else {
+    VOICES.primary = english[0];
+    VOICES.secondary = null;
+  }
+}
+
+if('speechSynthesis' in window){
+  speechSynthesis.onvoiceschanged = pickVoices;
+  pickVoices();
+  setTimeout(pickVoices, 500);
+  setTimeout(pickVoices, 1500);
+}
+
+/* ============================================================
+   RENDERING STATE
+   ============================================================ */
+var currentLang='en';
+var currentLevelId='words';
+var openSections={};
+if(LEVELS.length) openSections[LEVELS[0].id]=true;
+
+var lastSpokenItem=null;
+var lastHeardText='';
+var currentAttempt = { target:null, heard:'' };
+var isPracticing = false;
+
+var levelsContainer=document.getElementById('levelsContainer');
+var subtitleEl=document.getElementById('subtitle');
+var statelineEl=document.getElementById('stateline');
+var micBtn=document.getElementById('micBtn');
+var replayBtn=document.getElementById('replayBtn');
+var freeTalkBtn=document.getElementById('freeTalkBtn');
+var freeTalking=false, freeTalkRecog=null, freeTalkFinalText='';
+var lastFreeTalkText='';
+var subtitleMode='idle'; // 'idle' | 'item' | 'freetalk' — drives what a nav-language click re-renders
+
+function getTranslation(item){
+  if(currentLang==='en') return null;
+  if(!item.translation) return null;
+  return item.translation[currentLang] || null;
+}
+
+/* ============================================================
+   RENDER LEFT PANEL
+   ============================================================ */
+function renderLeftPanel(){
+  levelsContainer.innerHTML='';
+  LEVELS.forEach(function(level,idx){
+    var section=document.createElement('div');
+    section.className='level-section'+(openSections[level.id]?' open':'');
+    section.dataset.levelId=level.id;
+
+    var header=document.createElement('button');
+    header.className='level-header';
+    header.type='button';
+    header.innerHTML='<span>'+level.label+'</span><span class="arrow">▶</span>';
+    header.addEventListener('click',function(e){
+      e.stopPropagation();
+      openSections[level.id]=!openSections[level.id];
+      section.classList.toggle('open',openSections[level.id]);
+    });
+
+    var body=document.createElement('div');
+    body.className='level-body';
+    var list=document.createElement('div');
+    list.className='dept-list';
+
+    level.items.forEach(function(item){
+      var btn=document.createElement('button');
+      btn.className='dept';
+      btn.type='button';
+
+      var mainSpan=document.createElement('span');
+      var displayText=item.text.length>42?item.text.slice(0,39)+'…':item.text;
+      mainSpan.textContent=displayText;
+      btn.appendChild(mainSpan);
+
+      var tr=getTranslation(item);
+      if(tr){
+        var trSpan=document.createElement('span');
+        trSpan.className='dept-trans';
+        trSpan.textContent=tr.length>38?tr.slice(0,35)+'…':tr;
+        btn.appendChild(trSpan);
+      }
+
+      btn.setAttribute('aria-pressed','false');
+      btn.addEventListener('click',function(e){
+        e.stopPropagation();
+        document.querySelectorAll('.dept').forEach(function(b){b.setAttribute('aria-pressed','false');});
+        btn.setAttribute('aria-pressed','true');
+        currentLevelId=level.id;
+        lastSpokenItem=item;
+        isPracticing=false;
+        speak(item);
+        statelineEl.textContent='Now click "Try it" to practise this phrase.';
+      });
+      list.appendChild(btn);
+    });
+
+    body.appendChild(list);
+    section.appendChild(header);
+    section.appendChild(body);
+    levelsContainer.appendChild(section);
+  });
+}
+
+/* ============================================================
+   SUBTITLE
+   ============================================================ */
+function buildSubtitle(item, mode, attemptData){
+  var words=item.text.split(/\s+/);
+  var tr=getTranslation(item);
+  var trLine=tr?'<div class="translation-sub">'+LANGS[currentLang].flag+' '+tr+'</div>':'';
+
+  var wordHtml;
+  if(mode==='result' && attemptData){
+    var missedSet = new Set(attemptData.missed);
+    wordHtml = words.map(function(w){
+      var clean = normalize(w);
+      if(missedSet.has(clean)) return '<span class="missed">'+w+'</span>';
+      return '<span>'+w+'</span>';
+    }).join(' ');
+  } else {
+    wordHtml = words.map(function(w,i){return '<span data-i="'+i+'">'+w+'</span>';}).join(' ');
+  }
+
+  var fb='';
+  if(mode==='result' && attemptData){
+    var cls = attemptData.score>=80 ? 'good' : (attemptData.score>=50 ? 'mid' : 'bad');
+    var icon = attemptData.score>=80 ? '✅' : (attemptData.score>=50 ? '⚠️' : '❌');
+    var msg;
+    if(attemptData.score>=90) msg='Excellent!';
+    else if(attemptData.score>=80) msg='Great job!';
+    else if(attemptData.score>=50) msg='Good attempt — keep practising.';
+    else msg='Try again — listen to the model first.';
+    fb = '<div class="feedback '+cls+'">'+
+         '<span class="score">'+attemptData.score+'%</span> '+icon+' '+msg+
+         ' &nbsp;('+attemptData.matched+'/'+attemptData.total+' words matched)'+
+         '<div class="heard">You said: "'+(attemptData.heardRaw||'')+'"</div>'+
+         '</div>';
+  }
+
+  subtitleEl.innerHTML='<div>'+wordHtml+'</div>'+
+    '<div class="pronunciation-sub">🗣 '+item.pronunciation+'</div>'+
+    trLine + fb;
+}
+
+/* ============================================================
+   SPEECH
+   ============================================================ */
+function speak(item){
+  lastSpokenItem=item;
+  subtitleMode='item';
+  buildSubtitle(item,'speaking',null);
+  var spans=subtitleEl.querySelectorAll('div:first-child span');
+
+  if(!('speechSynthesis' in window)){
+    statelineEl.textContent='Speech synthesis unavailable — subtitles active.';
+    setState('speaking');
+    var wi0=0;
+    var iv=setInterval(function(){
+      if(wi0>0&&spans[wi0-1])spans[wi0-1].className='said';
+      if(wi0>=spans.length){clearInterval(iv);setState('idle');return;}
+      spans[wi0].className='now';wi0++;
+    },260);
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  var text = item.text;
+  var abMatch = text.match(/^(A:\s*.+?)\s+B:\s*(.+)$/);
+  var hasAB = !!abMatch;
+
+  setState('speaking');
+  statelineEl.textContent = hasAB ? 'Speaking (two voices)…' : 'Model is speaking…';
+
+  var wi=0;
+  var startTime = performance.now();
+  var wordsPerSecond = hasAB ? 3.2 : 2.8;
+  var highlightTimer = setInterval(function(){
+    var elapsed = (performance.now() - startTime) / 1000;
+    var target = Math.floor(elapsed * wordsPerSecond);
+    while(wi < Math.min(target, spans.length)){
+      if(wi > 0 && spans[wi-1]) spans[wi-1].className='said';
+      if(spans[wi]) spans[wi].className='now';
+      wi++;
+    }
+  }, 120);
+
+  var wordCount = text.split(/\s+/).length;
+  var safetyMs = Math.max(4000, wordCount * 380);
+  var safetyTimer = setTimeout(function(){ finishAll(); }, safetyMs);
+
+  var finished = false;
+  function finishAll(){
+    if(finished) return;
+    finished = true;
+    clearInterval(highlightTimer);
+    clearTimeout(safetyTimer);
+    Array.prototype.forEach.call(spans,function(s){s.className='said';});
+    setState('idle');
+    statelineEl.textContent='Model finished. Click "Try it" to record yourself.';
+  }
+
+  if(hasAB){
+    var partA = abMatch[1].replace(/^A:\s*/,'');
+    var partB = abMatch[2];
+
+    var canAlternate = VOICES.primary && VOICES.secondary && VOICES.primary.name !== VOICES.secondary.name;
+
+    if(!canAlternate){
+      var uOne = new SpeechSynthesisUtterance(text);
+      uOne.lang='en-US'; uOne.rate=0.95;
+      if(VOICES.primary) uOne.voice = VOICES.primary;
+      uOne.onend = finishAll;
+      uOne.onerror = finishAll;
+      window.speechSynthesis.speak(uOne);
+      return;
+    }
+
+    var uA = new SpeechSynthesisUtterance(partA);
+    uA.lang='en-US'; uA.rate=0.95;
+    if(VOICES.primary) uA.voice = VOICES.primary;
+    uA.pitch = 1.05;
+
+    var uB = new SpeechSynthesisUtterance(partB);
+    uB.lang='en-US'; uB.rate=0.95;
+    if(VOICES.secondary) uB.voice = VOICES.secondary;
+    uB.pitch = 0.85;
+
+    uA.onend = function(){
+      setTimeout(function(){ window.speechSynthesis.speak(uB); }, 200);
+    };
+    uB.onend = finishAll;
+    uA.onerror = function(){ finishAll(); };
+    uB.onerror = function(){ finishAll(); };
+
+    window.speechSynthesis.speak(uA);
+  } else {
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang='en-US'; u.rate=0.95;
+    if(VOICES.primary) u.voice = VOICES.primary;
+    u.onend = finishAll;
+    u.onerror = finishAll;
+    window.speechSynthesis.speak(u);
+  }
+}
+
+/* ============================================================
+   PRACTICE
+   ============================================================ */
+var recognizing=false,recog=null;
+
+function startPractice(){
+  if(!lastSpokenItem){
+    statelineEl.textContent='Pick a phrase on the left first.';
+    return;
+  }
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    statelineEl.textContent='Speech recognition unavailable on this browser.';
+    return;
+  }
+
+  var target=lastSpokenItem;
+  currentAttempt={ target:target, heard:'' };
+  isPracticing=true;
+
+  buildSubtitle(target,'listening',null);
+
+  recog=new SR();
+  recog.lang='en-US';
+  recog.interimResults=true;
+  recog.maxAlternatives=1;
+
+  recog.onstart=function(){
+    recognizing=true;
+    setState('listening');
+    micBtn.textContent='● Stop';
+    freeTalkBtn.disabled=true;
+    statelineEl.textContent='Listening… speak now.';
+  };
+
+  recog.onresult=function(ev){
+    var interim='', final='';
+    for(var i=ev.resultIndex;i<ev.results.length;i++){
+      var r=ev.results[i];
+      if(r.isFinal) final += r[0].transcript;
+      else interim += r[0].transcript;
+    }
+    if(interim || final){
+      lastHeardText = (final || interim).trim();
+      statelineEl.textContent='Heard: "'+lastHeardText+'"';
+    }
+    if(final){
+      finishPractice(final.trim());
+    }
+  };
+
+  recog.onend=function(){
+    recognizing=false;
+    micBtn.textContent='🎙 Try it';
+    freeTalkBtn.disabled=false;
+    if(isPracticing && currentAttempt.heard===''){
+      if(lastHeardText){
+        finishPractice(lastHeardText);
+      } else {
+        setState('idle');
+        statelineEl.textContent='No speech detected. Try again.';
+        isPracticing=false;
+      }
+    }
+  };
+
+  recog.onerror=function(e){
+    recognizing=false;
+    micBtn.textContent='🎙 Try it';
+    freeTalkBtn.disabled=false;
+    setState('idle');
+    isPracticing=false;
+    statelineEl.textContent = (e.error==='not-allowed')
+      ? 'Microphone access denied.'
+      : 'Recognition error: '+e.error;
+  };
+
+  lastHeardText='';
+  recog.start();
+}
+
+function finishPractice(heardText){
+  isPracticing=false;
+  var target = currentAttempt.target;
+  if(!target) return;
+
+  var result = scoreAttempt(target.text, heardText);
+  result.heardRaw = heardText;
+  currentAttempt.heard = heardText;
+
+  flashColor = result.score>=80 ? 'green' : 'red';
+  flashUntil = performance.now() + 1200;
+
+  setState(result.score>=80 ? 'success' : 'fail');
+  buildSubtitle(target,'result',result);
+
+  if(result.score>=90) statelineEl.textContent='🏆 Excellent! '+result.score+'%';
+  else if(result.score>=80) statelineEl.textContent='✅ Great! '+result.score+'%';
+  else if(result.score>=50) statelineEl.textContent='⚠️ '+result.score+'% — try again.';
+  else statelineEl.textContent='❌ '+result.score+'% — listen to the model and try again.';
+
+  setTimeout(function(){
+    if(state==='success'||state==='fail') setState('idle');
+  }, 1300);
+}
+
+/* ============================================================
+   FREE TALK — dictation only, no target, no score. Say anything
+   and it's written into the subtitle box as you speak.
+   ============================================================ */
+function speakRaw(text){
+  if(!('speechSynthesis' in window) || !text) return;
+  window.speechSynthesis.cancel();
+  var u=new SpeechSynthesisUtterance(text);
+  u.lang='en-US'; u.rate=0.95;
+  if(VOICES.primary) u.voice=VOICES.primary;
+  window.speechSynthesis.speak(u);
+}
+
+function translateFreeText(text, targetLang){
+  var url='https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl='+targetLang+'&dt=t&q='+encodeURIComponent(text);
+  return fetch(url).then(function(r){
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    return r.json();
+  }).then(function(data){
+    var segs = data && data[0];
+    if(!segs || !segs.length) throw new Error('empty translation');
+    var out='';
+    for(var i=0;i<segs.length;i++){ if(segs[i] && segs[i][0]) out+=segs[i][0]; }
+    if(!out) throw new Error('empty translation');
+    return out;
+  });
+}
+
+function renderFreeTalk(finalText, interimText){
+  var body = '<div>'+(finalText ? finalText : '<span style="color:#94a3b8">Listening…</span>')+
+             (interimText ? ' <span style="color:#94a3b8;font-style:italic">'+interimText+'</span>' : '')+
+             '</div>';
+  subtitleEl.innerHTML = '<div class="pronunciation-sub" style="margin-top:0;margin-bottom:8px">🗣 FREE TALK — say anything</div>' + body;
+}
+
+function renderFreeTalkResult(said){
+  var trBlock = (currentLang==='en') ? '' :
+    '<div class="translation-sub" id="freeTalkTranslation">Translating…</div>';
+  subtitleEl.innerHTML =
+    '<div class="pronunciation-sub" style="margin-top:0;margin-bottom:8px">🗣 FREE TALK</div>' +
+    '<div>'+said+'</div>' + trBlock;
+}
+
+function showFreeTalkResult(said){
+  renderFreeTalkResult(said);
+  if(currentLang!=='en'){
+    translateFreeText(said, currentLang).then(function(t){
+      var el=document.getElementById('freeTalkTranslation');
+      if(el) el.textContent = LANGS[currentLang].flag+' '+t;
+    }).catch(function(err){
+      console.error('Free Talk translation failed:', err);
+      var el=document.getElementById('freeTalkTranslation');
+      if(el) el.textContent = 'Translation unavailable right now.';
+    });
+  }
+}
+
+function startFreeTalk(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    statelineEl.textContent='Speech recognition unavailable on this browser.';
+    return;
+  }
+  freeTalking=true;
+  micBtn.disabled=true; replayBtn.disabled=true;
+  freeTalkBtn.classList.add('active');
+  freeTalkBtn.textContent='● Stop';
+  setState('listening');
+  statelineEl.textContent='Free talk — say anything, I\'ll write it above.';
+
+  freeTalkFinalText='';
+  subtitleMode='freetalk';
+  renderFreeTalk('', '');
+
+  freeTalkRecog=new SR();
+  freeTalkRecog.lang='en-US';
+  freeTalkRecog.interimResults=true;
+  freeTalkRecog.continuous=true;
+  freeTalkRecog.maxAlternatives=1;
+
+  freeTalkRecog.onresult=function(ev){
+    var interim='';
+    for(var i=ev.resultIndex;i<ev.results.length;i++){
+      var r=ev.results[i];
+      if(r.isFinal) freeTalkFinalText += (freeTalkFinalText ? ' ' : '') + r[0].transcript.trim();
+      else interim += r[0].transcript;
+    }
+    renderFreeTalk(freeTalkFinalText, interim);
+  };
+
+  freeTalkRecog.onerror=function(e){
+    statelineEl.textContent = (e.error==='not-allowed')
+      ? 'Microphone access denied.'
+      : 'Recognition error: '+e.error;
+    stopFreeTalk();
+  };
+
+  freeTalkRecog.onend=function(){
+    if(freeTalking) stopFreeTalk();
+  };
+
+  freeTalkRecog.start();
+}
+
+function stopFreeTalk(){
+  freeTalking=false;
+  if(freeTalkRecog){ try{ freeTalkRecog.stop(); }catch(e){} }
+  micBtn.disabled=false; replayBtn.disabled=false;
+  freeTalkBtn.classList.remove('active');
+  freeTalkBtn.textContent='🗣 Free Talk';
+  setState('idle');
+
+  var said=freeTalkFinalText.trim();
+  if(!said){
+    subtitleMode='idle';
+    if(statelineEl.textContent.indexOf('Free talk')===0) statelineEl.textContent='Ready.';
+    return;
+  }
+
+  lastFreeTalkText=said;
+  speakRaw(said);
+  statelineEl.textContent='Here\'s what I heard — speaking it back now.';
+  showFreeTalkResult(said);
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+micBtn.addEventListener('click',function(){
+  if(freeTalking) return;
+  if(recognizing){ recog.stop(); return; }
+  startPractice();
+});
+
+freeTalkBtn.addEventListener('click',function(){
+  if(recognizing) return;
+  if(freeTalking){ stopFreeTalk(); return; }
+  startFreeTalk();
+});
+
+replayBtn.addEventListener('click',function(){
+  if(freeTalking) return;
+  if(!lastSpokenItem){statelineEl.textContent='Nothing to hear yet — pick a phrase first.';return;}
+  speak(lastSpokenItem);
+});
+
+/* ============================================================
+   LANGUAGE SWITCH
+   ============================================================ */
+document.getElementById('langMenu').addEventListener('click',function(e){
+  var btn=e.target.closest('.lang-item');
+  if(!btn)return;
+  var lang=btn.dataset.lang;
+  if(!LANGS[lang]) return;
+  if(lang===currentLang)return;
+  currentLang=lang;
+  document.querySelectorAll('.lang-item').forEach(function(b){b.classList.toggle('active',b.dataset.lang===lang);});
+  renderLeftPanel();
+  if(subtitleMode==='freetalk' && lastFreeTalkText){
+    showFreeTalkResult(lastFreeTalkText);
+  } else if(lastSpokenItem && !isPracticing){
+    buildSubtitle(lastSpokenItem,'idle',null);
+  }
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+renderLeftPanel();
+setState('idle');
+
+})();
+</script>
+</body>
+</html>

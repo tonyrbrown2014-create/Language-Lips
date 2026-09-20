@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Language Lips — User Guide</title>
+<style>
+  :root{
+    --bg-main:#f8fafc;
+    --panel-bg:#ffffff;
+    --panel-border:#cbd5e1;
+    --text-primary:#090d16;
+    --text-secondary:#334155;
+    --brand-green:#064e3b;
+    --brand-green-accent:#047857;
+    --font-main:Arial,Helvetica,sans-serif;
+    --shadow-sm:0 1px 3px rgba(0,0,0,.06);
+    --shadow-md:0 4px 12px rgba(0,0,0,.08);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg-main);color:var(--text-primary);font-family:var(--font-main);-webkit-font-smoothing:antialiased;min-height:100vh}
+
+  .topbar{background:#ffffff;border-bottom:1.5px solid var(--panel-border);box-shadow:var(--shadow-sm)}
+  .topbar-inner{max-width:900px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:12px}
+  .logo-mark{width:44px;height:44px;flex-shrink:0;border-radius:50%;background:linear-gradient(135deg,#064e3b 0%,#047857 100%);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:var(--shadow-sm)}
+  .logo-title{font-size:20px;font-weight:900;color:var(--brand-green);letter-spacing:.02em}
+  .home-link{margin-left:auto;font-family:var(--font-main);font-size:14px;font-weight:800;color:var(--text-secondary);text-decoration:none;padding:9px 16px;border:1.5px solid var(--panel-border);border-radius:6px;transition:all .15s ease;white-space:nowrap}
+  .home-link:hover{background:#f0fdf4;color:var(--brand-green);border-color:#d1fae5}
+
+  .wrap{max-width:900px;margin:0 auto;padding:40px 24px 60px}
+
+  h1{font-size:34px;font-weight:900;color:var(--brand-green);margin:0 0 10px;letter-spacing:-.01em}
+  .lede{font-size:17px;color:var(--text-secondary);line-height:1.6;margin:0 0 30px;max-width:640px}
+
+  .callout{
+    background:#ffffff;border:1.5px solid var(--panel-border);border-radius:8px;
+    padding:24px 28px;margin-bottom:36px;box-shadow:var(--shadow-sm);
+  }
+  .callout .tag{font-size:11px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;color:var(--brand-green-accent);margin-bottom:10px}
+  .callout p{font-size:16px;line-height:1.7;color:var(--text-secondary);margin:0 0 10px}
+  .callout p:last-child{margin-bottom:0}
+  .callout ul{margin:10px 0 0;padding-left:20px;color:var(--text-secondary);font-size:16px;line-height:1.8}
+
+  section{margin-bottom:38px}
+  h2{font-size:21px;font-weight:900;color:var(--brand-green);margin:0 0 6px;display:flex;align-items:center;gap:10px}
+  h2 .num{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:28px;height:28px;border-radius:50%;background:var(--brand-green);color:#fff;
+    font-size:14px;font-weight:900;flex-shrink:0;
+  }
+  .section-sub{font-size:14px;color:#64748b;margin:0 0 16px;padding-left:38px}
+
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;padding-left:38px}
+  .card{background:#ffffff;border:1.5px solid var(--panel-border);border-radius:8px;padding:18px 20px;box-shadow:var(--shadow-sm)}
+  .card .btn-name{font-size:15px;font-weight:900;color:var(--brand-green);margin-bottom:8px;display:block}
+  .card p{font-size:14px;line-height:1.6;color:var(--text-secondary);margin:0}
+
+  .steps{padding-left:38px;display:grid;gap:12px}
+  .step{display:flex;gap:14px;align-items:flex-start}
+  .step .dot{width:8px;height:8px;border-radius:50%;background:var(--brand-green-accent);margin-top:8px;flex-shrink:0}
+  .step p{font-size:15px;line-height:1.6;color:var(--text-secondary);margin:0}
+  .step b{color:var(--text-primary)}
+
+  .footer-note{
+    text-align:center;font-size:13px;color:#94a3b8;margin-top:50px;
+    padding-top:20px;border-top:1.5px solid var(--panel-border);
+  }
+
+  @media (max-width:600px){
+    h1{font-size:26px}
+    .section-sub, .cards, .steps{padding-left:0}
+    h2{flex-wrap:wrap}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="logo-mark">👄</div>
+    <span class="logo-title">Language Lips</span>
+    <a class="home-link" href="index.html">🏠 Home</a>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <h1>How to Use Language Lips</h1>
+  <p class="lede">A short guide to every part of the program — the panel, the buttons, the languages, and how the scoring works.</p>
+
+  <div class="callout">
+    <div class="tag">Before You Start</div>
+    <p><b>This is not a pressurised course.</b> There are no time limits, no deadlines, and nothing to finish. Language Lips is a set of practical English lessons you use at your own pace — try one phrase today, come back next week, skip around between sectors. There's no wrong way to use it.</p>
+  </div>
+
+  <section>
+    <h2><span class="num">1</span> Panel Navigation</h2>
+    <p class="section-sub">The left-hand panel is where every lesson lives.</p>
+    <div class="steps">
+      <div class="step"><span class="dot"></span><p>Each sector page is organised into <b>levels</b> — Words, Phrases, Sentences, Dialogues, and more, depending on the sector. Click a level's heading to open or close it.</p></div>
+      <div class="step"><span class="dot"></span><p>Inside each level is a list of individual <b>items</b> to practise. Click any word, phrase, sentence, or line of dialogue to bring it up on the main screen.</p></div>
+      <div class="step"><span class="dot"></span><p>There's no set order — jump straight to whatever's useful to you.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">2</span> Choosing Words, Phrases &amp; Sentences</h2>
+    <p class="section-sub">Once you've clicked something in the panel:</p>
+    <div class="steps">
+      <div class="step"><span class="dot"></span><p>The mouth on screen speaks it aloud automatically, and the text appears in the caption box underneath.</p></div>
+      <div class="step"><span class="dot"></span><p>Click <b>Try it</b> and repeat it back — see the buttons section below for how that's scored.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span> The Three Buttons</h2>
+    <p class="section-sub">Every sector page has the same three controls under the mouth.</p>
+    <div class="cards">
+      <div class="card">
+        <span class="btn-name">🎙 Try it</span>
+        <p>Listens to you say the phrase currently on screen and compares it to the target text word by word, allowing for near-miss pronunciation. It marks which words came through clearly and which didn't, so you know exactly what to work on — not just a pass/fail score.</p>
+      </div>
+      <div class="card">
+        <span class="btn-name">🔁 Hear model</span>
+        <p>Plays the correct pronunciation again, as many times as you like, so you always have something to compare yourself against.</p>
+      </div>
+      <div class="card">
+        <span class="btn-name">🗣 Free Talk</span>
+        <p>Say anything you like — it's written on screen as you speak, then read back to you and translated into whichever language is selected in the nav bar. No target text, no score — just open practice.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span> Languages</h2>
+    <p class="section-sub">Along the top of every sector page.</p>
+    <div class="steps">
+      <div class="step"><span class="dot"></span><p>Click any language in the top bar at any time — before, during, or after using a lesson — to see (and hear, in Free Talk) a translation alongside the English.</p></div>
+      <div class="step"><span class="dot"></span><p>Translations are there to help you understand — the lesson itself is always about speaking the English text out loud.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">5</span> Sectors Navigation</h2>
+    <p class="section-sub">Switching between the eleven practice modules.</p>
+    <div class="steps">
+      <div class="step"><span class="dot"></span><p>Use the <b>Home</b> button in the top bar to return to the sector list at any time.</p></div>
+      <div class="step"><span class="dot"></span><p>Or jump directly between sectors using the links at the bottom of any page — General, Business, Medical, Retail, Food &amp; Beverage, Hospitality, Office, IT, Logistics, Academic, and Travel.</p></div>
+      <div class="step"><span class="dot"></span><p>Not sure where to start? General English is a broad mix that works for anyone.</p></div>
+    </div>
+  </section>
+
+</div>
+
+<div class="footer-note">© 2026 Language Lips. All rights reserved.</div>
+
+</body>
+</html>

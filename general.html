@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Language Lips — Practical English Avatar</title>
+<style>
+  :root{
+    --bg-main:#f8fafc; --panel-bg:#ffffff; --panel-border:#cbd5e1;
+    --text-primary:#090d16; --text-secondary:#334155; --text-phonetic:#0284c7;
+    --brand-green:#064e3b; --brand-green-accent:#047857;
+    --font-main:Arial,Helvetica,sans-serif;
+    --shadow-sm:0 1px 3px rgba(0,0,0,.06);
+    --shadow-md:0 4px 12px rgba(0,0,0,.08);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;height:100%}
+  body{background:var(--bg-main);color:var(--text-primary);font-family:var(--font-main);-webkit-font-smoothing:antialiased;overflow:hidden}
+
+  .topbar{background:#ffffff;border-bottom:1.5px solid var(--panel-border);box-shadow:var(--shadow-sm);height:60px;flex-shrink:0}
+  .topbar-inner{max-width:1500px;margin:0;padding:0 24px;height:100%;display:flex;align-items:center;gap:14px;flex-wrap:nowrap;overflow-x:auto}
+  .topbar-inner::-webkit-scrollbar{height:0}
+  .topbar-brand{display:flex;align-items:center;gap:10px;margin-right:8px;flex-shrink:0}
+  .logo-mark{width:44px;height:44px;flex-shrink:0;border-radius:50%;background:linear-gradient(135deg,#064e3b 0%,#047857 100%);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:var(--shadow-sm)}
+  .logo-text{display:flex;flex-direction:column;line-height:1.08;justify-content:center}
+  .logo-title{font-size:19px;font-weight:900;color:var(--brand-green);letter-spacing:.02em}
+  .lang-menu{display:flex;gap:5px;flex-wrap:nowrap;margin-left:auto}
+  .lang-item{font-family:var(--font-main);font-size:13px;font-weight:700;padding:7px 12px;background:transparent;border:1px solid transparent;border-radius:6px;color:var(--text-secondary);cursor:pointer;transition:all .15s ease;white-space:nowrap;flex-shrink:0}
+  .lang-item:hover{background:#f0fdf4;color:var(--brand-green);border-color:#d1fae5}
+  .lang-item.active{background:var(--brand-green);color:#fff;border-color:var(--brand-green);box-shadow:var(--shadow-sm)}
+
+  .app{max-width:1500px;margin:0;padding:16px 24px;display:grid;grid-template-columns:320px 1fr;gap:28px;align-items:start;height:calc(100vh - 60px)}
+
+  .side{display:flex;flex-direction:column;gap:10px;height:100%;overflow-y:auto;padding-right:6px}
+  .side::-webkit-scrollbar{width:6px}
+  .side::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+
+  .side-heading{font-size:16px;font-weight:900;color:var(--brand-green);letter-spacing:.02em;margin:0 0 2px;padding:0 2px}
+
+  .level-section{border:1.5px solid var(--panel-border);border-radius:8px;background:var(--panel-bg);overflow:hidden;transition:box-shadow .15s ease}
+  .level-section:hover{box-shadow:var(--shadow-sm)}
+  .level-header{display:flex;justify-content:space-between;align-items:center;width:100%;font-family:var(--font-main);font-size:14px;font-weight:800;padding:12px 14px;background:transparent;border:none;color:var(--brand-green);cursor:pointer;text-align:left;letter-spacing:.03em;transition:background .12s ease}
+  .level-header:hover{background:#f0fdf4}
+  .level-header .arrow{font-size:12px;transition:transform .25s ease;color:var(--brand-green-accent)}
+  .level-section.open .level-header .arrow{transform:rotate(90deg)}
+  .level-body{display:none;padding:0 8px 10px 8px;border-top:1px solid #e2e8f0}
+  .level-section.open .level-body{display:block}
+
+  .dept-list{display:grid;gap:5px;max-height:340px;overflow-y:auto;padding-right:2px;margin-top:6px}
+  .dept-list::-webkit-scrollbar{width:6px}
+  .dept-list::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+  .dept{text-align:left;font-family:var(--font-main);font-size:13px;font-weight:600;color:var(--text-primary);background:#f8fafc;border:1px solid #e2e8f0;padding:8px 10px;cursor:pointer;border-radius:5px;transition:all .12s ease;line-height:1.35}
+  .dept:hover{color:#fff;background:var(--brand-green-accent);border-color:var(--brand-green-accent)}
+  .dept[aria-pressed="true"]{color:#fff;border-color:var(--brand-green);background:var(--brand-green);font-weight:700}
+  .dept .dept-trans{display:block;font-size:11px;font-weight:500;opacity:.75;margin-top:2px;font-style:italic}
+  .dept[aria-pressed="true"] .dept-trans,
+  .dept:hover .dept-trans{opacity:.9}
+
+  .main{height:100%;overflow-y:auto;padding-right:6px;display:flex;flex-direction:column;align-items:stretch}
+  .main::-webkit-scrollbar{width:6px}
+  .main::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+
+  .lips-float{position:relative;width:100%;height:170px;flex-shrink:0;z-index:2;pointer-events:none;margin-bottom:-18px}
+  canvas#waveform{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:1}
+  canvas#scene{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:2}
+  .caption-float{position:absolute;top:6px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#94a3b8;z-index:3}
+  .state-label{position:absolute;top:8px;right:12px;font-size:12px;color:var(--text-primary);font-weight:600;background:rgba(241,245,249,.9);border:1px solid var(--panel-border);padding:3px 8px;border-radius:4px;pointer-events:auto;z-index:3}
+  .state-label b{color:var(--brand-green);font-weight:800}
+
+  .stage{position:relative;width:100%;background:#ffffff;border:2px solid var(--panel-border);border-radius:6px;box-shadow:var(--shadow-sm);padding:14px;flex-shrink:0}
+  .subtitle-bar{background:rgba(255,255,255,.98);border:1.5px solid var(--panel-border);border-radius:6px;padding:16px 20px;text-align:center;box-shadow:var(--shadow-md);min-height:88px;display:flex;align-items:center;justify-content:center}
+  .subtitle{font-size:19px;line-height:1.55;color:var(--text-primary);font-weight:700}
+  .subtitle .pronunciation-sub{display:block;font-size:14px;color:var(--text-phonetic);margin-top:8px;font-weight:600;letter-spacing:.01em}
+  .subtitle .translation-sub{display:block;font-size:15px;color:#475569;margin-top:8px;font-weight:600;font-style:italic}
+  .subtitle .said{color:var(--text-secondary)}
+  .subtitle .now{color:var(--brand-green);font-weight:800;text-decoration:underline}
+
+  .subtitle .feedback{display:block;margin-top:12px;padding-top:10px;border-top:1px dashed #cbd5e1;font-size:15px;font-weight:600}
+  .subtitle .feedback.good{color:#047857}
+  .subtitle .feedback.mid{color:#b45309}
+  .subtitle .feedback.bad{color:#b91c1c}
+  .subtitle .feedback .score{font-size:22px;font-weight:900;margin-right:6px}
+  .subtitle .missed{color:#b91c1c;text-decoration:line-through;opacity:.85}
+  .subtitle .heard{color:#64748b;font-style:italic;font-weight:500}
+
+  .avatar-controls{display:flex;gap:10px;margin-top:12px;flex-shrink:0}
+  .fn{font-family:var(--font-main);font-size:15px;font-weight:800;padding:10px 18px;cursor:pointer;text-align:center;background:var(--brand-green);color:#fff;border:1px solid var(--brand-green);border-radius:4px;transition:all .15s ease;flex:1}
+  .fn:hover{background:var(--brand-green-accent);border-color:var(--brand-green-accent)}
+  .fn.secondary{background:#fff;color:var(--brand-green);border:1.5px solid var(--brand-green)}
+  .fn.secondary:hover{background:#f0fdf4}
+  .fn.tertiary{background:#fff;color:var(--text-phonetic);border:1.5px solid var(--text-phonetic)}
+  .fn.tertiary:hover{background:#f0f9ff}
+  .fn.tertiary.active{background:var(--text-phonetic);color:#fff}
+  .fn:disabled{opacity:.45;cursor:not-allowed}
+  .fn:disabled{opacity:.45;cursor:not-allowed}
+  .stateline{font-size:13px;font-weight:600;color:var(--text-secondary);margin-top:6px;min-height:1.5em;text-align:center;flex-shrink:0}
+
+  .philosophy-below{margin-top:20px;background:#ffffff;border:1.5px solid var(--panel-border);border-radius:6px;padding:22px 26px;text-align:center;font-size:15px;line-height:1.75;color:var(--text-secondary);font-weight:500;box-shadow:var(--shadow-sm);flex-shrink:0}
+  .philosophy-below .title{font-size:13px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:var(--brand-green);margin-bottom:12px}
+
+  .sector-footer{margin-top:18px;background:#ffffff;border:1.5px solid var(--panel-border);border-radius:6px;padding:14px 18px;box-shadow:var(--shadow-sm);flex-shrink:0;margin-bottom:24px}
+  .sector-footer .label{font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--brand-green-accent);margin-bottom:10px;text-align:center}
+  .sector-links{display:flex;flex-wrap:wrap;gap:6px 10px;justify-content:center}
+  .sector-link{font-family:var(--font-main);font-size:13px;font-weight:700;color:var(--text-secondary);text-decoration:none;padding:5px 10px;border-radius:6px;border:1px solid transparent;transition:all .12s ease}
+  .sector-link:hover{background:#f0fdf4;color:var(--brand-green);border-color:#d1fae5}
+  .sector-link.current{background:var(--brand-green);color:#fff;border-color:var(--brand-green);font-weight:900;cursor:default}
+  .sector-link.current:hover{background:var(--brand-green);color:#fff}
+
+  .home-link{font-family:var(--font-main);font-size:13px;font-weight:700;color:var(--text-secondary);text-decoration:none;padding:7px 12px;border-radius:6px;border:1px solid transparent;transition:all .15s ease;white-space:nowrap;flex-shrink:0}
+  .home-link:hover{background:#f0fdf4;color:var(--brand-green);border-color:#d1fae5}
+
+  .page-footer{text-align:center;font-size:11.5px;color:#94a3b8;padding:12px 0 6px;flex-shrink:0}
+
+  @media (max-width:720px){
+    .app{grid-template-columns:1fr;height:auto}
+    body{overflow:auto}
+    .side{order:2;height:auto;max-height:400px}
+    .main{height:auto;overflow:visible}
+    .lips-float{height:140px}
+    .topbar-inner{padding:0 14px}
+    .lang-item{font-size:12px;padding:6px 9px}
+    .subtitle{font-size:16px}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-brand">
+      <div class="logo-mark">👄</div>
+      <div class="logo-text">
+        <span class="logo-title">Language Lips</span>
+      </div>
+    </div>
+    <a class="home-link" href="index.html">🏠 Home</a>
+    <div class="lang-menu" id="langMenu">
+      <button class="lang-item active" data-lang="en">🇬🇧 English</button>
+      <button class="lang-item" data-lang="es">🇪🇸 Español</button>
+      <button class="lang-item" data-lang="fr">🇫🇷 Français</button>
+      <button class="lang-item" data-lang="de">🇩🇪 Deutsch</button>
+      <button class="lang-item" data-lang="it">🇮🇹 Italiano</button>
+      <button class="lang-item" data-lang="pt">🇵🇹 Português</button>
+      <button class="lang-item" data-lang="nl">🇳🇱 Nederlands</button>
+      <button class="lang-item" data-lang="ru">🇷🇺 Русский</button>
+      <button class="lang-item" data-lang="pl">🇵🇱 Polski</button>
+      <button class="lang-item" data-lang="sv">🇸🇪 Svenska</button>
+    </div>
+  </div>
+</div>
+
+<div class="app">
+  <div class="side">
+    <div class="side-heading">General Practical English</div>
+    <div id="levelsContainer"></div>
+  </div>
+
+  <div class="main">
+    <div class="lips-float">
+      <canvas id="waveform"></canvas>
+      <canvas id="scene"></canvas>
+      <div class="caption-float">Mouth · lights up red while speaking</div>
+      <div class="state-label">state: <b id="stateTxt">idle</b></div>
+    </div>
+
+    <div class="stage">
+      <div class="subtitle-bar"><div class="subtitle" id="subtitle">Pick an item from the left, then click <b>Try it</b>.</div></div>
+    </div>
+
+    <div class="avatar-controls">
+      <button class="fn" id="micBtn">🎙 Try it</button>
+      <button class="fn tertiary" id="freeTalkBtn">🗣 Free Talk</button>
+      <button class="fn secondary" id="replayBtn">🔁 Hear model</button>
+    </div>
+    <div class="stateline" id="stateline">Ready.</div>
+
+    <div class="philosophy-below">
+      <div class="title">General Practical English</div>
+      A broad mix of everyday and workplace English that doesn't belong to one sector alone — words, phrases, sentences, idioms, dialogues, small talk, telephone calls, and more. A good starting point if you're not sure which module fits, or if you just want general practical English to practise out loud.
+    </div>
+
+    <div class="sector-footer">
+      <div class="label">Choose a Sector</div>
+      <div class="sector-links">
+        <span class="sector-link current">General</span>
+        <a class="sector-link" href="business.html">Business</a>
+        <a class="sector-link" href="medical.html">Medical</a>
+        <a class="sector-link" href="retail.html">Retail</a>
+        <a class="sector-link" href="fnb.html">Food &amp; Beverage</a>
+        <a class="sector-link" href="hospitality.html">Hospitality</a>
+        <a class="sector-link" href="office.html">Office</a>
+        <a class="sector-link" href="it.html">IT</a>
+        <a class="sector-link" href="logistics.html">Logistics</a>
+        <a class="sector-link" href="academic.html">Academic</a>
+        <a class="sector-link" href="travel.html">Travel</a>
+      </div>
+    </div>
+    <div class="page-footer">© 2026 Language Lips. All rights reserved.</div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+function clamp(v,a,b){return v<a?a:(v>b?b:v);}
+
+var LANGS = {
+  en:{code:'en',label:'English',flag:'🇬🇧'},
+  es:{code:'es',label:'Español',flag:'🇪🇸'},
+  fr:{code:'fr',label:'Français',flag:'🇫🇷'},
+  de:{code:'de',label:'Deutsch',flag:'🇩🇪'},
+  it:{code:'it',label:'Italiano',flag:'🇮🇹'},
+  pt:{code:'pt',label:'Português',flag:'🇵🇹'},
+  nl:{code:'nl',label:'Nederlands',flag:'🇳🇱'},
+  ru:{code:'ru',label:'Русский',flag:'🇷🇺'},
+  pl:{code:'pl',label:'Polski',flag:'🇵🇱'},
+  sv:{code:'sv',label:'Svenska',flag:'🇸🇪'}
+};
+
+/* ============================================================
+   DATA — 21 levels, full translations
+   ============================================================ */
+var LEVELS=[
+  {
+    id:'words', label:'Words',
+    items:[
+      {text:'Welcome', pronunciation:'WEL-kum', translation:{es:'Bienvenido', fr:'Bienvenue', de:'Willkommen', it:'Benvenuto', pt:'Bem-vindo', nl:'Welkom', ru:'Добро пожаловать', pl:'Witamy', sv:'Välkommen'}},
+      {text:'Reservation', pronunciation:'reh-zer-VAY-shun', translation:{es:'Reservación', fr:'Réservation', de:'Reservierung', it:'Prenotazione', pt:'Reserva', nl:'Reservering', ru:'Бронирование', pl:'Rezerwacja', sv:'Bokning'}},
+      {text:'Passport', pronunciation:'PASS-port', translation:{es:'Pasaporte', fr:'Passeport', de:'Reisepass', it:'Passaporto', pt:'Passaporte', nl:'Paspoort', ru:'Паспорт', pl:'Paszport', sv:'Pass'}},
+      {text:'Breakfast', pronunciation:'BREK-fust', translation:{es:'Desayuno', fr:'Petit-déjeuner', de:'Frühstück', it:'Colazione', pt:'Pequeno-almoço', nl:'Ontbijt', ru:'Завтрак', pl:'Śniadanie', sv:'Frukost'}},
+      {text:'Inconvenience', pronunciation:'in-kun-VEE-nee-uns', translation:{es:'Inconveniencia', fr:'Désagrément', de:'Unannehmlichkeit', it:'Inconveniente', pt:'Inconveniência', nl:'Ongemak', ru:'Неудобство', pl:'Niedogodność', sv:'Olägenhet'}},
+      {text:'Appointment', pronunciation:'uh-POINT-munt', translation:{es:'Cita', fr:'Rendez-vous', de:'Termin', it:'Appuntamento', pt:'Compromisso', nl:'Afspraak', ru:'Встреча', pl:'Spotkanie', sv:'Möte'}},
+      {text:'Confirmation', pronunciation:'kon-fer-MAY-shun', translation:{es:'Confirmación', fr:'Confirmation', de:'Bestätigung', it:'Conferma', pt:'Confirmação', nl:'Bevestiging', ru:'Подтверждение', pl:'Potwierdzenie', sv:'Bekräftelse'}},
+      {text:'Deadline', pronunciation:'DED-line', translation:{es:'Fecha límite', fr:'Date limite', de:'Frist', it:'Scadenza', pt:'Prazo', nl:'Deadline', ru:'Крайний срок', pl:'Termin', sv:'Deadline'}},
+      {text:'Receipt', pronunciation:'rih-SEET', translation:{es:'Recibo', fr:'Reçu', de:'Quittung', it:'Ricevuta', pt:'Recibo', nl:'Bon', ru:'Квитанция', pl:'Paragon', sv:'Kvitto'}},
+      {text:'Invoice', pronunciation:'IN-voice', translation:{es:'Factura', fr:'Facture', de:'Rechnung', it:'Fattura', pt:'Fatura', nl:'Factuur', ru:'Счёт', pl:'Faktura', sv:'Faktura'}},
+      {text:'Schedule', pronunciation:'SKED-jool', translation:{es:'Horario', fr:'Emploi du temps', de:'Zeitplan', it:'Orario', pt:'Horário', nl:'Schema', ru:'Расписание', pl:'Harmonogram', sv:'Schema'}},
+      {text:'Colleague', pronunciation:'KOL-eeg', translation:{es:'Colega', fr:'Collègue', de:'Kollege', it:'Collega', pt:'Colega', nl:'Collega', ru:'Коллега', pl:'Kolega', sv:'Kollega'}},
+      {text:'Supervisor', pronunciation:'SOO-per-vy-zer', translation:{es:'Supervisor', fr:'Superviseur', de:'Vorgesetzter', it:'Supervisore', pt:'Supervisor', nl:'Leidinggevende', ru:'Руководитель', pl:'Przełożony', sv:'Chef'}},
+      {text:'Department', pronunciation:'dih-PART-ment', translation:{es:'Departamento', fr:'Service', de:'Abteilung', it:'Reparto', pt:'Departamento', nl:'Afdeling', ru:'Отдел', pl:'Dział', sv:'Avdelning'}},
+      {text:'Responsibility', pronunciation:'rih-spon-suh-BIL-i-tee', translation:{es:'Responsabilidad', fr:'Responsabilité', de:'Verantwortung', it:'Responsabilità', pt:'Responsabilidade', nl:'Verantwoordelijkheid', ru:'Ответственность', pl:'Odpowiedzialność', sv:'Ansvar'}},
+      {text:'Opportunity', pronunciation:'op-er-TOO-ni-tee', translation:{es:'Oportunidad', fr:'Opportunité', de:'Gelegenheit', it:'Opportunità', pt:'Oportunidade', nl:'Kans', ru:'Возможность', pl:'Możliwość', sv:'Möjlighet'}},
+      {text:'Agreement', pronunciation:'uh-GREE-munt', translation:{es:'Acuerdo', fr:'Accord', de:'Vereinbarung', it:'Accordo', pt:'Acordo', nl:'Overeenkomst', ru:'Соглашение', pl:'Umowa', sv:'Avtal'}},
+      {text:'Negotiation', pronunciation:'nih-goh-shee-AY-shun', translation:{es:'Negociación', fr:'Négociation', de:'Verhandlung', it:'Negoziazione', pt:'Negociação', nl:'Onderhandeling', ru:'Переговоры', pl:'Negocjacje', sv:'Förhandling'}},
+      {text:'Customer', pronunciation:'KUS-tum-er', translation:{es:'Cliente', fr:'Client', de:'Kunde', it:'Cliente', pt:'Cliente', nl:'Klant', ru:'Клиент', pl:'Klient', sv:'Kund'}},
+      {text:'Complaint', pronunciation:'kum-PLAYNT', translation:{es:'Queja', fr:'Plainte', de:'Beschwerde', it:'Reclamo', pt:'Reclamação', nl:'Klacht', ru:'Жалоба', pl:'Skarga', sv:'Klagomål'}},
+      {text:'Refund', pronunciation:'REE-fund', translation:{es:'Reembolso', fr:'Remboursement', de:'Rückerstattung', it:'Rimborso', pt:'Reembolso', nl:'Terugbetaling', ru:'Возврат', pl:'Zwrot', sv:'Återbetalning'}},
+      {text:'Discount', pronunciation:'DIS-kownt', translation:{es:'Descuento', fr:'Réduction', de:'Rabatt', it:'Sconto', pt:'Desconto', nl:'Korting', ru:'Скидка', pl:'Zniżka', sv:'Rabatt'}},
+      {text:'Delivery', pronunciation:'dih-LIV-er-ee', translation:{es:'Entrega', fr:'Livraison', de:'Lieferung', it:'Consegna', pt:'Entrega', nl:'Levering', ru:'Доставка', pl:'Dostawa', sv:'Leverans'}},
+      {text:'Training', pronunciation:'TRAY-ning', translation:{es:'Formación', fr:'Formation', de:'Schulung', it:'Formazione', pt:'Formação', nl:'Training', ru:'Обучение', pl:'Szkolenie', sv:'Utbildning'}},
+      {text:'Meeting', pronunciation:'MEE-ting', translation:{es:'Reunión', fr:'Réunion', de:'Besprechung', it:'Riunione', pt:'Reunião', nl:'Vergadering', ru:'Совещание', pl:'Spotkanie', sv:'Möte'}},
+      {text:'Contract', pronunciation:'KON-trakt', translation:{es:'Contrato', fr:'Contrat', de:'Vertrag', it:'Contratto', pt:'Contrato', nl:'Contract', ru:'Контракт', pl:'Kontrakt', sv:'Kontrakt'}},
+      {text:'Payment', pronunciation:'PAY-munt', translation:{es:'Pago', fr:'Paiement', de:'Zahlung', it:'Pagamento', pt:'Pagamento', nl:'Betaling', ru:'Платёж', pl:'Płatność', sv:'Betalning'}},
+      {text:'Shipment', pronunciation:'SHIP-munt', translation:{es:'Envío', fr:'Expédition', de:'Sendung', it:'Spedizione', pt:'Envio', nl:'Zending', ru:'Отправка', pl:'Przesyłka', sv:'Försändelse'}},
+      {text:'Safety', pronunciation:'SAYF-tee', translation:{es:'Seguridad', fr:'Sécurité', de:'Sicherheit', it:'Sicurezza', pt:'Segurança', nl:'Veiligheid', ru:'Безопасность', pl:'Bezpieczeństwo', sv:'Säkerhet'}},
+      {text:'Emergency', pronunciation:'ih-MUR-jen-see', translation:{es:'Emergencia', fr:'Urgence', de:'Notfall', it:'Emergenza', pt:'Emergência', nl:'Noodgeval', ru:'Чрезвычайная ситуация', pl:'Nagły wypadek', sv:'Nödsituation'}},
+      {text:'Manager', pronunciation:'MAN-ij-er', translation:{es:'Gerente', fr:'Responsable', de:'Manager', it:'Manager', pt:'Gestor', nl:'Manager', ru:'Менеджер', pl:'Menedżer', sv:'Chef'}},
+      {text:'Director', pronunciation:'dih-REK-ter', translation:{es:'Director', fr:'Directeur', de:'Direktor', it:'Direttore', pt:'Diretor', nl:'Directeur', ru:'Директор', pl:'Dyrektor', sv:'Direktör'}},
+      {text:'Project', pronunciation:'PROJ-ekt', translation:{es:'Proyecto', fr:'Projet', de:'Projekt', it:'Progetto', pt:'Projeto', nl:'Project', ru:'Проект', pl:'Projekt', sv:'Projekt'}},
+      {text:'Budget', pronunciation:'BUJ-it', translation:{es:'Presupuesto', fr:'Budget', de:'Budget', it:'Budget', pt:'Orçamento', nl:'Budget', ru:'Бюджет', pl:'Budżet', sv:'Budget'}},
+      {text:'Report', pronunciation:'rih-PORT', translation:{es:'Informe', fr:'Rapport', de:'Bericht', it:'Rapporto', pt:'Relatório', nl:'Rapport', ru:'Отчёт', pl:'Raport', sv:'Rapport'}},
+      {text:'Feedback', pronunciation:'FEED-bak', translation:{es:'Comentarios', fr:'Retour', de:'Feedback', it:'Feedback', pt:'Feedback', nl:'Feedback', ru:'Отзыв', pl:'Informacja zwrotna', sv:'Återkoppling'}},
+      {text:'Presentation', pronunciation:'preh-zen-TAY-shun', translation:{es:'Presentación', fr:'Présentation', de:'Präsentation', it:'Presentazione', pt:'Apresentação', nl:'Presentatie', ru:'Презентация', pl:'Prezentacja', sv:'Presentation'}},
+      {text:'Strategy', pronunciation:'STRAT-uh-jee', translation:{es:'Estrategia', fr:'Stratégie', de:'Strategie', it:'Strategia', pt:'Estratégia', nl:'Strategie', ru:'Стратегия', pl:'Strategia', sv:'Strategi'}},
+      {text:'Objective', pronunciation:'ub-JEK-tiv', translation:{es:'Objetivo', fr:'Objectif', de:'Ziel', it:'Obiettivo', pt:'Objetivo', nl:'Doel', ru:'Цель', pl:'Cel', sv:'Mål'}},
+      {text:'Priority', pronunciation:'pry-OR-i-tee', translation:{es:'Prioridad', fr:'Priorité', de:'Priorität', it:'Priorità', pt:'Prioridade', nl:'Prioriteit', ru:'Приоритет', pl:'Priorytet', sv:'Prioritet'}},
+      {text:'Procedure', pronunciation:'pruh-SEE-jer', translation:{es:'Procedimiento', fr:'Procédure', de:'Verfahren', it:'Procedura', pt:'Procedimento', nl:'Procedure', ru:'Процедура', pl:'Procedura', sv:'Procedur'}},
+      {text:'Quality', pronunciation:'KWOL-i-tee', translation:{es:'Calidad', fr:'Qualité', de:'Qualität', it:'Qualità', pt:'Qualidade', nl:'Kwaliteit', ru:'Качество', pl:'Jakość', sv:'Kvalitet'}},
+      {text:'Efficiency', pronunciation:'ih-FISH-un-see', translation:{es:'Eficiencia', fr:'Efficacité', de:'Effizienz', it:'Efficienza', pt:'Eficiência', nl:'Efficiëntie', ru:'Эффективность', pl:'Wydajność', sv:'Effektivitet'}},
+      {text:'Communication', pronunciation:'kuh-myoo-ni-KAY-shun', translation:{es:'Comunicación', fr:'Communication', de:'Kommunikation', it:'Comunicazione', pt:'Comunicação', nl:'Communicatie', ru:'Общение', pl:'Komunikacja', sv:'Kommunikation'}},
+      {text:'Teamwork', pronunciation:'TEEM-wurk', translation:{es:'Trabajo en equipo', fr:'Travail d\'équipe', de:'Teamarbeit', it:'Lavoro di squadra', pt:'Trabalho em equipa', nl:'Teamwerk', ru:'Командная работа', pl:'Praca zespołowa', sv:'Lagarbete'}},
+      {text:'Leadership', pronunciation:'LEE-der-ship', translation:{es:'Liderazgo', fr:'Leadership', de:'Führung', it:'Leadership', pt:'Liderança', nl:'Leiderschap', ru:'Лидерство', pl:'Przywództwo', sv:'Ledarskap'}},
+      {text:'Innovation', pronunciation:'in-uh-VAY-shun', translation:{es:'Innovación', fr:'Innovation', de:'Innovation', it:'Innovazione', pt:'Inovação', nl:'Innovatie', ru:'Инновация', pl:'Innowacja', sv:'Innovation'}}
+    ]
+  },
+{
+    id:'phrases', label:'Phrases',
+    items:[
+      {text:'Could you please', pronunciation:'kood yoo pleez', translation:{es:'¿Podría usted por favor?', fr:'Pourriez-vous s\'il vous plaît', de:'Könnten Sie bitte', it:'Potrebbe per favore', pt:'Poderia por favor', nl:'Zou u alstublieft', ru:'Не могли бы вы пожалуйста', pl:'Czy mógłbyś proszę', sv:'Skulle du kunna snälla'}},
+      {text:'Thank you very much', pronunciation:'thank yoo VEH-ree much', translation:{es:'Muchas gracias', fr:'Merci beaucoup', de:'Vielen Dank', it:'Grazie mille', pt:'Muito obrigado', nl:'Hartelijk dank', ru:'Большое спасибо', pl:'Dziękuję bardzo', sv:'Tack så mycket'}},
+      {text:'I appreciate it', pronunciation:'eye uh-PREE-shee-ate it', translation:{es:'Lo aprecio', fr:'Je l\'apprécie', de:'Ich schätze es', it:'Lo apprezzo', pt:'Agradeço', nl:'Ik waardeer het', ru:'Я ценю это', pl:'Doceniam to', sv:'Jag uppskattar det'}},
+      {text:'Let me check', pronunciation:'let mee chek', translation:{es:'Déjeme verificar', fr:'Laissez-moi vérifier', de:'Lassen Sie mich prüfen', it:'Fammi controllare', pt:'Deixe-me verificar', nl:'Laat me even kijken', ru:'Позвольте проверить', pl:'Pozwól mi sprawdzić', sv:'Låt mig kolla'}},
+      {text:'Have a great day', pronunciation:'hav uh grayt day', translation:{es:'Que tenga un buen día', fr:'Bonne journée', de:'Einen schönen Tag', it:'Buona giornata', pt:'Tenha um bom dia', nl:'Fijne dag', ru:'Хорошего дня', pl:'Miłego dnia', sv:'Ha en bra dag'}},
+      {text:'No problem at all', pronunciation:'no PROB-lum at awl', translation:{es:'No hay problema', fr:'Pas de problème', de:'Kein Problem', it:'Nessun problema', pt:'Sem problema', nl:'Geen probleem', ru:'Нет проблем', pl:'Nie ma problemu', sv:'Inga problem'}},
+      {text:'After you', pronunciation:'AF-ter yoo', translation:{es:'Después de usted', fr:'Après vous', de:'Nach Ihnen', it:'Dopo di lei', pt:'Depois de você', nl:'Na u', ru:'После вас', pl:'Po panu', sv:'Efter dig'}},
+      {text:'Excuse me', pronunciation:'ik-SKYOOZ mee', translation:{es:'Disculpe', fr:'Excusez-moi', de:'Entschuldigung', it:'Scusi', pt:'Com licença', nl:'Pardon', ru:'Извините', pl:'Przepraszam', sv:'Ursäkta'}},
+      {text:'Nice to meet you', pronunciation:'nys too meet yoo', translation:{es:'Mucho gusto', fr:'Enchanté', de:'Freut mich', it:'Piacere', pt:'Prazer em conhecê-lo', nl:'Aangenaam', ru:'Приятно познакомиться', pl:'Miło mi', sv:'Trevligt att träffas'}},
+      {text:'I\'m just checking in', pronunciation:'eyem just CHEK-ing in', translation:{es:'Solo vengo a saludar', fr:'Je viens juste dire bonjour', de:'Ich wollte nur Hallo sagen', it:'Sono solo passato a salutare', pt:'Só estou a dar um olá', nl:'Ik kom even hallo zeggen', ru:'Я просто зашёл поздороваться', pl:'Wpadłem się przywitać', sv:'Jag tittar bara in'}},
+      {text:'Could you repeat that?', pronunciation:'kood yoo rih-PEET that', translation:{es:'¿Podría repetir eso?', fr:'Pouvez-vous répéter ?', de:'Können Sie das wiederholen?', it:'Può ripetere?', pt:'Pode repetir?', nl:'Kunt u dat herhalen?', ru:'Не могли бы вы повторить?', pl:'Czy możesz powtórzyć?', sv:'Kan du upprepa?'}},
+      {text:'I\'ll get back to you', pronunciation:'eyel get bak too yoo', translation:{es:'Le responderé', fr:'Je vous tiendrai au courant', de:'Ich melde mich bei Ihnen', it:'Ti farò sapere', pt:'Entro em contacto', nl:'Ik kom erop terug', ru:'Я вернусь к вам', pl:'Odezwę się', sv:'Jag återkommer'}},
+      {text:'That works for me', pronunciation:'that works for mee', translation:{es:'Eso me funciona', fr:'Ça me va', de:'Das passt mir', it:'Per me va bene', pt:'Funciona para mim', nl:'Dat werkt voor mij', ru:'Меня это устраивает', pl:'To mi pasuje', sv:'Det funkar för mig'}},
+      {text:'Let\'s stay in touch', pronunciation:'lets stay in tuch', translation:{es:'Mantengámonos en contacto', fr:'Restons en contact', de:'Bleiben wir in Kontakt', it:'Restiamo in contatto', pt:'Vamos manter contacto', nl:'Laten we contact houden', ru:'Будем на связи', pl:'Zostańmy w kontakcie', sv:'Vi hörs'}},
+      {text:'I\'ll look into it', pronunciation:'eyel look IN-too it', translation:{es:'Lo investigaré', fr:'Je vais me renseigner', de:'Ich werde dem nachgehen', it:'Ci darò un\'occhiata', pt:'Vou averiguar', nl:'Ik zoek het uit', ru:'Я разберусь', pl:'Sprawdzę to', sv:'Jag ska titta på det'}},
+      {text:'Just to be clear', pronunciation:'just too bee kleer', translation:{es:'Solo para aclarar', fr:'Juste pour être clair', de:'Nur um klar zu sein', it:'Giusto per essere chiari', pt:'Só para ficar claro', nl:'Even voor de duidelijkheid', ru:'Просто чтобы уточнить', pl:'Tak dla jasności', sv:'Bara så att vi är överens'}},
+      {text:'At your earliest convenience', pronunciation:'at yor UR-lee-est kun-VEEN-yuns', translation:{es:'A la brevedad posible', fr:'Dans les plus brefs délais', de:'So bald wie möglich', it:'Il prima possibile', pt:'O mais breve possível', nl:'Zo spoedig mogelijk', ru:'При первой возможности', pl:'W najbliższym możliwym terminie', sv:'Snarast möjligt'}},
+      {text:'Please bear with me', pronunciation:'pleez bair with mee', translation:{es:'Por favor tenga paciencia', fr:'Veuillez patienter', de:'Bitte haben Sie Geduld', it:'La prego di avere pazienza', pt:'Por favor tenha paciência', nl:'Even geduld alstublieft', ru:'Пожалуйста, потерпите', pl:'Proszę o cierpliwość', sv:'Ha tålamod'}},
+      {text:'That\'s not a problem', pronunciation:'thats not uh PROB-lum', translation:{es:'Eso no es problema', fr:'Ce n\'est pas un problème', de:'Das ist kein Problem', it:'Non è un problema', pt:'Não é problema', nl:'Dat is geen probleem', ru:'Это не проблема', pl:'To nie problem', sv:'Det är inget problem'}},
+      {text:'I\'m on it', pronunciation:'eyem on it', translation:{es:'Me encargo', fr:'Je m\'en occupe', de:'Ich kümmere mich darum', it:'Me ne occupo io', pt:'Estou a tratar disso', nl:'Ik regel het', ru:'Я этим занимаюсь', pl:'Zajmuję się tym', sv:'Jag tar hand om det'}},
+      {text:'Could I have your name?', pronunciation:'kood eye hav yor naym', translation:{es:'¿Podría darme su nombre?', fr:'Pourrais-je avoir votre nom ?', de:'Könnte ich Ihren Namen haben?', it:'Potrei avere il suo nome?', pt:'Pode dizer-me o seu nome?', nl:'Mag ik uw naam?', ru:'Могу я узнать ваше имя?', pl:'Czy mogę poznać twoje imię?', sv:'Får jag ditt namn?'}},
+      {text:'One moment please', pronunciation:'wun MOH-ment pleez', translation:{es:'Un momento por favor', fr:'Un instant s\'il vous plaît', de:'Einen Moment bitte', it:'Un momento per favore', pt:'Um momento por favor', nl:'Een moment alstublieft', ru:'Минуточку пожалуйста', pl:'Chwilkę proszę', sv:'Ett ögonblick tack'}},
+      {text:'Is everything alright?', pronunciation:'iz EV-ree-thing awl-ryt', translation:{es:'¿Todo está bien?', fr:'Tout va bien ?', de:'Ist alles in Ordnung?', it:'Va tutto bene?', pt:'Está tudo bem?', nl:'Is alles in orde?', ru:'Всё в порядке?', pl:'Czy wszystko w porządku?', sv:'Är allt okej?'}},
+      {text:'How can I help you?', pronunciation:'how kan eye help yoo', translation:{es:'¿Cómo puedo ayudarle?', fr:'Comment puis-je vous aider ?', de:'Wie kann ich Ihnen helfen?', it:'Come posso aiutarla?', pt:'Como posso ajudar?', nl:'Hoe kan ik u helpen?', ru:'Чем я могу вам помочь?', pl:'Jak mogę ci pomóc?', sv:'Hur kan jag hjälpa dig?'}},
+      {text:'I\'m not sure about that', pronunciation:'eyem not shoor uh-BOWT that', translation:{es:'No estoy seguro de eso', fr:'Je ne suis pas sûr de cela', de:'Da bin ich mir nicht sicher', it:'Non ne sono sicuro', pt:'Não tenho a certeza disso', nl:'Daar ben ik niet zeker van', ru:'Я не уверен в этом', pl:'Nie jestem tego pewien', sv:'Jag är inte säker på det'}},
+      {text:'Let me explain', pronunciation:'let mee ik-SPLAYN', translation:{es:'Déjeme explicar', fr:'Laissez-moi expliquer', de:'Lassen Sie mich erklären', it:'Fammi spiegare', pt:'Deixe-me explicar', nl:'Laat me het uitleggen', ru:'Позвольте объяснить', pl:'Pozwól mi wyjaśnić', sv:'Låt mig förklara'}},
+      {text:'We appreciate your business', pronunciation:'wee uh-PREE-shee-ate yor BIZ-ness', translation:{es:'Agradecemos su preferencia', fr:'Nous apprécions votre clientèle', de:'Wir schätzen Ihr Geschäft', it:'Apprezziamo il suo business', pt:'Agradecemos o seu negócio', nl:'We waarderen uw klandizie', ru:'Мы ценим ваше сотрудничество', pl:'Doceniamy twoją współpracę', sv:'Vi uppskattar din affär'}},
+      {text:'Please hold on a moment', pronunciation:'pleez hohld on uh MOH-ment', translation:{es:'Por favor espere un momento', fr:'Veuillez patienter un instant', de:'Bitte warten Sie einen Moment', it:'La prego di attendere un momento', pt:'Por favor aguarde um momento', nl:'Een moment geduld alstublieft', ru:'Пожалуйста, подождите минуту', pl:'Proszę chwilę poczekać', sv:'Vänta ett ögonblick tack'}},
+      {text:'I\'ll take care of it', pronunciation:'eyel tayk kair uv it', translation:{es:'Me encargaré de ello', fr:'Je m\'en occupe', de:'Ich kümmere mich darum', it:'Me ne occupo io', pt:'Eu trato disso', nl:'Ik zorg ervoor', ru:'Я об этом позабочусь', pl:'Zajmę się tym', sv:'Jag tar hand om det'}},
+      {text:'Could you do me a favour?', pronunciation:'kood yoo doo mee uh FAY-ver', translation:{es:'¿Podría hacerme un favor?', fr:'Pourriez-vous me rendre service ?', de:'Könnten Sie mir einen Gefallen tun?', it:'Potrebbe farmi un favore?', pt:'Pode fazer-me um favor?', nl:'Kunt u mij een plezier doen?', ru:'Не могли бы вы оказать мне услугу?', pl:'Czy możesz wyświadczyć mi przysługę?', sv:'Kan du göra mig en tjänst?'}},
+      {text:'I\'ll let you know', pronunciation:'eyel let yoo noh', translation:{es:'Le avisaré', fr:'Je vous ferai savoir', de:'Ich sage Ihnen Bescheid', it:'Le farò sapere', pt:'Eu aviso-o', nl:'Ik laat het u weten', ru:'Я вам сообщу', pl:'Dam ci znać', sv:'Jag meddelar dig'}}
+    ]
+  },
+{
+    id:'sentences', label:'Sentences',
+    items:[
+      {text:'Could I please see your passport or ID?', pronunciation:'kood eye pleez see yor PASS-port or eye-DEE', translation:{es:'¿Podría ver su pasaporte o identificación?', fr:'Puis-je voir votre passeport ou pièce d\'identité ?', de:'Darf ich bitte Ihren Pass oder Ausweis sehen?', it:'Posso vedere il suo passaporto o documento?', pt:'Posso ver o seu passaporte ou documento?', nl:'Mag ik uw paspoort of ID zien?', ru:'Можно посмотреть ваш паспорт или удостоверение?', pl:'Czy mogę zobaczyć paszport lub dowód?', sv:'Kan jag få se ditt pass eller ID?'}},
+      {text:'Breakfast is served from seven to ten.', pronunciation:'BREK-fust iz survd frum SEV-un too ten', translation:{es:'El desayuno se sirve de siete a diez.', fr:'Le petit-déjeuner est servi de sept à dix heures.', de:'Das Frühstück wird von sieben bis zehn Uhr serviert.', it:'La colazione viene servita dalle sette alle dieci.', pt:'O pequeno-almoço é servido das sete às dez.', nl:'Het ontbijt wordt geserveerd van zeven tot tien uur.', ru:'Завтрак подаётся с семи до десяти.', pl:'Śniadanie podawane jest od siódmej do dziesiątej.', sv:'Frukosten serveras mellan sju och tio.'}},
+      {text:'I will forward your request to the manager.', pronunciation:'eye wil FOR-werd yor rih-KWEST too thuh MAN-ij-er', translation:{es:'Enviaré su solicitud al gerente.', fr:'Je transmettrai votre demande au responsable.', de:'Ich leite Ihre Anfrage an den Manager weiter.', it:'Inoltrerò la sua richiesta al manager.', pt:'Vou encaminhar o seu pedido ao gerente.', nl:'Ik stuur uw verzoek door naar de manager.', ru:'Я передам ваш запрос менеджеру.', pl:'Przekażę twoją prośbę menedżerowi.', sv:'Jag vidarebefordrar din förfrågan till chefen.'}},
+      {text:'The meeting has been rescheduled to Tuesday.', pronunciation:'thuh MEE-ting haz bin ree-SKED-jooled too TOOZ-day', translation:{es:'La reunión se ha reprogramado para el martes.', fr:'La réunion a été reportée à mardi.', de:'Das Meeting wurde auf Dienstag verschoben.', it:'La riunione è stata spostata a martedì.', pt:'A reunião foi reagendada para terça-feira.', nl:'De vergadering is verplaatst naar dinsdag.', ru:'Встреча перенесена на вторник.', pl:'Spotkanie zostało przełożone na wtorek.', sv:'Mötet har flyttats till tisdag.'}},
+      {text:'Please sign and return the document by Friday.', pronunciation:'pleez sine and rih-TURN thuh DOK-yoo-ment by FRY-day', translation:{es:'Por favor firme y devuelva el documento antes del viernes.', fr:'Veuillez signer et renvoyer le document avant vendredi.', de:'Bitte unterschreiben und senden Sie das Dokument bis Freitag zurück.', it:'Firmi e restituisca il documento entro venerdì.', pt:'Por favor assine e devolva o documento até sexta-feira.', nl:'Onderteken en retourneer het document vóór vrijdag.', ru:'Пожалуйста, подпишите и верните документ до пятницы.', pl:'Proszę podpisać i zwrócić dokument do piątku.', sv:'Vänligen underteckna och returnera dokumentet före fredag.'}},
+      {text:'Your order will arrive within three business days.', pronunciation:'yor OR-der wil uh-RIVE with-IN three BIZ-ness days', translation:{es:'Su pedido llegará dentro de tres días hábiles.', fr:'Votre commande arrivera sous trois jours ouvrables.', de:'Ihre Bestellung kommt innerhalb von drei Werktagen an.', it:'Il suo ordine arriverà entro tre giorni lavorativi.', pt:'O seu pedido chegará em três dias úteis.', nl:'Uw bestelling arriveert binnen drie werkdagen.', ru:'Ваш заказ придёт в течение трёх рабочих дней.', pl:'Twoje zamówienie dotrze w ciągu trzech dni roboczych.', sv:'Din beställning anländer inom tre arbetsdagar.'}},
+      {text:'I would like to schedule a follow-up meeting.', pronunciation:'eye wood lyk too SKED-jool uh FOL-oh-up MEE-ting', translation:{es:'Me gustaría agendar una reunión de seguimiento.', fr:'J\'aimerais planifier une réunion de suivi.', de:'Ich möchte ein Folge-Meeting planen.', it:'Vorrei programmare una riunione di follow-up.', pt:'Gostaria de agendar uma reunião de acompanhamento.', nl:'Ik wil graag een vervolggesprek plannen.', ru:'Я хотел бы назначить повторную встречу.', pl:'Chciałbym zaplanować spotkanie follow-up.', sv:'Jag skulle vilja boka ett uppföljningsmöte.'}},
+      {text:'Please let me know if you need anything else.', pronunciation:'pleez let mee noh if yoo need EN-ee-thing els', translation:{es:'Por favor avíseme si necesita algo más.', fr:'Merci de me faire savoir si vous avez besoin d\'autre chose.', de:'Bitte lassen Sie mich wissen, wenn Sie noch etwas brauchen.', it:'Mi faccia sapere se ha bisogno di altro.', pt:'Por favor avise-me se precisar de mais alguma coisa.', nl:'Laat het me weten als u nog iets nodig heeft.', ru:'Пожалуйста, сообщите, если вам нужно что-то ещё.', pl:'Daj znać, jeśli potrzebujesz czegoś jeszcze.', sv:'Säg till om du behöver något mer.'}},
+      {text:'We appreciate your patience during this process.', pronunciation:'wee uh-PREE-shee-ate yor PAY-shuns DOO-ring this PROS-es', translation:{es:'Agradecemos su paciencia durante este proceso.', fr:'Nous vous remercions de votre patience pendant ce processus.', de:'Wir danken Ihnen für Ihre Geduld während dieses Prozesses.', it:'Apprezziamo la sua pazienza durante questo processo.', pt:'Agradecemos a sua paciência durante este processo.', nl:'We waarderen uw geduld tijdens dit proces.', ru:'Мы благодарим вас за терпение в этом процессе.', pl:'Dziękujemy za cierpliwość w tym procesie.', sv:'Vi uppskattar ditt tålamod under denna process.'}},
+      {text:'Could you send me the updated version today?', pronunciation:'kood yoo send mee thee UP-day-ted VUR-zhun tuh-DAY', translation:{es:'¿Podría enviarme la versión actualizada hoy?', fr:'Pouvez-vous m\'envoyer la version mise à jour aujourd\'hui ?', de:'Können Sie mir heute die aktualisierte Version schicken?', it:'Può inviarmi la versione aggiornata oggi?', pt:'Pode enviar-me a versão atualizada hoje?', nl:'Kunt u mij vandaag de bijgewerkte versie sturen?', ru:'Не могли бы вы прислать обновлённую версию сегодня?', pl:'Czy możesz przesłać mi dziś zaktualizowaną wersję?', sv:'Kan du skicka den uppdaterade versionen idag?'}},
+      {text:'I would like to file a formal complaint.', pronunciation:'eye wood lyk too fyl uh FOR-mul kum-PLAYNT', translation:{es:'Me gustaría presentar una queja formal.', fr:'Je souhaiterais déposer une réclamation officielle.', de:'Ich möchte eine formelle Beschwerde einreichen.', it:'Vorrei presentare un reclamo formale.', pt:'Gostaria de apresentar uma reclamação formal.', nl:'Ik wil een formele klacht indienen.', ru:'Я хотел бы подать официальную жалобу.', pl:'Chciałbym złożyć formalną skargę.', sv:'Jag skulle vilja lämna in ett formellt klagomål.'}},
+      {text:'Would you mind explaining that one more time?', pronunciation:'wood yoo mynd ik-SPLAY-ning that wun mor tym', translation:{es:'¿Le importaría explicarlo una vez más?', fr:'Cela vous dérangerait-il de réexpliquer ?', de:'Würde es Ihnen etwas ausmachen, das noch einmal zu erklären?', it:'Le dispiacerebbe spiegarlo ancora una volta?', pt:'Importa-se de explicar mais uma vez?', nl:'Zou u dat nog één keer kunnen uitleggen?', ru:'Не могли бы вы объяснить это ещё раз?', pl:'Czy mógłbyś wyjaśnić to jeszcze raz?', sv:'Skulle du kunna förklara det en gång till?'}},
+      {text:'Please make sure the invoice matches the order.', pronunciation:'pleez mayk shoor thee IN-voice MACH-iz thee OR-der', translation:{es:'Asegúrese de que la factura coincida con el pedido.', fr:'Veuillez vous assurer que la facture correspond à la commande.', de:'Bitte stellen Sie sicher, dass die Rechnung mit der Bestellung übereinstimmt.', it:'Assicurarsi che la fattura corrisponda all\'ordine.', pt:'Certifique-se de que a fatura corresponde ao pedido.', nl:'Zorg ervoor dat de factuur overeenkomt met de bestelling.', ru:'Убедитесь, что счёт соответствует заказу.', pl:'Upewnij się, że faktura zgadza się z zamówieniem.', sv:'Se till att fakturan matchar beställningen.'}},
+      {text:'I will escalate this to my supervisor.', pronunciation:'eye wil ES-kuh-layt this too my SOO-per-vy-zer', translation:{es:'Escalaré esto a mi supervisor.', fr:'Je vais faire remonter cela à mon superviseur.', de:'Ich werde das an meinen Vorgesetzten weiterleiten.', it:'Lo segnalerò al mio supervisore.', pt:'Vou escalar isto ao meu supervisor.', nl:'Ik escal eer dit naar mijn leidinggevende.', ru:'Я передам это своему руководителю.', pl:'Zgłoszę to mojemu przełożonemu.', sv:'Jag eskalerar detta till min chef.'}},
+      {text:'Let\'s schedule a call for early next week.', pronunciation:'lets SKED-jool uh kawl for UR-lee nekst week', translation:{es:'Programemos una llamada para principios de la próxima semana.', fr:'Planifions un appel pour le début de la semaine prochaine.', de:'Lassen Sie uns Anfang nächster Woche telefonieren.', it:'Programmiamo una chiamata per l\'inizio della prossima settimana.', pt:'Vamos agendar uma chamada para o início da próxima semana.', nl:'Laten we begin volgende week bellen.', ru:'Давайте созвонимся в начале следующей недели.', pl:'Zaplanujmy rozmowę na początek przyszłego tygodnia.', sv:'Låt oss boka ett samtal i början av nästa vecka.'}},
+      {text:'Thank you for bringing this to my attention.', pronunciation:'thank yoo for BRING-ing this too my uh-TEN-shun', translation:{es:'Gracias por informarme de esto.', fr:'Merci de m\'avoir signalé cela.', de:'Danke, dass Sie mich darauf aufmerksam gemacht haben.', it:'Grazie per avermelo segnalato.', pt:'Obrigado por me informar disto.', nl:'Bedankt dat u mij hierop attent maakt.', ru:'Спасибо, что обратили на это моё внимание.', pl:'Dziękuję za zwrócenie mi na to uwagi.', sv:'Tack för att du uppmärksammade mig på detta.'}},
+      {text:'Could we move the appointment to next week?', pronunciation:'kood wee moov thee uh-POINT-munt too nekst week', translation:{es:'¿Podríamos mover la cita a la próxima semana?', fr:'Pourrions-nous déplacer le rendez-vous à la semaine prochaine ?', de:'Könnten wir den Termin auf nächste Woche verschieben?', it:'Potremmo spostare l\'appuntamento alla prossima settimana?', pt:'Poderíamos adiar a marcação para a próxima semana?', nl:'Kunnen we de afspraak naar volgende week verplaatsen?', ru:'Могли бы мы перенести встречу на следующую неделю?', pl:'Czy moglibyśmy przenieść spotkanie na przyszły tydzień?', sv:'Kan vi flytta mötet till nästa vecka?'}},
+      {text:'I\'m calling to confirm your reservation for tomorrow.', pronunciation:'eyem KAW-ling too kun-FURM yor reh-zer-VAY-shun for tuh-MOR-oh', translation:{es:'Llamo para confirmar su reservación para mañana.', fr:'J\'appelle pour confirmer votre réservation pour demain.', de:'Ich rufe an, um Ihre Reservierung für morgen zu bestätigen.', it:'Chiamo per confermare la sua prenotazione per domani.', pt:'Estou a ligar para confirmar a sua reserva para amanhã.', nl:'Ik bel om uw reservering voor morgen te bevestigen.', ru:'Звоню, чтобы подтвердить вашу бронь на завтра.', pl:'Dzwonię, aby potwierdzić rezerwację na jutro.', sv:'Jag ringer för att bekräfta din bokning till imorgon.'}},
+      {text:'Could you tell me where the gate is?', pronunciation:'kood yoo tel mee wair thuh gayt iz', translation:{es:'¿Podría decirme dónde está la puerta?', fr:'Pourriez-vous me dire où se trouve la porte ?', de:'Könnten Sie mir sagen, wo das Gate ist?', it:'Potrebbe dirmi dov\'è il gate?', pt:'Pode dizer-me onde fica a porta?', nl:'Kunt u mij vertellen waar de gate is?', ru:'Не подскажете, где выход?', pl:'Czy możesz mi powiedzieć, gdzie jest bramka?', sv:'Kan du säga var gaten är?'}},
+      {text:'My flight has been delayed by two hours.', pronunciation:'my flyt haz bin dih-LAYD by too AW-erz', translation:{es:'Mi vuelo se ha retrasado dos horas.', fr:'Mon vol a été retardé de deux heures.', de:'Mein Flug hat sich um zwei Stunden verspätet.', it:'Il mio volo è stato ritardato di due ore.', pt:'O meu voo atrasou duas horas.', nl:'Mijn vlucht is twee uur vertraagd.', ru:'Мой рейс задержали на два часа.', pl:'Mój lot został opóźniony o dwie godziny.', sv:'Mitt flyg har försenats med två timmar.'}},
+      {text:'Do you have any seats available on the next flight?', pronunciation:'doo yoo hav EN-ee seets uh-VAY-luh-bul on thuh nekst flyt', translation:{es:'¿Tiene asientos disponibles en el próximo vuelo?', fr:'Avez-vous des places disponibles sur le prochain vol ?', de:'Haben Sie noch Plätze auf dem nächsten Flug?', it:'Ha posti disponibili sul prossimo volo?', pt:'Tem lugares disponíveis no próximo voo?', nl:'Heeft u nog plaatsen op de volgende vlucht?', ru:'Есть ли места на следующий рейс?', pl:'Czy są wolne miejsca w następnym locie?', sv:'Finns det några platser på nästa flyg?'}}
+    ]
+  },
+{
+    id:'paragraphs', label:'Paragraphs',
+    items:[
+      {text:'Welcome to our hotel. We hope you enjoy your stay. If you need anything at all, please dial zero from your room phone.',
+       pronunciation:'WEL-kum too our ho-TEL. wee hope yoo en-JOY yor stay. if yoo need EN-ee-thing at awl, pleez DY-ul ZEER-oh frum yor room fone',
+       translation:{es:'Bienvenido a nuestro hotel. Esperamos que disfrute su estancia. Si necesita algo, marque cero desde el teléfono de su habitación.', fr:'Bienvenue dans notre hôtel. Nous espérons que vous apprécierez votre séjour. Si vous avez besoin de quoi que ce soit, composez le zéro depuis le téléphone de votre chambre.', de:'Willkommen in unserem Hotel. Wir hoffen, dass Ihnen Ihr Aufenthalt gefällt. Wenn Sie etwas brauchen, wählen Sie bitte die Null von Ihrem Zimmertelefon.', it:'Benvenuto nel nostro hotel. Speriamo che il suo soggiorno sia piacevole. Se ha bisogno di qualcosa, componga lo zero dal telefono della sua camera.', pt:'Bem-vindo ao nosso hotel. Esperamos que desfrute da sua estadia. Se precisar de algo, disque zero do telefone do quarto.', nl:'Welkom in ons hotel. We hopen dat u geniet van uw verblijf. Als u iets nodig heeft, druk dan op nul via de telefoon in uw kamer.', ru:'Добро пожаловать в наш отель. Надеемся, вам понравится ваше пребывание. Если вам что-то понадобится, наберите ноль с телефонного аппарата в номере.', pl:'Witamy w naszym hotelu. Mamy nadzieję, że pobyt będzie przyjemny. Jeśli czegoś potrzebujesz, wybierz zero z telefonu w pokoju.', sv:'Välkommen till vårt hotell. Vi hoppas att du trivs under din vistelse. Om du behöver något, ring noll från telefon på rummet.'}},
+      {text:'Thank you for calling customer support. All of our agents are currently assisting other callers. Please hold, and we will be with you shortly.',
+       pronunciation:'thank yoo for KAW-ling KUS-tum-er suh-PORT. awl uv our AY-jents ar KUR-unt-lee uh-SIS-ting UH-ther KAW-lers. pleez hold, and wee wil bee with yoo SHORT-lee',
+       translation:{es:'Gracias por llamar a atención al cliente. Todos nuestros agentes están atendiendo a otros clientes. Por favor espere, y estaremos con usted en breve.', fr:'Merci d\'avoir appelé le support client. Tous nos agents assistent actuellement d\'autres appelants. Veuillez patienter, nous serons avec vous sous peu.', de:'Danke, dass Sie den Kundenservice angerufen haben. Alle unsere Mitarbeiter betreuen gerade andere Anrufer. Bitte warten Sie, wir sind gleich für Sie da.', it:'Grazie per aver chiamato il supporto clienti. Tutti i nostri operatori stanno assistendo altri clienti. La preghiamo di attendere, saremo con lei a breve.', pt:'Obrigado por contactar o apoio ao cliente. Todos os nossos agentes estão a atender outros clientes. Aguarde, por favor, e estaremos consigo em breve.', nl:'Bedankt dat u de klantenservice heeft gebeld. Al onze medewerkers helpen op dit moment andere bellers. Een moment geduld alstublieft, we zijn zo bij u.', ru:'Спасибо за обращение в службу поддержки. Все наши операторы сейчас помогают другим клиентам. Пожалуйста, подождите, мы скоро вам ответим.', pl:'Dziękujemy za kontakt z obsługą klienta. Wszyscy nasi konsultanci obsługują obecnie innych klientów. Proszę czekać, wkrótce się z tobą połączymy.', sv:'Tack för att du kontaktar kundsupport. Alla våra agenter hjälper för närvarande andra kunder. Vänta kvar, vi är snart med dig.'}},
+      {text:'Before we begin the meeting, let us quickly review the action items from last week. Then we will move on to the quarterly budget.',
+       pronunciation:'bih-FOR wee bih-GIN thuh MEE-ting, let us KWIK-lee ree-VYOO thee AK-shun EYE-tems frum last week. then wee wil moov on too thuh KWOR-ter-lee BUJ-it',
+       translation:{es:'Antes de comenzar la reunión, repasemos rápidamente los puntos de acción de la semana pasada. Luego pasaremos al presupuesto trimestral.', fr:'Avant de commencer la réunion, passons rapidement en revue les points d\'action de la semaine dernière. Ensuite, nous aborderons le budget trimestriel.', de:'Bevor wir mit dem Meeting beginnen, lassen Sie uns kurz die Aufgaben der letzten Woche durchgehen. Danach kommen wir zum Quartalsbudget.', it:'Prima di iniziare la riunione, rivediamo rapidamente i punti d\'azione della scorsa settimana. Poi passeremo al budget trimestrale.', pt:'Antes de começarmos a reunião, vamos rever rapidamente os pontos de ação da semana passada. Depois passaremos ao orçamento trimestral.', nl:'Voordat we aan de vergadering beginnen, nemen we snel de actiepunten van vorige week door. Daarna gaan we verder met de kwartaalbudget.', ru:'Прежде чем начать встречу, давайте быстро пройдёмся по задачам прошлой недели. Затем перейдём к квартальному бюджету.', pl:'Zanim rozpoczniemy spotkanie, przejrzyjmy szybko zadania z poprzedniego tygodnia. Następnie przejdziemy do budżetu kwartalnego.', sv:'Innan vi börjar mötet, låt oss snabbt gå igenom åtgärdspunkterna från förra veckan. Sedan går vi vidare till kvartalsbudgeten.'}},
+      {text:'Your safety is our top priority. Please ensure that all personal protective equipment is worn correctly at all times while on the factory floor.',
+       pronunciation:'yor SAFE-tee iz our top pry-OR-i-tee. pleez en-SHOOR that awl PUR-sun-ul pro-TEK-tiv ee-KWIP-ment iz worn kuh-REKT-lee at awl times wyl on thuh FAK-tuh-ree flor',
+       translation:{es:'Su seguridad es nuestra máxima prioridad. Asegúrese de que todo el equipo de protección personal se use correctamente en todo momento mientras esté en la planta de producción.', fr:'Votre sécurité est notre priorité absolue. Veuillez vous assurer que tout l\'équipement de protection individuelle est porté correctement à tout moment dans l\'usine.', de:'Ihre Sicherheit hat für uns höchste Priorität. Bitte stellen Sie sicher, dass alle persönlichen Schutzausrüstungen in der Fabrikhalle jederzeit korrekt getragen werden.', it:'La sua sicurezza è la nostra massima priorità. Assicurarsi che tutti i dispositivi di protezione individuale siano indossati correttamente in ogni momento nello stabilimento.', pt:'A sua segurança é a nossa prioridade máxima. Certifique-se de que todo o equipamento de proteção individual é usado corretamente em todos os momentos no chão de fábrica.', nl:'Uw veiligheid is onze topprioriteit. Zorg ervoor dat alle persoonlijke beschermingsmiddelen te allen tijde correct worden gedragen op de fabrieksvloer.', ru:'Ваша безопасность — наш главный приоритет. Убедитесь, что все средства индивидуальной защиты правильно используются в цехе в любое время.', pl:'Twoje bezpieczeństwo jest naszym najwyższym priorytetem. Upewnij się, że wszystkie środki ochrony indywidualnej są prawidłowo noszone na hali fabrycznej przez cały czas.', sv:'Din säkerhet är vår högsta prioritet. Se till att all personlig skyddsutrustning bärs korrekt hela tiden i fabrikslokalen.'}},
+      {text:'Our quarterly results exceeded expectations. Revenue grew by twelve percent, and customer satisfaction reached an all-time high. We will continue investing in training and technology.',
+       pronunciation:'our KWOR-ter-lee rih-ZULTS ek-SEE-ded ek-spek-TAY-shunz. REV-uh-nyoo groo by TWELV per-SENT, and KUS-tum-er sat-is-FAK-shun reecht an awl-tym hy. wee wil kun-TIN-yoo in-VEST-ing in TRAY-ning and tek-NOL-uh-jee',
+       translation:{es:'Nuestros resultados trimestrales superaron las expectativas. Los ingresos crecieron un doce por ciento y la satisfacción del cliente alcanzó un máximo histórico. Seguiremos invirtiendo en formación y tecnología.', fr:'Nos résultats trimestriels ont dépassé les attentes. Le chiffre d\'affaires a augmenté de douze pour cent et la satisfaction client a atteint un niveau record. Nous continuerons à investir dans la formation et la technologie.', de:'Unsere Quartalsergebnisse haben die Erwartungen übertroffen. Der Umsatz wuchs um zwölf Prozent und die Kundenzufriedenheit erreichte einen Höchststand. Wir werden weiter in Schulung und Technologie investieren.', it:'I nostri risultati trimestrali hanno superato le aspettative. Il fatturato è cresciuto del dodici per cento e la soddisfazione dei clienti ha raggiunto un massimo storico. Continueremo a investire in formazione e tecnologia.', pt:'Os nossos resultados trimestrais superaram as expetativas. A receita cresceu doze por cento e a satisfação do cliente atingiu um máximo histórico. Continuaremos a investir em formação e tecnologia.', nl:'Onze kwartaalresultaten overtroffen de verwachtingen. De omzet groeide met twaalf procent en de klanttevredenheid bereikte een recordhoogte. We blijven investeren in training en technologie.', ru:'Наши квартальные результаты превзошли ожидания. Выручка выросла на двенадцать процентов, а удовлетворённость клиентов достигла исторического максимума. Мы продолжим инвестировать в обучение и технологии.', pl:'Nasze wyniki kwartalne przekroczyły oczekiwania. Przychody wzrosły o dwanaście procent, a satysfakcja klientów osiągnęła rekordowy poziom. Będziemy nadal inwestować w szkolenia i technologię.', sv:'Våra kvartalsresultat överträffade förväntningarna. Intäkterna växte med tolv procent och kundnöjdheten nådde en rekordnivå. Vi kommer att fortsätta investera i utbildning och teknik.'}},
+      {text:'We are pleased to inform you that your application has been approved. You will receive your welcome package within five working days. Please contact HR if you have any questions.',
+       pronunciation:'wee ar pleezd too in-FORM yoo that yor ap-lih-KAY-shun haz bin uh-PROOVD. yoo wil rih-SEEV yor WEL-kum PAK-ij with-IN fyv WUR-king dayz. pleez KON-takt aych-ar if yoo hav EN-ee KWES-chunz',
+       translation:{es:'Nos complace informarle que su solicitud ha sido aprobada. Recibirá su paquete de bienvenida dentro de cinco días hábiles. Por favor, contacte con RR. HH. si tiene alguna pregunta.', fr:'Nous avons le plaisir de vous informer que votre candidature a été acceptée. Vous recevrez votre kit de bienvenue dans les cinq jours ouvrables. Veuillez contacter les RH pour toute question.', de:'Wir freuen uns, Ihnen mitteilen zu können, dass Ihr Antrag genehmigt wurde. Sie erhalten Ihr Willkommenspaket innerhalb von fünf Werktagen. Bei Fragen wenden Sie sich bitte an die Personalabteilung.', it:'Siamo lieti di informarla che la sua candidatura è stata approvata. Riceverà il suo kit di benvenuto entro cinque giorni lavorativi. Per qualsiasi domanda contatti le risorse umane.', pt:'Temos o prazer de informar que a sua candidatura foi aprovada. Receberá o seu kit de boas-vindas em cinco dias úteis. Contacte os RH se tiver alguma questão.', nl:'We zijn verheugd u te kunnen meedelen dat uw sollicitatie is goedgekeurd. U ontvangt uw welkomstpakket binnen vijf werkdagen. Neem contact op met HR bij vragen.', ru:'Мы рады сообщить, что ваша заявка одобрена. Вы получите приветственный пакет в течение пяти рабочих дней. Свяжитесь с отделом кадров, если у вас есть вопросы.', pl:'Z przyjemnością informujemy, że twoje zgłoszenie zostało zatwierdzone. Pakiet powitalny otrzymasz w ciągu pięciu dni roboczych. W razie pytań skontaktuj się z działem HR.', sv:'Vi är glada att meddela att din ansökan har godkänts. Du kommer att få ditt välkomstpaket inom fem arbetsdagar. Kontakta HR om du har några frågor.'}},
+      {text:'Due to unforeseen circumstances, the shipment has been delayed by 48 hours. We sincerely apologize for the inconvenience and are doing everything possible to expedite delivery.',
+       pronunciation:'doo too un-for-SEEN SUR-kum-stan-siz, thuh SHIP-ment haz bin dih-LAYD by FOR-tee-AYT AW-erz. wee sin-SEER-lee uh-POL-uh-jyz for thee in-kun-VEE-nee-uns and ar DOO-ing EV-ree-thing POS-uh-bul too EK-spuh-dyt dih-LIV-er-ee',
+       translation:{es:'Debido a circunstancias imprevistas, el envío se ha retrasado 48 horas. Nos disculpamos sinceramente por las molestias y hacemos todo lo posible por acelerar la entrega.', fr:'En raison de circonstances imprévues, l\'expédition a été retardée de 48 heures. Nous vous prions de nous excuser pour ce désagrément et faisons tout notre possible pour accélérer la livraison.', de:'Aufgrund unvorhergesehener Umstände hat sich der Versand um 48 Stunden verzögert. Wir entschuldigen uns aufrichtig für die Unannehmlichkeiten und tun alles Mögliche, um die Lieferung zu beschleunigen.', it:'A causa di circostanze impreviste, la spedizione ha subito un ritardo di 48 ore. Ci scusiamo sinceramente per l\'inconveniente e stiamo facendo tutto il possibile per accelerare la consegna.', pt:'Devido a circunstâncias imprevistas, o envio sofreu um atraso de 48 horas. Pedimos sinceras desculpas pelo incómodo e estamos a fazer tudo o possível para acelerar a entrega.', nl:'Door onvoorziene omstandigheden is de zending 48 uur vertraagd. Onze oprechte excuses voor het ongemak; we doen er alles aan om de levering te bespoedigen.', ru:'В связи с непредвиденными обстоятельствами отправка задержана на 48 часов. Приносим искренние извинения за неудобства и делаем всё возможное, чтобы ускорить доставку.', pl:'Z powodu nieprzewidzianych okoliczności przesyłka została opóźniona o 48 godzin. Serdecznie przepraszamy za niedogodności i robimy wszystko, aby przyspieszyć dostawę.', sv:'På grund av oförutsedda omständigheter har försändelsen försenats med 48 timmar. Vi ber uppriktigt om ursäkt för besväret och gör allt för att påskynda leveransen.'}},
+      {text:'Our team is committed to delivering excellence in every project we undertake. We believe that clear communication and mutual respect are the foundations of lasting partnerships.',
+       pronunciation:'our teem iz kuh-MIT-ed too dih-LIV-er-ing EK-suh-luns in EV-ree PROJ-ekt wee un-der-TAYK. wee bih-LEEV that kleer kuh-myoo-ni-KAY-shun and MYOO-choo-ul rih-SPEKT ar thuh fown-DAY-shunz uv LAS-ting PART-ner-ships',
+       translation:{es:'Nuestro equipo está comprometido a ofrecer excelencia en cada proyecto que emprendemos. Creemos que la comunicación clara y el respeto mutuo son la base de las relaciones duraderas.', fr:'Notre équipe s\'engage à offrir l\'excellence dans chaque projet que nous entreprenons. Nous croyons que la communication claire et le respect mutuel sont les fondements de partenariats durables.', de:'Unser Team ist bestrebt, in jedem Projekt, das wir übernehmen, Spitzenleistungen zu erbringen. Wir glauben, dass klare Kommunikation und gegenseitiger Respekt die Grundlagen dauerhafter Partnerschaften sind.', it:'Il nostro team si impegna a offrire l\'eccellenza in ogni progetto che intraprendiamo. Crediamo che una comunicazione chiara e il rispetto reciproco siano le fondamenta di partnership durature.', pt:'A nossa equipa está comprometida em oferecer excelência em cada projeto que realizamos. Acreditamos que a comunicação clara e o respeito mútuo são a base de parcerias duradouras.', nl:'Ons team streeft naar uitmuntendheid in elk project dat we aangaan. Wij geloven dat duidelijke communicatie en wederzijds respect de fundamenten zijn van blijvende partnerschappen.', ru:'Наша команда стремится к совершенству в каждом проекте, за который мы берёмся. Мы верим, что чёткая коммуникация и взаимное уважение — основы долгосрочного партнёрства.', pl:'Nasz zespół dokłada wszelkich starań, aby każdy projekt był realizowany na najwyższym poziomie. Wierzymy, że jasna komunikacja i wzajemny szacunek to fundamenty trwałych partnerstw.', sv:'Vårt team är engagerat i att leverera excellens i varje projekt vi åtar oss. Vi tror att tydlig kommunikation och ömsesidig respekt är grunden för varaktiga partnerskap.'}},
+      {text:'Please be advised that the office will be closed from December 24th to January 2nd. During this period, urgent matters should be directed to the on-call manager. Regular operations will resume on January 3rd.',
+       pronunciation:'pleez bee ud-VYZD that thee OF-is wil bee klohzd frum dih-SEM-ber TWEN-tee-FORTH too JAN-yoo-air-ee SEK-und. DOO-ring this PEER-ee-ud, UR-junt MAY-terz shood bee dih-REK-ted too thee ON-kawl MAN-ij-er. REG-yoo-ler op-uh-RAY-shunz wil rih-ZOOM on JAN-yoo-air-ee THURD',
+       translation:{es:'Tenga en cuenta que la oficina estará cerrada del 24 de diciembre al 2 de enero. Durante este período, los asuntos urgentes deben dirigirse al gerente de guardia. Las operaciones regulares se reanudarán el 3 de enero.', fr:'Veuillez noter que le bureau sera fermé du 24 décembre au 2 janvier. Pendant cette période, les affaires urgentes doivent être adressées au responsable de permanence. Les opérations reprendront le 3 janvier.', de:'Bitte beachten Sie, dass das Büro vom 24. Dezember bis zum 2. Januar geschlossen ist. In diesem Zeitraum sind dringende Angelegenheiten an den Bereitschaftsleiter zu richten. Der reguläre Betrieb wird am 3. Januar wieder aufgenommen.', it:'Si avvisa che l\'ufficio sarà chiuso dal 24 dicembre al 2 gennaio. Durante questo periodo, le questioni urgenti devono essere indirizzate al manager di turno. Le operazioni regolari riprenderanno il 3 gennaio.', pt:'Informamos que o escritório estará fechado de 24 de dezembro a 2 de janeiro. Durante este período, assuntos urgentes devem ser dirigidos ao gestor de serviço. As operações regulares serão retomadas a 3 de janeiro.', nl:'Let op: het kantoor is gesloten van 24 december tot 2 januari. In deze periode moeten dringende zaken worden gericht aan de dienstdoende manager. De normale bedrijfsvoering hervat op 3 januari.', ru:'Обратите внимание, что офис будет закрыт с 24 декабря по 2 января. В этот период срочные вопросы следует направлять дежурному менеджеру. Обычный режим работы возобновится 3 января.', pl:'Informujemy, że biuro będzie zamknięte od 24 grudnia do 2 stycznia. W tym okresie pilne sprawy należy kierować do menedżera dyżurnego. Normalna działalność zostanie wznowiona 3 stycznia.', sv:'Observera att kontoret är stängt från 24 december till 2 januari. Under denna period ska brådskande ärenden riktas till jourhavande chef. Normal verksamhet återupptas den 3 januari.'}},
+      {text:'This training module covers the fundamentals of our customer service policy. After completing it, you will be able to handle most inquiries independently and escalate complex cases to your supervisor.',
+       pronunciation:'this TRAY-ning MOD-yool KUV-erz thuh fun-duh-MEN-tulz uv our KUS-tum-er SUR-vis POL-uh-see. AF-ter kum-PLEET-ing it, yoo wil bee AY-bul too HAN-dul mohst in-KWY-reez in-dih-PEN-dunt-lee and ES-kuh-layt KOM-pleks KAY-siz too yor SOO-per-vy-zer',
+       translation:{es:'Este módulo de formación cubre los fundamentos de nuestra política de atención al cliente. Tras completarlo, podrá gestionar la mayoría de las consultas de forma independiente y escalar los casos complejos a su supervisor.', fr:'Ce module de formation couvre les fondamentaux de notre politique de service client. Après l\'avoir terminé, vous serez en mesure de gérer la plupart des demandes de manière autonome et d\'escalader les cas complexes à votre superviseur.', de:'Dieses Schulungsmodul behandelt die Grundlagen unserer Kundenservice-Richtlinie. Nach Abschluss können Sie die meisten Anfragen selbstständig bearbeiten und komplexe Fälle an Ihren Vorgesetzten weiterleiten.', it:'Questo modulo di formazione copre i fondamenti della nostra politica di assistenza clienti. Dopo averlo completato, sarà in grado di gestire autonomamente la maggior parte delle richieste e di escalare i casi complessi al suo supervisore.', pt:'Este módulo de formação cobre os fundamentos da nossa política de apoio ao cliente. Depois de o concluir, poderá tratar da maioria dos pedidos de forma autónoma e escalar casos complexos para o seu supervisor.', nl:'Deze trainingsmodule behandelt de basisprincipes van ons klantenservicebeleid. Na afronding kunt u de meeste vragen zelfstandig afhandelen en complexe gevallen escaleren naar uw leidinggevende.', ru:'Этот учебный модуль охватывает основы нашей политики обслуживания клиентов. После его завершения вы сможете самостоятельно обрабатывать большинство запросов и передавать сложные случаи руководителю.', pl:'Ten moduł szkoleniowy obejmuje podstawy naszej polityki obsługi klienta. Po jego ukończeniu będziesz w stanie samodzielnie obsługiwać większość zapytań i eskalować złożone przypadki do przełożonego.', sv:'Denna utbildningsmodul täcker grunderna i vår kundservicepolicy. Efter genomförandet kommer du att kunna hantera de flesta förfrågningar självständigt och eskalera komplexa ärenden till din chef.'}}
+    ]
+  },
+{
+    id:'dialogues', label:'Dialogues',
+    items:[
+      {text:'A: Good morning, welcome to the Grand Hotel. B: Good morning, I have a reservation under the name Carter.',
+       pronunciation:'A: good MOR-ning, WEL-kum too thuh grand ho-TEL. B: good MOR-ning, eye hav uh reh-zer-VAY-shun UN-der thuh naym KAR-ter',
+       translation:{es:'A: Buenos días, bienvenido al Grand Hotel. B: Buenos días, tengo una reservación a nombre de Carter.', fr:'A: Bonjour, bienvenue au Grand Hôtel. B: Bonjour, j\'ai une réservation au nom de Carter.', de:'A: Guten Morgen, willkommen im Grand Hotel. B: Guten Morgen, ich habe eine Reservierung auf den Namen Carter.', it:'A: Buongiorno, benvenuto al Grand Hotel. B: Buongiorno, ho una prenotazione a nome Carter.', pt:'A: Bom dia, bem-vindo ao Grand Hotel. B: Bom dia, tenho uma reserva em nome de Carter.', nl:'A: Goedemorgen, welkom in het Grand Hotel. B: Goedemorgen, ik heb een reservering op naam van Carter.', ru:'A: Доброе утро, добро пожаловать в Гранд Отель. Б: Доброе утро, у меня бронь на имя Картер.', pl:'A: Dzień dobry, witamy w Grand Hotel. B: Dzień dobry, mam rezerwację na nazwisko Carter.', sv:'A: God morgon, välkommen till Grand Hotel. B: God morgon, jag har en bokning under namnet Carter.'}},
+      {text:'A: Could I see your ID, please? B: Of course, here you go.',
+       pronunciation:'A: kood eye see yor eye-DEE, pleez? B: uv KORS, heer yoo goh',
+       translation:{es:'A: ¿Podría ver su identificación, por favor? B: Por supuesto, aquí tiene.', fr:'A: Puis-je voir votre pièce d\'identité, s\'il vous plaît ? B: Bien sûr, voici.', de:'A: Darf ich bitte Ihren Ausweis sehen? B: Natürlich, bitte schön.', it:'A: Posso vedere il suo documento, per favore? B: Certo, ecco a lei.', pt:'A: Posso ver o seu documento, por favor? B: Claro, aqui tem.', nl:'A: Mag ik uw identiteitsbewijs zien? B: Natuurlijk, alstublieft.', ru:'A: Могу я взглянуть на ваше удостоверение? Б: Конечно, вот.', pl:'A: Czy mogę zobaczyć dokument tożsamości? B: Oczywiście, proszę.', sv:'A: Kan jag få se din legitimation? B: Självklart, varsågod.'}},
+      {text:'A: Do you have a minute? B: Sure, what\'s up? A: I need your feedback on the report.',
+       pronunciation:'A: doo yoo hav uh MIN-it? B: shur, wuts up? A: eye need yor FEED-bak on thuh rih-PORT',
+       translation:{es:'A: ¿Tiene un minuto? B: Claro, ¿qué pasa? A: Necesito su opinión sobre el informe.', fr:'A: Vous avez une minute ? B: Bien sûr, quoi de neuf ? A: J\'ai besoin de votre avis sur le rapport.', de:'A: Haben Sie eine Minute? B: Klar, was gibt\'s? A: Ich brauche Ihr Feedback zum Bericht.', it:'A: Ha un minuto? B: Certo, che succede? A: Mi serve il suo feedback sul rapporto.', pt:'A: Tem um minuto? B: Claro, o que se passa? A: Preciso do seu feedback sobre o relatório.', nl:'A: Heeft u een minuutje? B: Zeker, wat is er? A: Ik heb uw feedback op het rapport nodig.', ru:'A: У вас есть минутка? Б: Конечно, что случилось? А: Мне нужен ваш отзыв о отчёте.', pl:'A: Masz chwilkę? B: Jasne, co się stało? A: Potrzebuję twojej opinii o raporcie.', sv:'A: Har du en minut? B: Visst, vad gäller det? A: Jag behöver din feedback på rapporten.'}},
+      {text:'A: When do I get my first paycheck? B: At the end of the month.',
+       pronunciation:'A: wen doo eye get my furst PAY-chek? B: at thee end uv thuh munth',
+       translation:{es:'A: ¿Cuándo recibo mi primer sueldo? B: A fin de mes.', fr:'A: Quand vais-je recevoir ma première paie ? B: À la fin du mois.', de:'A: Wann bekomme ich mein erstes Gehalt? B: Am Ende des Monats.', it:'A: Quando ricevo il primo stipendio? B: Alla fine del mese.', pt:'A: Quando recebo o primeiro salário? B: No fim do mês.', nl:'A: Wanneer krijg ik mijn eerste loon? B: Aan het einde van de maand.', ru:'A: Когда я получу первую зарплату? Б: В конце месяца.', pl:'A: Kiedy dostanę pierwszą wypłatę? B: Pod koniec miesiąca.', sv:'A: När får jag min första lön? B: I slutet av månaden.'}},
+      {text:'A: I\'m sorry for the delay. B: That\'s alright, these things happen.',
+       pronunciation:'A: eyem SOR-ee for thuh dih-LAY. B: thats awl-RYT, theez things HAP-un',
+       translation:{es:'A: Lamento la demora. B: Está bien, estas cosas pasan.', fr:'A: Je suis désolé pour le retard. B: Ce n\'est rien, ça arrive.', de:'A: Entschuldigung für die Verspätung. B: Schon gut, das passiert.', it:'A: Mi scuso per il ritardo. B: Va bene, succede.', pt:'A: Desculpe o atraso. B: Não faz mal, estas coisas acontecem.', nl:'A: Sorry voor de vertraging. B: Geeft niets, dat gebeurt.', ru:'A: Извините за задержку. Б: Ничего, бывает.', pl:'A: Przepraszam za opóźnienie. B: W porządku, to się zdarza.', sv:'A: Förlåt för förseningen. B: Det är okej, sånt händer.'}},
+      {text:'A: Would you like to upgrade your room? B: Yes, how much extra would that be?',
+       pronunciation:'A: wood yoo lyk too UP-grayd yor room? B: yes, how much EK-struh wood that bee',
+       translation:{es:'A: ¿Le gustaría mejorar su habitación? B: Sí, ¿cuánto costaría extra?', fr:'A: Souhaitez-vous surclasser votre chambre ? B: Oui, combien cela coûterait-il en plus ?', de:'A: Möchten Sie Ihr Zimmer upgraden? B: Ja, wie viel würde das extra kosten?', it:'A: Desidera fare un upgrade della camera? B: Sì, quanto costerebbe in più?', pt:'A: Gostaria de fazer upgrade do quarto? B: Sim, quanto custaria a mais?', nl:'A: Wilt u een upgrade van uw kamer? B: Ja, hoeveel extra zou dat kosten?', ru:'A: Хотите улучшить номер? Б: Да, сколько это будет стоить дополнительно?', pl:'A: Chciałbyś ulepszyć pokój? B: Tak, ile by to kosztowało dodatkowo?', sv:'A: Vill du uppgradera ditt rum? B: Ja, hur mycket extra skulle det kosta?'}},
+      {text:'A: I\'d like to file a complaint about the service. B: I\'m very sorry to hear that. Could you tell me what happened?',
+       pronunciation:'A: eyed lyk too fyl uh kum-PLAYNT uh-BOWT thuh SUR-vis. B: eyem VEH-ree SOR-ee too heer that. kood yoo tel mee wut HAP-und',
+       translation:{es:'A: Me gustaría presentar una queja sobre el servicio. B: Lamento mucho oír eso. ¿Podría contarme qué pasó?', fr:'A: Je souhaiterais déposer une réclamation concernant le service. B: Je suis vraiment désolé de l\'entendre. Pouvez-vous me dire ce qui s\'est passé ?', de:'A: Ich möchte eine Beschwerde über den Service einreichen. B: Das tut mir sehr leid. Können Sie mir sagen, was passiert ist?', it:'A: Vorrei presentare un reclamo sul servizio. B: Mi dispiace molto. Può dirmi cosa è successo?', pt:'A: Gostaria de apresentar uma reclamação sobre o serviço. B: Lamento muito ouvir isso. Pode dizer-me o que aconteceu?', nl:'A: Ik wil een klacht indienen over de service. B: Dat spijt me zeer. Kunt u mij vertellen wat er is gebeurd?', ru:'A: Я хотел бы подать жалобу на обслуживание. Б: Мне очень жаль это слышать. Можете рассказать, что произошло?', pl:'A: Chciałbym złożyć skargę na obsługę. B: Bardzo mi przykro. Możesz mi powiedzieć, co się stało?', sv:'A: Jag vill lämna in ett klagomål om servicen. B: Det var tråkigt att höra. Kan du berätta vad som hände?'}},
+      {text:'A: Can we negotiate the price? B: We might be able to offer a small discount for a bulk order.',
+       pronunciation:'A: kan wee nih-GOH-shee-ayt thuh prys? B: wee myt bee AY-bul too AW-fer uh smawl DIS-kownt for uh bulk OR-der',
+       translation:{es:'A: ¿Podemos negociar el precio? B: Podríamos ofrecer un pequeño descuento por un pedido al por mayor.', fr:'A: Pouvons-nous négocier le prix ? B: Nous pourrions offrir une petite réduction pour une commande en gros.', de:'A: Können wir über den Preis verhandeln? B: Für eine Großbestellung könnten wir einen kleinen Rabatt anbieten.', it:'A: Possiamo negoziare il prezzo? B: Potremmo offrire un piccolo sconto per un ordine all\'ingrosso.', pt:'A: Podemos negociar o preço? B: Podemos oferecer um pequeno desconto para encomendas em grande quantidade.', nl:'A: Kunnen we over de prijs onderhandelen? B: Voor een grote bestelling kunnen we een kleine korting aanbieden.', ru:'A: Можем обсудить цену? Б: Для крупного заказа мы могли бы предложить небольшую скидку.', pl:'A: Możemy negocjować cenę? B: Przy dużym zamówieniu możemy zaoferować niewielki rabat.', sv:'A: Kan vi förhandla om priset? B: Vid en stor beställning kan vi erbjuda en liten rabatt.'}},
+      {text:'A: Welcome aboard! B: Thank you, I\'m excited to get started.',
+       pronunciation:'A: WEL-kum uh-BORD! B: thank yoo, eyem ik-SY-ted too get STAR-ted',
+       translation:{es:'A: ¡Bienvenido al equipo! B: Gracias, estoy emocionado de empezar.', fr:'A: Bienvenue à bord ! B: Merci, je suis ravi de commencer.', de:'A: Willkommen an Bord! B: Danke, ich freue mich darauf, anzufangen.', it:'A: Benvenuto a bordo! B: Grazie, sono entusiasta di iniziare.', pt:'A: Bem-vindo a bordo! B: Obrigado, estou entusiasmado por começar.', nl:'A: Welkom aan boord! B: Bedankt, ik kijk ernaar uit om te beginnen.', ru:'A: Добро пожаловать в команду! Б: Спасибо, я рад начать.', pl:'A: Witamy na pokładzie! B: Dziękuję, nie mogę się doczekać rozpoczęcia.', sv:'A: Välkommen ombord! B: Tack, jag är glad att komma igång.'}},
+      {text:'A: Any plans for the weekend? B: Not much — just relaxing at home.',
+       pronunciation:'A: EN-ee plans for thuh WEEK-end? B: not much — just rih-LAK-sing at hohm',
+       translation:{es:'A: ¿Algún plan para el fin de semana? B: No mucho, solo relajarme en casa.', fr:'A: Des projets pour le week-end ? B: Pas grand-chose — juste me détendre à la maison.', de:'A: Pläne fürs Wochenende? B: Nicht viel — nur zu Hause entspannen.', it:'A: Programmi per il fine settimana? B: Non molto — solo rilassarmi a casa.', pt:'A: Planos para o fim de semana? B: Não muito — só relaxar em casa.', nl:'A: Plannen voor het weekend? B: Niet veel — gewoon thuis ontspannen.', ru:'A: Планы на выходные? Б: Не особо — просто отдохну дома.', pl:'A: Plany na weekend? B: Niewiele — po prostu odpoczywam w domu.', sv:'A: Några planer för helgen? B: Inte mycket — bara koppla av hemma.'}},
+      {text:'A: Welcome to the airport. May I see your passport and boarding pass? B: Yes, here they are.',
+       pronunciation:'A: WEL-kum too thee AIR-port. may eye see yor PASS-port and BOR-ding pass? B: yes, heer thay ar',
+       translation:{es:'A: Bienvenido al aeropuerto. ¿Puedo ver su pasaporte y tarjeta de embarque? B: Sí, aquí están.', fr:'A: Bienvenue à l\'aéroport. Puis-je voir votre passeport et carte d\'embarquement ? B: Oui, les voici.', de:'A: Willkommen am Flughafen. Darf ich Ihren Pass und Ihre Bordkarte sehen? B: Ja, hier bitte.', it:'A: Benvenuto in aeroporto. Posso vedere il passaporto e la carta d\'imbarco? B: Sì, eccoli.', pt:'A: Bem-vindo ao aeroporto. Posso ver o passaporte e o cartão de embarque? B: Sim, aqui estão.', nl:'A: Welkom op de luchthaven. Mag ik uw paspoort en instapkaart zien? B: Ja, alstublieft.', ru:'A: Добро пожаловать в аэропорт. Можно ваш паспорт и посадочный талон? Б: Да, вот они.', pl:'A: Witamy na lotnisku. Czy mogę zobaczyć paszport i kartę pokładową? B: Tak, proszę.', sv:'A: Välkommen till flygplatsen. Får jag se ditt pass och boardingkort? B: Ja, varsågod.'}},
+      {text:'A: What time does boarding start? B: Boarding starts at 6:45, gate 22.',
+       pronunciation:'A: wut tym duz BOR-ding start? B: BOR-ding starts at SIK-fort-ee-FYV, gayt TWEN-tee-TOO',
+       translation:{es:'A: ¿A qué hora comienza el embarque? B: El embarque comienza a las 6:45, puerta 22.', fr:'A: À quelle heure commence l\'embarquement ? B: L\'embarquement commence à 6h45, porte 22.', de:'A: Wann beginnt das Boarding? B: Das Boarding beginnt um 6:45 Uhr, Gate 22.', it:'A: A che ora inizia l\'imbarco? B: L\'imbarco inizia alle 6:45, gate 22.', pt:'A: A que horas começa o embarque? B: O embarque começa às 6:45, porta 22.', nl:'A: Hoe laat begint het boarden? B: Het boarden begint om 6:45, gate 22.', ru:'A: Во сколько начинается посадка? Б: Посадка начинается в 6:45, выход 22.', pl:'A: O której zaczyna się boarding? B: Boarding zaczyna się o 6:45, bramka 22.', sv:'A: När börjar boarding? B: Boarding börjar klockan 6:45, gate 22.'}}
+    ]
+  },
+{
+    id:'idioms', label:'Idioms',
+    items:[
+      {text:'Touch base', pronunciation:'tuch bays', translation:{es:'Ponerse en contacto', fr:'Prendre contact', de:'Sich kurz melden', it:'Farsi sentire', pt:'Dar um toque', nl:'Even contact opnemen', ru:'Связаться', pl:'Skontaktować się', sv:'Höra av sig'}},
+      {text:'On the same page', pronunciation:'on thuh saym payj', translation:{es:'Estar de acuerdo', fr:'Être sur la même longueur d\'onde', de:'Auf derselben Wellenlänge sein', it:'Essere sulla stessa lunghezza d\'onda', pt:'Estar em sintonia', nl:'Op één lijn zitten', ru:'Быть на одной волне', pl:'Być zgodnym', sv:'Var på samma sida'}},
+      {text:'Circle back', pronunciation:'SUR-kul bak', translation:{es:'Volver a hablar después', fr:'Revenir dessus plus tard', de:'Später darauf zurückkommen', it:'Riparlarne più tardi', pt:'Voltar a falar', nl:'Er later op terugkomen', ru:'Вернуться к этому позже', pl:'Wrócić do tego później', sv:'Återkomma'}},
+      {text:'At your service', pronunciation:'at yor SUR-vis', translation:{es:'A su servicio', fr:'À votre service', de:'Zu Ihren Diensten', it:'A sua disposizione', pt:'Ao seu serviço', nl:'Tot uw dienst', ru:'К вашим услугам', pl:'Do usług', sv:'Till er tjänst'}},
+      {text:'Make yourself at home', pronunciation:'mayk yor-SELF at hohm', translation:{es:'Siéntase como en casa', fr:'Faites comme chez vous', de:'Fühlen Sie sich wie zu Hause', it:'Si senta come a casa', pt:'Sinta-se em casa', nl:'Doe alsof u thuis bent', ru:'Чувствуйте себя как дома', pl:'Czuj się jak u siebie', sv:'Känn dig som hemma'}},
+      {text:'Go the extra mile', pronunciation:'goh thee EK-struh myl', translation:{es:'Dar un esfuerzo adicional', fr:'Faire un effort supplémentaire', de:'Sich besonders anstrengen', it:'Fare uno sforzo in più', pt:'Fazer um esforço extra', nl:'Net dat beetje extra doen', ru:'Приложить дополнительные усилия', pl:'Zrobić coś extra', sv:'Anstränga sig lite extra'}},
+      {text:'Hit the ground running', pronunciation:'hit thuh grownd RUN-ing', translation:{es:'Empezar con buen pie', fr:'Démarrer sur les chapeaux de roues', de:'Voll durchstarten', it:'Partire a razzo', pt:'Começar com o pé direito', nl:'Direct goed van start gaan', ru:'Сразу включиться в работу', pl:'Od razu ruszyć z kopyta', sv:'Komma igång direkt'}},
+      {text:'Better safe than sorry', pronunciation:'BET-er sayf than SOR-ee', translation:{es:'Más vale prevenir que lamentar', fr:'Mieux vaut prévenir que guérir', de:'Vorsicht ist besser als Nachsicht', it:'Meglio prevenire che curare', pt:'Mais vale prevenir que remediar', nl:'Beter safe dan sorry', ru:'Бережёного Бог бережёт', pl:'Lepiej dmuchać na zimne', sv:'Bättre safe än ledsen'}},
+      {text:'Bite the bullet', pronunciation:'byt thuh BUL-it', translation:{es:'Hacer de tripas corazón', fr:'Serrer les dents', de:'In den sauren Apfel beißen', it:'Stringere i denti', pt:'Engolir o sapo', nl:'Door de zure appel heen bijten', ru:'Стиснуть зубы', pl:'Zacisnąć zęby', sv:'Bita i det sura äpplet'}},
+      {text:'Break the ice', pronunciation:'brayk thee eys', translation:{es:'Romper el hielo', fr:'Briser la glace', de:'Das Eis brechen', it:'Rompere il ghiaccio', pt:'Quebrar o gelo', nl:'Het ijs breken', ru:'Растопить лёд', pl:'Przełamać lody', sv:'Bryta isen'}},
+      {text:'Think outside the box', pronunciation:'think owt-SYD thuh boks', translation:{es:'Pensar fuera de lo común', fr:'Penser hors des sentiers battus', de:'Um die Ecke denken', it:'Pensare fuori dagli schemi', pt:'Pensar fora da caixa', nl:'Buiten de kaders denken', ru:'Мыслить нестандартно', pl:'Myśleć nieszablonowo', sv:'Tänka utanför boxen'}},
+      {text:'Under the weather', pronunciation:'UN-der thuh WETH-er', translation:{es:'Sentirse mal', fr:'Pas dans son assiette', de:'Nicht ganz auf der Höhe', it:'Sentirsi giù', pt:'Sentir-se mal', nl:'Zich niet lekker voelen', ru:'Неважно себя чувствовать', pl:'Źle się czuć', sv:'Känna sig krasslig'}},
+      {text:'Pull your weight', pronunciation:'pool yor wayt', translation:{es:'Aportar lo que corresponde', fr:'Faire sa part', de:'Seinen Beitrag leisten', it:'Fare la propria parte', pt:'Fazer a sua parte', nl:'Je steentje bijdragen', ru:'Вносить свой вклад', pl:'Wnosić swój wkład', sv:'Dra sitt strå till stacken'}},
+      {text:'In the loop', pronunciation:'in thuh loop', translation:{es:'Al tanto', fr:'Dans la boucle', de:'Auf dem Laufenden', it:'Al corrente', pt:'A par', nl:'Op de hoogte', ru:'В курсе', pl:'W temacie', sv:'Uppdaterad'}},
+      {text:'Ballpark figure', pronunciation:'BAWL-park FIG-yer', translation:{es:'Cifra aproximada', fr:'Chiffre approximatif', de:'Ungefähre Zahl', it:'Cifra approssimativa', pt:'Valor aproximado', nl:'Globale schatting', ru:'Примерная цифра', pl:'Przybliżona liczba', sv:'Grov uppskattning'}},
+      {text:'Game changer', pronunciation:'gaym CHAYN-jer', translation:{es:'Cambio radical', fr:'Révolution', de:'Spielveränderer', it:'Cambia tutto', pt:'Muda o jogo', nl:'Baanbrekend', ru:'Меняет правила игры', pl:'Przełom', sv:'Spelväxlare'}},
+      {text:'Cut to the chase', pronunciation:'kut too thuh chays', translation:{es:'Ir al grano', fr:'Aller droit au but', de:'Zur Sache kommen', it:'Andare al dunque', pt:'Ir direto ao assunto', nl:'Ter zake komen', ru:'Перейти к сути', pl:'Przejść do rzeczy', sv:'Gå rakt på sak'}},
+      {text:'Get the ball rolling', pronunciation:'get thuh bawl ROH-ling', translation:{es:'Poner las cosas en marcha', fr:'Lancer la machine', de:'Ins Rollen bringen', it:'Dare il via', pt:'Pôr as coisas a andar', nl:'Het balletje aan het rollen brengen', ru:'Дать старт', pl:'Rozpocząć', sv:'Sätta igång'}},
+      {text:'Up in the air', pronunciation:'up in thee air', translation:{es:'En el aire', fr:'En suspens', de:'In der Schwebe', it:'In sospeso', pt:'Em aberto', nl:'Onzeker', ru:'Под вопросом', pl:'W powietrzu', sv:'Uppe i luften'}},
+      {text:'Back to square one', pronunciation:'bak too skwair wun', translation:{es:'Volver al punto de partida', fr:'Retour à la case départ', de:'Zurück zum Anfang', it:'Tornare al punto di partenza', pt:'Voltar ao início', nl:'Terug naar af', ru:'Вернуться к началу', pl:'Wrócić do początku', sv:'Tillbaka till ruta ett'}}
+    ]
+  },
+{
+    id:'interview', label:'Interview Prep',
+    items:[
+      {text:'Q: Tell me about yourself. A: I am organized, I communicate clearly, and I enjoy helping people.',
+       pronunciation:'Q: tel mee uh-BOWT yor-SELF. A: eye am OR-guh-nyzd, eye kuh-MYOO-ni-kayt KLEER-lee, and eye en-JOY HELP-ing PEE-pul',
+       translation:{es:'P: Hábleme de usted. R: Soy organizado, me comunico con claridad y disfruto ayudar a las personas.', fr:'Q: Parlez-moi de vous. R: Je suis organisé, je communique clairement et j\'aime aider les gens.', de:'F: Erzählen Sie mir von sich. A: Ich bin organisiert, kommuniziere klar und helfe gerne Menschen.', it:'D: Mi parli di lei. R: Sono organizzato, comunico chiaramente e mi piace aiutare le persone.', pt:'P: Fale-me de si. R: Sou organizado, comunico com clareza e gosto de ajudar as pessoas.', nl:'V: Vertel eens over uzelf. A: Ik ben georganiseerd, communiceer duidelijk en help graag mensen.', ru:'В: Расскажите о себе. О: Я организован, ясно излагаю мысли и люблю помогать людям.', pl:'P: Opowiedz mi o sobie. O: Jestem zorganizowany, komunikuję się jasno i lubię pomagać ludziom.', sv:'F: Berätta om dig själv. S: Jag är organiserad, kommunicerar tydligt och tycker om att hjälpa människor.'}},
+      {text:'Q: Why do you want this job? A: I want to grow my skills and contribute to a strong team.',
+       pronunciation:'Q: wy doo yoo want this job? A: eye want too groh my skilz and kun-TRIB-yoot too uh strong teem',
+       translation:{es:'P: ¿Por qué quiere este trabajo? R: Quiero desarrollar mis habilidades y contribuir a un buen equipo.', fr:'Q: Pourquoi voulez-vous ce poste ? R: Je veux développer mes compétences et contribuer à une équipe solide.', de:'F: Warum möchten Sie diesen Job? A: Ich möchte meine Fähigkeiten ausbauen und zu einem starken Team beitragen.', it:'D: Perché vuole questo lavoro? R: Voglio sviluppare le mie competenze e contribuire a un team solido.', pt:'P: Porque quer este trabalho? R: Quero desenvolver as minhas competências e contribuir para uma equipa forte.', nl:'V: Waarom wil je deze baan? A: Ik wil mijn vaardigheden ontwikkelen en bijdragen aan een sterk team.', ru:'В: Почему вы хотите эту работу? О: Хочу развивать свои навыки и вносить вклад в сильную команду.', pl:'P: Dlaczego chcesz tę pracę? O: Chcę rozwijać swoje umiejętności i wnosić wkład w silny zespół.', sv:'F: Varför vill du ha det här jobbet? S: Jag vill utveckla mina färdigheter och bidra till ett starkt team.'}},
+      {text:'Q: What are your strengths? A: I stay calm under pressure and I pay attention to detail.',
+       pronunciation:'Q: wut ar yor strengths? A: eye stay kahm UN-der PRESH-er and eye pay uh-TEN-shun too DEE-tayl',
+       translation:{es:'P: ¿Cuáles son sus fortalezas? R: Mantengo la calma bajo presión y presto atención al detalle.', fr:'Q: Quelles sont vos forces ? R: Je reste calme sous pression et je fais attention aux détails.', de:'F: Was sind Ihre Stärken? A: Ich bleibe unter Druck ruhig und achte auf Details.', it:'D: Quali sono i suoi punti di forza? R: Rimango calmo sotto pressione e presto attenzione ai dettagli.', pt:'P: Quais são os seus pontos fortes? R: Mantenho a calma sob pressão e presto atenção aos detalhes.', nl:'V: Wat zijn je sterke punten? A: Ik blijf kalm onder druk en let op details.', ru:'В: Каковы ваши сильные стороны? О: Сохраняю спокойствие под давлением и внимателен к деталям.', pl:'P: Jakie są twoje mocne strony? O: Zachowuję spokój pod presją i zwracam uwagę na szczegóły.', sv:'F: Vad är dina styrkor? S: Jag är lugn under press och uppmärksammar detaljer.'}},
+      {text:'Q: How do you handle tight deadlines? A: I prioritize tasks and communicate early if I need help.',
+       pronunciation:'Q: how doo yoo HAN-dul tyt DED-lynz? A: eye pry-OR-i-tyz tasks and kuh-MYOO-ni-kayt UR-lee if eye need help',
+       translation:{es:'P: ¿Cómo maneja plazos ajustados? R: Priorizo tareas y comunico temprano si necesito ayuda.', fr:'Q: Comment gérez-vous les délais serrés ? R: Je priorise les tâches et communique tôt si j\'ai besoin d\'aide.', de:'F: Wie gehen Sie mit knappen Fristen um? A: Ich priorisiere Aufgaben und kommuniziere früh, wenn ich Hilfe brauche.', it:'D: Come gestisce le scadenze strette? R: Do priorità ai compiti e comunico in anticipo se ho bisogno di aiuto.', pt:'P: Como lida com prazos apertados? R: Priorizo tarefas e comunico cedo se precisar de ajuda.', nl:'V: Hoe ga je om met krappe deadlines? A: Ik geef prioriteit aan taken en meld het vroeg als ik hulp nodig heb.', ru:'В: Как вы справляетесь со сжатыми сроками? О: Я расставляю приоритеты и заранее сообщаю, если нужна помощь.', pl:'P: Jak radzisz sobie z napiętymi terminami? O: Ustalam priorytety i wcześnie komunikuję, gdy potrzebuję pomocy.', sv:'F: Hur hanterar du tighta deadlines? S: Jag prioriterar uppgifter och kommunicerar tidigt om jag behöver hjälp.'}},
+      {text:'Q: Where do you see yourself in five years? A: Leading a team and mentoring new colleagues.',
+       pronunciation:'Q: wair doo yoo see yor-SELF in fyv yeerz? A: LEED-ing uh teem and MEN-ter-ing nyoo KOL-eegz',
+       translation:{es:'P: ¿Dónde se ve en cinco años? R: Liderando un equipo y mentorizando a nuevos colegas.', fr:'Q: Où vous voyez-vous dans cinq ans ? R: À la tête d\'une équipe et au mentorat de nouveaux collègues.', de:'F: Wo sehen Sie sich in fünf Jahren? A: Ein Team leiten und neue Kollegen betreuen.', it:'D: Dove si vede tra cinque anni? R: A guidare un team e fare da mentore a nuovi colleghi.', pt:'P: Onde se vê daqui a cinco anos? R: A liderar uma equipa e a orientar novos colegas.', nl:'V: Waar zie je jezelf over vijf jaar? A: Een team leiden en nieuwe collega\'s begeleiden.', ru:'В: Где вы видите себя через пять лет? О: Во главе команды, наставником для новых коллег.', pl:'P: Gdzie widzisz siebie za pięć lat? O: Prowadząc zespół i mentorując nowych kolegów.', sv:'F: Var ser du dig själv om fem år? S: Ledande ett team och mentor för nya kollegor.'}},
+      {text:'Q: Do you have any questions for us? A: Yes, what does success look like in this role?',
+       pronunciation:'Q: doo yoo hav EN-ee KWES-chunz for us? A: yes, wut duz suk-SES lok lyk in this rohl',
+       translation:{es:'P: ¿Tiene alguna pregunta para nosotros? R: Sí, ¿cómo se ve el éxito en este puesto?', fr:'Q: Avez-vous des questions ? R: Oui, à quoi ressemble la réussite dans ce poste ?', de:'F: Haben Sie Fragen an uns? A: Ja, wie sieht Erfolg in dieser Position aus?', it:'D: Ha domande per noi? R: Sì, come si misura il successo in questo ruolo?', pt:'P: Tem alguma pergunta para nós? R: Sim, como se mede o sucesso nesta função?', nl:'V: Heeft u nog vragen aan ons? A: Ja, hoe ziet succes eruit in deze rol?', ru:'В: У вас есть к нам вопросы? О: Да, как выглядит успех в этой роли?', pl:'P: Czy masz jakieś pytania do nas? O: Tak, jak wygląda sukces na tym stanowisku?', sv:'F: Har du några frågor till oss? S: Ja, hur ser framgång ut i den här rollen?'}},
+      {text:'Q: What is your biggest weakness? A: I can be too detailed sometimes, but I have learned to balance speed and quality.',
+       pronunciation:'Q: wut iz yor BIG-est WEEKN-is? A: eye kan bee too DEE-tayld SUM-tymz, but eye hav LURND too BAL-uns speed and KWOL-i-tee',
+       translation:{es:'P: ¿Cuál es su mayor debilidad? R: A veces puedo ser demasiado detallista, pero he aprendido a equilibrar velocidad y calidad.', fr:'Q: Quelle est votre plus grande faiblesse ? R: Je peux être trop minutieux parfois, mais j\'ai appris à équilibrer rapidité et qualité.', de:'F: Was ist Ihre größte Schwäche? A: Manchmal bin ich zu detailorientiert, aber ich habe gelernt, Tempo und Qualität auszubalancieren.', it:'D: Qual è il suo più grande difetto? R: A volte sono troppo dettagliato, ma ho imparato a bilanciare velocità e qualità.', pt:'P: Qual é o seu maior ponto fraco? R: Por vezes sou demasiado detalhista, mas aprendi a equilibrar rapidez e qualidade.', nl:'V: Wat is je grootste zwakte? A: Soms ben ik te gedetailleerd, maar ik heb geleerd snelheid en kwaliteit in balans te brengen.', ru:'В: Ваш главный недостаток? О: Иногда я слишком детален, но научился балансировать скорость и качество.', pl:'P: Jaka jest twoja największa słabość? O: Czasem jestem zbyt drobiazgowy, ale nauczyłem się równoważyć szybkość i jakość.', sv:'F: Vad är din största svaghet? S: Jag kan vara för detaljerad ibland, men jag har lärt mig balansera snabbhet och kvalitet.'}},
+      {text:'Q: Why are you leaving your current job? A: I am looking for new challenges and opportunities to grow.',
+       pronunciation:'Q: wy ar yoo LEEV-ing yor KUR-unt job? A: eye am LOOK-ing for nyoo CHAL-in-jiz and op-er-TOO-ni-teez too groh',
+       translation:{es:'P: ¿Por qué deja su trabajo actual? R: Busco nuevos retos y oportunidades para crecer.', fr:'Q: Pourquoi quittez-vous votre poste actuel ? R: Je cherche de nouveaux défis et des opportunités de croissance.', de:'F: Warum verlassen Sie Ihren aktuellen Job? A: Ich suche neue Herausforderungen und Wachstumsmöglichkeiten.', it:'D: Perché lascia il suo lavoro attuale? R: Cerco nuove sfide e opportunità di crescita.', pt:'P: Porque deixa o seu trabalho atual? R: Procuro novos desafios e oportunidades de crescimento.', nl:'V: Waarom verlaat je je huidige baan? A: Ik zoek nieuwe uitdagingen en groeimogelijkheden.', ru:'В: Почему вы уходите с текущей работы? О: Ищу новые вызовы и возможности для роста.', pl:'P: Dlaczego odchodzisz z obecnej pracy? O: Szukam nowych wyzwań i możliwości rozwoju.', sv:'F: Varför lämnar du ditt nuvarande jobb? S: Jag söker nya utmaningar och möjligheter att växa.'}},
+      {text:'Q: How do you handle conflict with a colleague? A: I address it privately, listen carefully, and focus on solutions.',
+       pronunciation:'Q: how doo yoo HAN-dul KON-flikt with uh KOL-eeg? A: eye uh-DRES it PRY-vut-lee, LIS-un KAIR-ful-ee, and FOH-kus on suh-LOO-shunz',
+       translation:{es:'P: ¿Cómo maneja un conflicto con un colega? R: Lo abordo en privado, escucho con atención y me centro en soluciones.', fr:'Q: Comment gérez-vous un conflit avec un collègue ? R: Je l\'aborde en privé, j\'écoute attentivement et je me concentre sur les solutions.', de:'F: Wie gehen Sie mit Konflikten mit einem Kollegen um? A: Ich spreche es privat an, höre aufmerksam zu und konzentriere mich auf Lösungen.', it:'D: Come gestisce un conflitto con un collega? R: Lo affronto in privato, ascolto attentamente e mi concentro sulle soluzioni.', pt:'P: Como lida com um conflito com um colega? R: Abordo-o em privado, ouço com atenção e foco-me em soluções.', nl:'V: Hoe ga je om met een conflict met een collega? A: Ik bespreek het privé, luister aandachtig en richt me op oplossingen.', ru:'В: Как вы справляетесь с конфликтом с коллегой? О: Обсуждаю это наедине, внимательно слушаю и сосредотачиваюсь на решениях.', pl:'P: Jak radzisz sobie z konfliktem z kolegą? O: Omawiam go prywatnie, uważnie słucham i skupiam się na rozwiązaniach.', sv:'F: Hur hanterar du konflikt med en kollega? S: Jag tar upp det privat, lyssnar noga och fokuserar på lösningar.'}},
+      {text:'Q: What motivates you? A: Seeing the impact of my work and learning something new every day.',
+       pronunciation:'Q: wut MOH-tuh-vayts yoo? A: SEE-ing thee IM-pakt uv my wurk and LUR-ning SUM-thing nyoo EV-ree day',
+       translation:{es:'P: ¿Qué le motiva? R: Ver el impacto de mi trabajo y aprender algo nuevo cada día.', fr:'Q: Qu\'est-ce qui vous motive ? R: Voir l\'impact de mon travail et apprendre quelque chose de nouveau chaque jour.', de:'F: Was motiviert Sie? A: Die Wirkung meiner Arbeit zu sehen und jeden Tag etwas Neues zu lernen.', it:'D: Cosa la motiva? R: Vedere l\'impatto del mio lavoro e imparare qualcosa di nuovo ogni giorno.', pt:'P: O que o motiva? R: Ver o impacto do meu trabalho e aprender algo novo todos os dias.', nl:'V: Wat motiveert je? A: De impact van mijn werk zien en elke dag iets nieuws leren.', ru:'В: Что вас мотивирует? О: Видеть результат своей работы и учиться чему-то новому каждый день.', pl:'P: Co cię motywuje? O: Widzieć wpływ mojej pracy i uczyć się czegoś nowego każdego dnia.', sv:'F: Vad motiverar dig? S: Att se effekten av mitt arbete och lära mig något nytt varje dag.'}}
+    ]
+  },
+{
+    id:'smalltalk', label:'Small Talk',
+    items:[
+      {text:'How was your weekend?', pronunciation:'how wuz yor WEEK-end', translation:{es:'¿Cómo estuvo su fin de semana?', fr:'Comment était votre week-end ?', de:'Wie war Ihr Wochenende?', it:'Com\'è stato il suo fine settimana?', pt:'Como foi o seu fim de semana?', nl:'Hoe was je weekend?', ru:'Как прошли выходные?', pl:'Jak minął weekend?', sv:'Hur var din helg?'}},
+      {text:'How is your first week going?', pronunciation:'how iz yor furst week GOH-ing', translation:{es:'¿Cómo va su primera semana?', fr:'Comment se passe votre première semaine ?', de:'Wie läuft Ihre erste Woche?', it:'Come sta andando la sua prima settimana?', pt:'Como está a correr a sua primeira semana?', nl:'Hoe gaat je eerste week?', ru:'Как проходит первая неделя?', pl:'Jak mija pierwszy tydzień?', sv:'Hur går din första vecka?'}},
+      {text:'Is this your first time in the city?', pronunciation:'iz this yor furst tym in thuh SIT-ee', translation:{es:'¿Es su primera vez en la ciudad?', fr:'C\'est votre première fois en ville ?', de:'Sind Sie zum ersten Mal in der Stadt?', it:'È la sua prima volta in città?', pt:'É a sua primeira vez na cidade?', nl:'Is dit je eerste keer in de stad?', ru:'Вы впервые в этом городе?', pl:'Czy to twoja pierwsza wizyta w tym mieście?', sv:'Är det här första gången i staden?'}},
+      {text:'I hope your day is going well.', pronunciation:'eye hohp yor day iz GOH-ing wel', translation:{es:'Espero que su día vaya bien.', fr:'J\'espère que votre journée se passe bien.', de:'Ich hoffe, Ihr Tag läuft gut.', it:'Spero che la sua giornata stia andando bene.', pt:'Espero que o seu dia esteja a correr bem.', nl:'Ik hoop dat je dag goed verloopt.', ru:'Надеюсь, ваш день проходит хорошо.', pl:'Mam nadzieję, że twój dzień mija dobrze.', sv:'Jag hoppas att din dag går bra.'}},
+      {text:'How was your flight?', pronunciation:'how wuz yor flyt', translation:{es:'¿Cómo estuvo su vuelo?', fr:'Comment était votre vol ?', de:'Wie war Ihr Flug?', it:'Com\'è andato il volo?', pt:'Como foi o seu voo?', nl:'Hoe was je vlucht?', ru:'Как прошёл полёт?', pl:'Jak minął lot?', sv:'Hur var din flygning?'}},
+      {text:'Any plans for the holidays?', pronunciation:'EN-ee plans for thuh HOL-i-dayz', translation:{es:'¿Algún plan para las vacaciones?', fr:'Des projets pour les vacances ?', de:'Pläne für die Feiertage?', it:'Programmi per le vacanze?', pt:'Algum plano para as férias?', nl:'Plannen voor de feestdagen?', ru:'Есть планы на праздники?', pl:'Masz plany na święta?', sv:'Några planer för helgerna?'}},
+      {text:'The weather is beautiful today.', pronunciation:'thuh WETH-er iz BYOO-ti-ful tuh-DAY', translation:{es:'El clima está precioso hoy.', fr:'Il fait beau aujourd\'hui.', de:'Das Wetter ist heute schön.', it:'Oggi il tempo è bellissimo.', pt:'O tempo está lindo hoje.', nl:'Het weer is prachtig vandaag.', ru:'Сегодня прекрасная погода.', pl:'Dziś jest piękna pogoda.', sv:'Vädret är vackert idag.'}},
+      {text:'How long have you worked here?', pronunciation:'how long hav yoo wurkt heer', translation:{es:'¿Cuánto tiempo lleva trabajando aquí?', fr:'Depuis combien de temps travaillez-vous ici ?', de:'Wie lange arbeiten Sie schon hier?', it:'Da quanto tempo lavora qui?', pt:'Há quanto tempo trabalha aqui?', nl:'Hoe lang werk je hier al?', ru:'Как долго вы здесь работаете?', pl:'Jak długo tu pracujesz?', sv:'Hur länge har du arbetat här?'}},
+      {text:'Do you follow any sports?', pronunciation:'doo yoo FOL-oh EN-ee sports', translation:{es:'¿Sigue algún deporte?', fr:'Suivez-vous un sport ?', de:'Verfolgen Sie einen Sport?', it:'Segue qualche sport?', pt:'Segue algum desporto?', nl:'Volg je een sport?', ru:'Следите за каким-нибудь спортом?', pl:'Śledzisz jakiś sport?', sv:'Följer du någon sport?'}},
+      {text:'I love the coffee here.', pronunciation:'luv thuh KOF-ee heer', translation:{es:'Me encanta el café de aquí.', fr:'J\'adore le café ici.', de:'Ich liebe den Kaffee hier.', it:'Adoro il caffè qui.', pt:'Adoro o café daqui.', nl:'Ik hou van de koffie hier.', ru:'Обожаю здешний кофе.', pl:'Uwielbiam tutejszą kawę.', sv:'Jag älskar kaffet här.'}},
+      {text:'Have you seen any good movies lately?', pronunciation:'hav yoo seen EN-ee good MOO-veez LAYT-lee', translation:{es:'¿Ha visto alguna buena película últimamente?', fr:'Avez-vous vu de bons films récemment ?', de:'Haben Sie in letzter Zeit gute Filme gesehen?', it:'Ha visto qualche bel film ultimamente?', pt:'Viu algum bom filme ultimamente?', nl:'Heb je recentelijk goede films gezien?', ru:'Смотрели что-нибудь хорошее в кино?', pl:'Widziałeś ostatnio jakiś dobry film?', sv:'Har du sett några bra filmer på sistone?'}},
+      {text:'Where are you originally from?', pronunciation:'wair ar yoo uh-RIJ-uh-nul-ee frum', translation:{es:'¿De dónde es originalmente?', fr:'D\'où êtes-vous originaire ?', de:'Woher kommen Sie ursprünglich?', it:'Di dove è originariamente?', pt:'De onde é originalmente?', nl:'Waar kom je oorspronkelijk vandaan?', ru:'Откуда вы родом?', pl:'Skąd pochodzisz?', sv:'Var kommer du ursprungligen ifrån?'}},
+      {text:'Do you have any recommendations for lunch nearby?', pronunciation:'doo yoo hav EN-ee rek-uh-men-DAY-shunz for lunch neer-BY', translation:{es:'¿Tiene alguna recomendación para almorzar cerca?', fr:'Avez-vous des recommandations pour déjeuner à proximité ?', de:'Haben Sie Empfehlungen für ein Mittagessen in der Nähe?', it:'Ha consigli per pranzare qui vicino?', pt:'Tem recomendações para almoçar perto?', nl:'Heb je tips voor de lunch in de buurt?', ru:'Порекомендуете где пообедать поблизости?', pl:'Masz jakieś rekomendacje na lunch w pobliżu?', sv:'Har du några tips på lunch i närheten?'}},
+      {text:'Is it always this busy here?', pronunciation:'iz it AWL-wayz this BIZ-ee heer', translation:{es:'¿Siempre está tan concurrido aquí?', fr:'Est-ce toujours aussi animé ici ?', de:'Ist es hier immer so geschäftig?', it:'È sempre così affollato qui?', pt:'É sempre tão movimentado aqui?', nl:'Is het hier altijd zo druk?', ru:'Здесь всегда так людно?', pl:'Czy tu zawsze jest tak ruchliwie?', sv:'Är det alltid så fullt här?'}},
+      {text:'It was great catching up with you.', pronunciation:'it wuz grayt KACH-ing up with yoo', translation:{es:'Fue genial ponerme al día con usted.', fr:'C\'était super de vous rattraper.', de:'Es war schön, sich mit Ihnen auszutauschen.', it:'È stato bello aggiornarci.', pt:'Foi ótimo colocar a conversa em dia.', nl:'Het was fijn om bij te praten.', ru:'Было приятно с вами пообщаться.', pl:'Miło było nadrobić zaległości.', sv:'Det var trevligt att komma ikapp.'}}
+    ]
+  },
+{
+    id:'telephone', label:'Telephone',
+    items:[
+      {text:'Good afternoon, Grand Hotel, how may I help you?', pronunciation:'good af-ter-NOON, grand ho-TEL, how may eye help yoo', translation:{es:'Buenas tardes, Grand Hotel, ¿en qué puedo ayudarle?', fr:'Bonjour, Grand Hôtel, comment puis-je vous aider ?', de:'Guten Tag, Grand Hotel, wie kann ich Ihnen helfen?', it:'Buon pomeriggio, Grand Hotel, come posso aiutarla?', pt:'Boa tarde, Grand Hotel, em que posso ajudar?', nl:'Goedemiddag, Grand Hotel, hoe kan ik u helpen?', ru:'Добрый день, Гранд Отель, чем могу помочь?', pl:'Dobry wieczór, Grand Hotel, w czym mogę pomóc?', sv:'God eftermiddag, Grand Hotel, hur kan jag hjälpa dig?'}},
+      {text:'Could you speak up a little, please?', pronunciation:'kood yoo speek up uh LIT-ul, pleez', translation:{es:'¿Podría hablar un poco más alto, por favor?', fr:'Pourriez-vous parler un peu plus fort, s\'il vous plaît ?', de:'Könnten Sie bitte etwas lauter sprechen?', it:'Potrebbe parlare un po\' più forte, per favore?', pt:'Pode falar um pouco mais alto, por favor?', nl:'Kunt u iets harder praten alstublieft?', ru:'Не могли бы вы говорить немного громче?', pl:'Czy możesz mówić trochę głośniej?', sv:'Kan du tala lite högre tack?'}},
+      {text:'Could I speak to Mr. Johnson, please?', pronunciation:'kood eye speek too MIS-ter JON-sun, pleez', translation:{es:'¿Podría hablar con el Sr. Johnson, por favor?', fr:'Puis-je parler à M. Johnson, s\'il vous plaît ?', de:'Könnte ich bitte mit Herrn Johnson sprechen?', it:'Potrei parlare con il signor Johnson, per favore?', pt:'Posso falar com o Sr. Johnson, por favor?', nl:'Mag ik met de heer Johnson spreken alstublieft?', ru:'Могу я поговорить с господином Джонсоном?', pl:'Czy mogę rozmawiać z panem Johnsonem?', sv:'Kan jag få tala med herr Johnson tack?'}},
+      {text:'Thank you for holding. How may I assist you?', pronunciation:'thank yoo for HOHL-ding. how may eye uh-SIST yoo', translation:{es:'Gracias por esperar. ¿En qué puedo ayudarle?', fr:'Merci d\'avoir patienté. Comment puis-je vous aider ?', de:'Danke fürs Warten. Wie kann ich Ihnen helfen?', it:'Grazie per aver atteso. Come posso aiutarla?', pt:'Obrigado por aguardar. Em que posso ajudar?', nl:'Bedankt voor het wachten. Hoe kan ik u helpen?', ru:'Спасибо за ожидание. Чем могу помочь?', pl:'Dziękuję za oczekiwanie. W czym mogę pomóc?', sv:'Tack för att du väntade. Hur kan jag hjälpa dig?'}},
+      {text:'I will transfer you to the right department.', pronunciation:'eye wil TRANS-fer yoo too thuh ryt dih-PART-ment', translation:{es:'Le transferiré al departamento correcto.', fr:'Je vais vous transférer au bon service.', de:'Ich verbinde Sie mit der richtigen Abteilung.', it:'La trasferisco al reparto giusto.', pt:'Vou transferir para o departamento correto.', nl:'Ik verbind u door naar de juiste afdeling.', ru:'Я переключу вас на нужный отдел.', pl:'Przekieruję cię do właściwego działu.', sv:'Jag kopplar dig till rätt avdelning.'}},
+      {text:'May I take a message?', pronunciation:'may eye tayk uh MES-ij', translation:{es:'¿Puedo tomar un mensaje?', fr:'Puis-je prendre un message ?', de:'Kann ich eine Nachricht aufnehmen?', it:'Posso prendere un messaggio?', pt:'Posso deixar uma mensagem?', nl:'Mag ik een bericht aannemen?', ru:'Могу я передать сообщение?', pl:'Czy mogę przyjąć wiadomość?', sv:'Kan jag ta ett meddelande?'}},
+      {text:'I\'m afraid the line is busy.', pronunciation:'eyem uh-FRAYD thuh lyn iz BIZ-ee', translation:{es:'Me temo que la línea está ocupada.', fr:'Je crains que la ligne soit occupée.', de:'Ich fürchte, die Leitung ist besetzt.', it:'Temo che la linea sia occupata.', pt:'Receio que a linha esteja ocupada.', nl:'Ik ben bang dat de lijn bezet is.', ru:'Боюсь, линия занята.', pl:'Obawiam się, że linia jest zajęta.', sv:'Jag är rädd att linjen är upptagen.'}},
+      {text:'Could you call back in ten minutes?', pronunciation:'kood yoo kawl bak in ten MIN-its', translation:{es:'¿Podría volver a llamar en diez minutos?', fr:'Pourriez-vous rappeler dans dix minutes ?', de:'Könnten Sie in zehn Minuten zurückrufen?', it:'Può richiamare tra dieci minuti?', pt:'Pode voltar a ligar dentro de dez minutos?', nl:'Kunt u over tien minuten terugbellen?', ru:'Не могли бы вы перезвонить через десять минут?', pl:'Czy możesz oddzwonić za dziesięć minut?', sv:'Kan du ringa tillbaka om tio minuter?'}},
+      {text:'I\'ll put you on hold for a moment.', pronunciation:'eyel poot yoo on hohld for uh MOH-ment', translation:{es:'Le pondré en espera un momento.', fr:'Je vous mets en attente un instant.', de:'Ich halte Sie einen Moment in der Warteschleife.', it:'La metto in attesa un momento.', pt:'Vou colocá-lo em espera um momento.', nl:'Ik zet u heel even in de wacht.', ru:'Я поставлю вас на удержание на минуту.', pl:'Postawię cię chwilę na oczekiwaniu.', sv:'Jag sätter dig på vänt en stund.'}},
+      {text:'Thank you for calling. Have a great day.', pronunciation:'thank yoo for KAW-ling. hav uh grayt day', translation:{es:'Gracias por llamar. Que tenga un buen día.', fr:'Merci de votre appel. Bonne journée.', de:'Danke für Ihren Anruf. Einen schönen Tag.', it:'Grazie per aver chiamato. Buona giornata.', pt:'Obrigado pela chamada. Tenha um bom dia.', nl:'Bedankt voor het bellen. Fijne dag.', ru:'Спасибо за звонок. Хорошего дня.', pl:'Dziękuję za telefon. Miłego dnia.', sv:'Tack för att du ringde. Ha en bra dag.'}},
+      {text:'May I ask who\'s calling, please?', pronunciation:'may eye ask hooz KAW-ling, pleez', translation:{es:'¿Puedo preguntar quién llama, por favor?', fr:'Puis-je demander qui est à l\'appareil, s\'il vous plaît ?', de:'Darf ich fragen, wer am Apparat ist?', it:'Posso chiedere chi parla, per favore?', pt:'Posso perguntar quem está a ligar?', nl:'Mag ik vragen wie er aan de lijn is?', ru:'Можно узнать, кто звонит?', pl:'Czy mogę zapytać kto dzwoni?', sv:'Får jag fråga vem som ringer?'}},
+      {text:'I\'ll call you back as soon as I have an update.', pronunciation:'eyel kawl yoo bak az soon az eye hav an UP-dayt', translation:{es:'Le llamaré en cuanto tenga una actualización.', fr:'Je vous rappellerai dès que j\'aurai une mise à jour.', de:'Ich rufe Sie zurück, sobald ich ein Update habe.', it:'La richiamerò appena avrò un aggiornamento.', pt:'Volto a ligar assim que tiver novidades.', nl:'Ik bel u terug zodra ik een update heb.', ru:'Я перезвоню, как только будет новость.', pl:'Oddzwonię, gdy będę miał aktualizację.', sv:'Jag ringer tillbaka så snart jag har en uppdatering.'}},
+      {text:'Sorry, I think we got cut off earlier.', pronunciation:'SOR-ee, eye think wee got kut of UR-lee-er', translation:{es:'Lo siento, creo que se cortó antes.', fr:'Désolé, je crois que nous avons été coupés.', de:'Entschuldigung, ich glaube, wir wurden unterbrochen.', it:'Scusi, credo che la chiamata sia caduta prima.', pt:'Desculpe, acho que a chamada caiu antes.', nl:'Sorry, ik geloof dat we eerder werden onderbroken.', ru:'Извините, кажется, нас прервали.', pl:'Przepraszam, chyba nas rozłączyło.', sv:'Ursäkta, jag tror att vi blev avbrutna.'}},
+      {text:'Let me repeat that for you.', pronunciation:'let mee rih-PEET that for yoo', translation:{es:'Permítame repetirle eso.', fr:'Laissez-moi vous répéter cela.', de:'Lassen Sie mich das für Sie wiederholen.', it:'Mi permetta di ripeterglielo.', pt:'Deixe-me repetir isso para o senhor.', nl:'Laat me dat voor u herhalen.', ru:'Позвольте мне повторить это для вас.', pl:'Pozwól, że powtórzę to dla ciebie.', sv:'Låt mig upprepa det för dig.'}}
+    ]
+  },
+{
+    id:'storytelling', label:'Storytelling',
+    items:[
+      {text:'Last night a guest arrived late. She had lost her luggage. We offered her a toothbrush and a warm meal. She wrote us a five-star review.',
+       pronunciation:'last nyt uh gest uh-RYVD layt. shee had lost hur LUG-ij. wee AW-ferd hur uh TOOTH-brush and uh worm meel. shee roht us uh fyv-star ree-VYOO',
+       translation:{es:'Anoche llegó una huésped tarde. Había perdido su equipaje. Le ofrecimos un cepillo de dientes y una comida caliente. Nos escribió una reseña de cinco estrellas.', fr:'Hier soir, une cliente est arrivée tard. Elle avait perdu ses bagages. Nous lui avons offert une brosse à dents et un repas chaud. Elle nous a laissé un avis cinq étoiles.', de:'Gestern Abend kam ein Gast spät an. Sie hatte ihr Gepäck verloren. Wir boten ihr eine Zahnbürste und eine warme Mahlzeit an. Sie schrieb uns eine Fünf-Sterne-Bewertung.', it:'Ieri sera è arrivata tardi una cliente. Aveva perso il bagaglio. Le abbiamo offerto uno spazzolino e un pasto caldo. Ci ha lasciato una recensione a cinque stelle.', pt:'Ontem à noite uma hóspede chegou tarde. Tinha perdido a bagagem. Oferecemos-lhe uma escova de dentes e uma refeição quente. Deixou-nos uma avaliação de cinco estrelas.', nl:'Gisteravond kwam een gast laat aan. Ze was haar bagage kwijt. We boden haar een tandenborstel en een warme maaltijd aan. Ze schreef ons een vijfsterrenrecensie.', ru:'Вчера поздно вечером приехала гостья. Она потеряла багаж. Мы предложили ей зубную щётку и тёплую еду. Она оставила нам отзыв на пять звёзд.', pl:'Wczoraj wieczorem gość przyjechał późno. Zgubiła bagaż. Zaoferowaliśmy jej szczoteczkę do zębów i ciepły posiłek. Napisała nam opinię na pięć gwiazdek.', sv:'I går kväll kom en gäst sent. Hon hade tappat sitt bagage. Vi erbjöd henne en tandborste och en varm måltid. Hon lämnade ett femstjärnigt omdöme.'}},
+      {text:'A customer called furious about a late order. I listened, apologized, and shipped it overnight. She left a five-star review.',
+       pronunciation:'uh KUS-tum-er kawld FYOOR-ee-us uh-BOWT uh layt OR-der. eye LIS-und, uh-POL-uh-jyzd, and shipped it OH-ver-nyt. shee left uh fyv-star ree-VYOO',
+       translation:{es:'Una clienta llamó furiosa por un pedido tardío. La escuché, me disculpé y lo envié durante la noche. Dejó una reseña de cinco estrellas.', fr:'Une cliente a appelé furieuse à cause d\'une commande en retard. Je l\'ai écoutée, me suis excusé et l\'ai expédiée pendant la nuit. Elle a laissé un avis cinq étoiles.', de:'Eine Kundin rief wütend wegen einer verspäteten Bestellung an. Ich hörte zu, entschuldigte mich und versandte sie über Nacht. Sie hinterließ eine Fünf-Sterne-Bewertung.', it:'Una cliente ha chiamato furiosa per un ordine in ritardo. L\'ho ascoltata, mi sono scusato e l\'ho spedito durante la notte. Ha lasciato una recensione a cinque stelle.', pt:'Uma cliente ligou furiosa por um pedido atrasado. Ouvi-a, pedi desculpa e enviei durante a noite. Deixou uma avaliação de cinco estrelas.', nl:'Een klant belde woedend over een late bestelling. Ik luisterde, verontschuldigde me en verzond deze dezelfde nacht. Ze liet een vijfsterrenrecensie achter.', ru:'Клиентка позвонила в ярости из-за позднего заказа. Я выслушал, извинился и отправил его ночью. Она оставила отзыв на пять звёзд.', pl:'Klientka zadzwoniła wściekła z powodu spóźnionego zamówienia. Wysłuchałem, przeprosiłem i wysłałem je nocą. Zostawiła opinię na pięć gwiazdek.', sv:'En kund ringde rasande om en sen beställning. Jag lyssnade, bad om ursäkt och skickade den över natten. Hon lämnade ett femstjärnigt omdöme.'}},
+      {text:'On my first day at the company, I forgot my badge. A kind colleague walked me to security and helped me get a new one. I never forgot that kindness.',
+       pronunciation:'on my furst day at thuh KUM-puh-nee, eye for-GOT my baj. uh kynd KOL-eeg wawkt mee too sih-KYOOR-i-tee and helped mee get uh nyoo wun. eye NEV-er for-GOT that KYNd-nis',
+       translation:{es:'El primer día en la empresa olvidé mi credencial. Un amable colega me acompañó a seguridad y me ayudó a obtener una nueva. Nunca olvidé esa amabilidad.', fr:'Mon premier jour dans l\'entreprise, j\'ai oublié mon badge. Un collègue aimable m\'a accompagné à la sécurité et m\'a aidé à en obtenir un nouveau. Je n\'ai jamais oublié cette gentillesse.', de:'An meinem ersten Tag in der Firma vergaß ich meinen Ausweis. Ein freundlicher Kollege begleitete mich zum Sicherheitsdienst und half mir, einen neuen zu bekommen. Diese Freundlichkeit habe ich nie vergessen.', it:'Il mio primo giorno in azienda ho dimenticato il badge. Un collega gentile mi ha accompagnato alla sicurezza e mi ha aiutato a ottenerne uno nuovo. Non ho mai dimenticato quella gentilezza.', pt:'No meu primeiro dia na empresa esqueci o crachá. Um colega gentil acompanhou-me à segurança e ajudou-me a obter um novo. Nunca esqueci essa gentileza.', nl:'Op mijn eerste dag bij het bedrijf vergat ik mijn badge. Een vriendelijke collega bracht me naar de beveiliging en hielp me een nieuwe te krijgen. Die vriendelijkheid ben ik nooit vergeten.', ru:'В первый день в компании я забыл пропуск. Добрый коллега проводил меня в службу безопасности и помог получить новый. Я никогда не забыл эту доброту.', pl:'Pierwszego dnia w firmie zapomniałem identyfikatora. Życzliwy kolega zaprowadził mnie do ochrony i pomógł wyrobić nowy. Nigdy nie zapomniałem tej życzliwości.', sv:'Min första dag på företaget glömde jag mitt passerkort. En vänlig kollega följde mig till säkerheten och hjälpte mig skaffa ett nytt. Den vänligheten glömde jag aldrig.'}},
+      {text:'We once had a client who was about to cancel. I called her personally, listened for twenty minutes, and offered a tailored solution. She stayed with us for five more years.',
+       pronunciation:'wee wuns had uh KLY-ent hoo wuz uh-BOWT too KAN-sul. eye kawld hur PUR-sun-ul-ee, LIS-und for TWEN-tee MIN-its, and AW-ferd uh TAY-lerd suh-LOO-shun. shee stayd with us for fyv mor yeerz',
+       translation:{es:'Una vez tuvimos una clienta a punto de cancelar. La llamé personalmente, la escuché durante veinte minutos y le ofrecí una solución a medida. Se quedó con nosotros cinco años más.', fr:'Nous avons eu une cliente sur le point d\'annuler. Je l\'ai appelée personnellement, je l\'ai écoutée pendant vingt minutes et je lui ai proposé une solution sur mesure. Elle est restée avec nous cinq ans de plus.', de:'Wir hatten einmal eine Kundin, die kurz vor der Kündigung stand. Ich rief sie persönlich an, hörte zwanzig Minuten zu und bot eine maßgeschneiderte Lösung an. Sie blieb fünf weitere Jahre bei uns.', it:'Una volta avevamo una cliente in procinto di disdire. L\'ho chiamata personalmente, l\'ho ascoltata per venti minuti e le ho offerto una soluzione su misura. È rimasta con noi per altri cinque anni.', pt:'Uma vez tivemos uma cliente prestes a cancelar. Liguei-lhe pessoalmente, escutei-a durante vinte minutos e ofereci uma solução à medida. Ficou connosco mais cinco anos.', nl:'We hadden ooit een klant die op het punt stond op te zeggen. Ik belde haar persoonlijk, luisterde twintig minuten en bood een oplossing op maat. Ze bleef nog vijf jaar bij ons.', ru:'Однажды у нас была клиентка, которая собиралась уйти. Я позвонил ей лично, выслушал двадцать минут и предложил индивидуальное решение. Она осталась с нами ещё на пять лет.', pl:'Mieliśmy kiedyś klientkę, która chciała zrezygnować. Zadzwoniłem do niej osobiście, słuchałem przez dwadzieścia minut i zaproponowałem rozwiązanie szyte na miarę. Została z nami jeszcze pięć lat.', sv:'Vi hade en gång en kund som var på väg att avsluta. Jag ringde henne personligen, lyssnade i tjugo minuter och erbjöd en skräddarsydd lösning. Hon stannade hos oss i fem år till.'}},
+      {text:'At the conference, our presentation went wrong at the start. The projector failed, but I kept calm, told a joke, and the audience laughed. We delivered a strong talk.',
+       pronunciation:'at thuh KON-fur-uns, our preh-zen-TAY-shun went rong at thuh start. thuh pro-JEK-ter fayld, but eye kept kahm, tohld uh johk, and thee AW-dee-uns laffd. wee dih-LIV-erd uh strong tawk',
+       translation:{es:'En la conferencia, nuestra presentación salió mal al principio. El proyector falló, pero mantuve la calma, conté un chiste y el público se rió. Dimos una charla sólida.', fr:'À la conférence, notre présentation a mal commencé. Le projecteur est tombé en panne, mais je suis resté calme, j\'ai raconté une blague et le public a ri. Nous avons livré un bon discours.', de:'Auf der Konferenz lief unsere Präsentation zu Beginn schief. Der Projektor fiel aus, aber ich blieb ruhig, erzählte einen Witz und das Publikum lachte. Wir hielten einen starken Vortrag.', it:'Alla conferenza, la nostra presentazione è andata male all\'inizio. Il proiettore si è guastato, ma sono rimasto calmo, ho raccontato una barzelletta e il pubblico ha riso. Abbiamo tenuto un ottimo intervento.', pt:'Na conferência, a nossa apresentação correu mal no início. O projetor falhou, mas mantive a calma, contei uma piada e o público riu. Fizemos uma boa palestra.', nl:'Op de conferentie ging onze presentatie in het begin mis. De projector viel uit, maar ik bleef kalm, vertelde een grap en het publiek lachte. We hebben een sterke presentatie gegeven.', ru:'На конференции наша презентация пошла не так в самом начале. Проектор сломался, но я сохранил спокойствие, пошутил, и зал засмеялся. Мы провели отличное выступление.', pl:'Na konferencji nasza prezentacja zaczęła się źle. Projektor się zepsuł, ale zachowałem spokój, opowiedziałem żart i publiczność się roześmiała. Wygłosiliśmy mocny wykład.', sv:'På konferensen gick vår presentation fel i början. Projektorn slutade fungera, men jag höll mig lugn, berättade ett skämt och publiken skrattade. Vi höll ett starkt föredrag.'}},
+      {text:'Last summer I travelled to Japan for work. I learned three phrases, and the effort opened doors. People were kind everywhere I went. It taught me that small gestures go a long way.',
+       pronunciation:'last SUM-er eye TRAV-uld too juh-PAN for wurk. eye LURND three FRAY-ziz, and thee EF-ert OH-pund doorz. PEE-pul wur kynd EV-ree-wair eye went. it TAWT mee that smawl JES-cherz goh uh long way',
+       translation:{es:'El verano pasado viajé a Japón por trabajo. Aprendí tres frases y el esfuerzo abrió puertas. La gente fue amable dondequiera que fui. Me enseñó que los pequeños gestos llegan lejos.', fr:'L\'été dernier, j\'ai voyagé au Japon pour le travail. J\'ai appris trois phrases et l\'effort a ouvert des portes. Les gens étaient gentils partout où j\'allais. Cela m\'a appris que les petits gestes font la différence.', de:'Letzten Sommer reiste ich beruflich nach Japan. Ich lernte drei Sätze, und die Mühe öffnete Türen. Überall, wo ich hinkam, waren die Menschen freundlich. Es lehrte mich, dass kleine Gesten viel bewirken.', it:'L\'estate scorsa ho viaggiato in Giappone per lavoro. Ho imparato tre frasi e lo sforzo ha aperto porte. Le persone erano gentili ovunque andassi. Mi ha insegnato che i piccoli gesti fanno la differenza.', pt:'No verão passado viajei para o Japão por trabalho. Aprendi três frases e o esforço abriu portas. As pessoas foram gentis onde quer que eu fosse. Ensinou-me que pequenos gestos fazem a diferença.', nl:'Afgelopen zomer reisde ik voor werk naar Japan. Ik leerde drie zinnen en de moeite opende deuren. Mensen waren overal vriendelijk. Het leerde me dat kleine gebaren veel betekenen.', ru:'Прошлым летом я ездил в Японию по работе. Я выучил три фразы, и это открыло двери. Люди были добры везде, куда бы я ни пошёл. Это научило меня, что небольшие жесты значат многое.', pl:'Zeszłego lata pojechałem do Japonii w interesach. Nauczyłem się trzech zwrotów, a wysiłek otworzył drzwi. Ludzie byli życzliwi wszędzie, gdzie się udałem. Nauczyło mnie to, że małe gesty znaczą wiele.', sv:'I somras reste jag till Japan i jobbet. Jag lärde mig tre fraser och ansträngningen öppnade dörrar. Människor var vänliga överallt jag kom. Det lärde mig att små gester betyder mycket.'}},
+      {text:'A regular guest once left her wallet in the lobby. We tracked her down at the airport gate and returned it before boarding. She has stayed with us every year since.', pronunciation:'uh REG-yoo-ler gest wuns left hur WAW-lit in thuh LOB-ee. wee trakt hur down at thee AIR-port gayt and rih-TURND it bih-FOR BOR-ding. shee haz stayd with us EV-ree yeer sins', translation:{es:'Una huésped habitual dejó su billetera en el vestíbulo. La encontramos en la puerta del aeropuerto y se la devolvimos antes de embarcar. Se hospeda con nosotros todos los años desde entonces.', fr:'Une cliente régulière avait laissé son portefeuille dans le hall. Nous l\'avons retrouvée à la porte d\'embarquement et le lui avons rendu avant le décollage. Elle séjourne chez nous chaque année depuis.', de:'Eine Stammgästin hatte einmal ihre Brieftasche in der Lobby liegen lassen. Wir haben sie am Flugsteig gefunden und sie ihr vor dem Boarding zurückgegeben. Seitdem übernachtet sie jedes Jahr bei uns.', it:'Un\'ospite abituale una volta ha lasciato il portafoglio nella hall. L\'abbiamo rintracciata al gate dell\'aeroporto e gliel\'abbiamo restituito prima dell\'imbarco. Da allora soggiorna da noi ogni anno.', pt:'Uma hóspede habitual certa vez esqueceu a carteira no saguão. Nós a encontramos no portão do aeroporto e devolvemos antes do embarque. Desde então, ela se hospeda conosco todos os anos.', nl:'Een vaste gast liet ooit haar portemonnee in de lobby liggen. We vonden haar bij de gate op het vliegveld en gaven het terug voor het instappen. Sindsdien logeert ze elk jaar bij ons.', ru:'Постоянная гостья однажды оставила кошелёк в холле. Мы нашли её у выхода на посадку в аэропорту и вернули кошелёк до посадки. С тех пор она останавливается у нас каждый год.', pl:'Stała gościni kiedyś zostawiła portfel w holu. Znaleźliśmy ją przy bramce na lotnisku i zwróciliśmy portfel przed wejściem na pokład. Od tamtej pory zatrzymuje się u nas co roku.', sv:'En stamgäst glömde en gång sin plånbok i lobbyn. Vi hittade henne vid gaten på flygplatsen och lämnade tillbaka den innan ombordstigningen. Sedan dess bor hon hos oss varje år.'}},
+      {text:'Our warehouse lost power during a big shipment. The team worked by flashlight and finished loading by hand. Every order still went out on time that day.', pronunciation:'our WAIR-hows lost POW-er DOOR-ing uh big SHIP-munt. thuh teem wurkt by FLASH-lyt and FIN-isht LOHD-ing by hand. EV-ree OR-der stil went owt on tym that day', translation:{es:'Nuestro almacén se quedó sin electricidad durante un gran envío. El equipo trabajó con linternas y terminó de cargar a mano. Todos los pedidos salieron a tiempo ese día.', fr:'Notre entrepôt a perdu l\'électricité pendant une grosse expédition. L\'équipe a travaillé à la lampe torche et a terminé le chargement à la main. Toutes les commandes sont quand même parties à l\'heure ce jour-là.', de:'Unser Lager hatte während einer großen Lieferung einen Stromausfall. Das Team arbeitete mit Taschenlampen und beendete das Beladen von Hand. Trotzdem gingen an diesem Tag alle Bestellungen pünktlich raus.', it:'Il nostro magazzino ha perso corrente durante una grande spedizione. Il team ha lavorato con le torce e ha finito di caricare a mano. Tutti gli ordini sono comunque partiti in orario quel giorno.', pt:'Nosso armazém ficou sem energia durante um grande carregamento. A equipe trabalhou com lanternas e terminou de carregar manualmente. Todos os pedidos saíram no prazo naquele dia.', nl:'Ons magazijn had stroomuitval tijdens een grote verzending. Het team werkte met zaklampen en laadde alles met de hand in. Alle bestellingen gingen die dag toch op tijd de deur uit.', ru:'На нашем складе отключилось электричество во время крупной отгрузки. Команда работала с фонариками и закончила погрузку вручную. В тот день все заказы всё равно ушли вовремя.', pl:'W naszym magazynie zabrakło prądu podczas dużej wysyłki. Zespół pracował przy latarkach i zakończył załadunek ręcznie. Tego dnia wszystkie zamówienia i tak wyszły na czas.', sv:'Vårt lager förlorade strömmen under en stor leverans. Teamet arbetade med ficklampor och lastade klart för hand. Alla beställningar gick ändå ut i tid den dagen.'}}
+    ]
+  },
+{
+    id:'pronunciation', label:'Pronunciation',
+    items:[
+      {text:'TH vs S — think / sink', pronunciation:'TH as in "think" (tongue between teeth) vs S as in "sink"', translation:{es:'TH como en "think" (lengua entre los dientes) vs S como en "sink"', fr:'TH comme dans "think" (langue entre les dents) vs S comme dans "sink"', de:'TH wie in "think" (Zunge zwischen den Zähnen) vs S wie in "sink"', it:'TH come in "think" (lingua tra i denti) vs S come in "sink"', pt:'TH como em "think" (língua entre os dentes) vs S como em "sink"', nl:'TH zoals in "think" (tong tussen de tanden) vs S zoals in "sink"', ru:'TH как в "think" (язык между зубами) vs S как в "sink"', pl:'TH jak w "think" (język między zębami) vs S jak w "sink"', sv:'TH som i "think" (tungan mellan tänderna) vs S som i "sink"'}},
+      {text:'R vs L — right / light', pronunciation:'R as in "right" (no tongue touch) vs L as in "light"', translation:{es:'R como en "right" (sin tocar con la lengua) vs L como en "light"', fr:'R comme dans "right" (pas de contact de la langue) vs L comme dans "light"', de:'R wie in "right" (keine Zungenberührung) vs L wie in "light"', it:'R come in "right" (nessun contatto della lingua) vs L come in "light"', pt:'R como em "right" (sem tocar com a língua) vs L como em "light"', nl:'R zoals in "right" (geen tongcontact) vs L zoals in "light"', ru:'R как в "right" (без касания языком) vs L как в "light"', pl:'R jak w "right" (bez dotykania językiem) vs L jak w "light"', sv:'R som i "right" (ingen tungkontakt) vs L som i "light"'}},
+      {text:'V vs B — very / berry', pronunciation:'V as in "very" (lip on teeth) vs B as in "berry"', translation:{es:'V como en "very" (labio sobre dientes) vs B como en "berry"', fr:'V comme dans "very" (lèvre sur les dents) vs B comme dans "berry"', de:'V wie in "very" (Lippe auf Zähnen) vs B wie in "berry"', it:'V come in "very" (labbro sui denti) vs B come in "berry"', pt:'V como em "very" (lábio sobre dentes) vs B como em "berry"', nl:'V zoals in "very" (lip op tanden) vs B zoals in "berry"', ru:'V как в "very" (губа на зубах) vs B как в "berry"', pl:'V jak w "very" (warga na zębach) vs B jak w "berry"', sv:'V som i "very" (läppen mot tänderna) vs B som i "berry"'}},
+      {text:'Short vs long I — ship / sheep', pronunciation:'ship (short ih) vs sheep (long ee)', translation:{es:'ship (i corta) vs sheep (i larga)', fr:'ship (i court) vs sheep (i long)', de:'ship (kurzes i) vs sheep (langes i)', it:'ship (i breve) vs sheep (i lunga)', pt:'ship (i curto) vs sheep (i longo)', nl:'ship (korte i) vs sheep (lange i)', ru:'ship (краткий i) vs sheep (долгий i)', pl:'ship (krótkie i) vs sheep (długie i)', sv:'ship (kort i) vs sheep (långt i)'}},
+      {text:'Word stress — PREsent / preSENT', pronunciation:'PREsent (noun) vs preSENT (verb) — stress changes meaning', translation:{es:'PREsent (sustantivo) vs preSENT (verbo) — el acento cambia el significado', fr:'PREsent (nom) vs preSENT (verbe) — l\'accent change le sens', de:'PREsent (Substantiv) vs preSENT (Verb) — Betonung ändert die Bedeutung', it:'PREsent (sostantivo) vs preSENT (verbo) — l\'accento cambia il significato', pt:'PREsent (substantivo) vs preSENT (verbo) — o acento muda o significado', nl:'PREsent (zelfstandig naamwoord) vs preSENT (werkwoord) — klemtoon verandert de betekenis', ru:'PREsent (существительное) vs preSENT (глагол) — ударение меняет значение', pl:'PREsent (rzeczownik) vs preSENT (czasownik) — akcent zmienia znaczenie', sv:'PREsent (substantiv) vs preSENT (verb) — betoning ändrar betydelsen'}},
+      {text:'Silent letters — knock, climb', pronunciation:'the K in "knock" and the B in "climb" are silent', translation:{es:'La K de "knock" y la B de "climb" son mudas', fr:'Le K de "knock" et le B de "climb" sont muets', de:'Das K in "knock" und das B in "climb" sind stumm', it:'La K di "knock" e la B di "climb" sono mute', pt:'O K de "knock" e o B de "climb" são mudos', nl:'De K in "knock" en de B in "climb" zijn stom', ru:'K в "knock" и B в "climb" не произносятся', pl:'K w "knock" i B w "climb" są nieme', sv:'K i "knock" och B i "climb" är stumma'}},
+      {text:'Schwa — the most common English sound', pronunciation:'the "uh" sound in "banana" (buh-NA-nuh)', translation:{es:'El sonido "uh" en "banana" (buh-NA-nuh)', fr:'Le son "euh" dans "banana" (buh-NA-nuh)', de:'Der "uh"-Laut in "banana" (buh-NA-nuh)', it:'Il suono "uh" in "banana" (buh-NA-nuh)', pt:'O som "uh" em "banana" (buh-NA-nuh)', nl:'De "uh"-klank in "banana" (buh-NA-nuh)', ru:'Звук "uh" в слове "banana" (buh-NA-nuh)', pl:'Dźwięk "uh" w "banana" (buh-NA-nuh)', sv:'"uh"-ljudet i "banana" (buh-NA-nuh)'}},
+      {text:'Ed endings — walked, wanted, played', pronunciation:'walked = /t/, wanted = /id/, played = /d/', translation:{es:'walked = /t/, wanted = /id/, played = /d/', fr:'walked = /t/, wanted = /id/, played = /d/', de:'walked = /t/, wanted = /id/, played = /d/', it:'walked = /t/, wanted = /id/, played = /d/', pt:'walked = /t/, wanted = /id/, played = /d/', nl:'walked = /t/, wanted = /id/, played = /d/', ru:'walked = /t/, wanted = /id/, played = /d/', pl:'walked = /t/, wanted = /id/, played = /d/', sv:'walked = /t/, wanted = /id/, played = /d/'}},
+      {text:'Aspiration — p, t, k sounds', pronunciation:'place your hand in front of your mouth — you should feel a puff of air', translation:{es:'Ponga la mano delante de la boca: debería sentir un soplo de aire.', fr:'Placez votre main devant votre bouche — vous devriez sentir un souffle d\'air.', de:'Legen Sie Ihre Hand vor den Mund — Sie sollten einen Luftstoß spüren.', it:'Metti la mano davanti alla bocca — dovresti sentire un soffio d\'aria.', pt:'Coloque a mão à frente da boca — deve sentir um sopro de ar.', nl:'Houd uw hand voor uw mond — u zou een luchtstoot moeten voelen.', ru:'Поднесите руку ко рту — вы должны почувствовать поток воздуха.', pl:'Umieść dłoń przed ustami — powinieneś poczuć podmuch powietrza.', sv:'Placera handen framför munnen — du bör känna en pust av luft.'}},
+      {text:'Linking words — "an apple" → "uh-napple"', pronunciation:'native speakers link words ending in a consonant with words starting in a vowel', translation:{es:'Los nativos enlazan palabras que terminan en consonante con las que empiezan en vocal.', fr:'Les locuteurs natifs lient les mots se terminant par une consonne aux mots commençant par une voyelle.', de:'Muttersprachler verbinden Wörter, die auf einen Konsonanten enden, mit Wörtern, die mit einem Vokal beginnen.', it:'I madrelingua legano parole che finiscono con una consonante con parole che iniziano con una vocale.', pt:'Os nativos ligam palavras terminadas em consoante com palavras começadas por vogal.', nl:'Moedertaalsprekers verbinden woorden die eindigen op een medeklinker met woorden die beginnen met een klinker.', ru:'Носители связывают слова, оканчивающиеся на согласную, со словами, начинающимися с гласной.', pl:'Native speakerzy łączą słowa kończące się spółgłoską ze słowami zaczynającymi się od samogłoski.', sv:'Modersmålstalare länkar ord som slutar på konsonant med ord som börjar på vokal.'}}
+    ]
+  },
+{
+    id:'listening', label:'Listening',
+    items:[
+      {text:'Listen and repeat: "Could you please send the updated report by 5 p.m.?"', pronunciation:'Listen first, then read the text aloud.', translation:{es:'Escuche primero, luego lea el texto en voz alta.', fr:'Écoutez d\'abord, puis lisez le texte à voix haute.', de:'Erst zuhören, dann den Text laut vorlesen.', it:'Ascolta prima, poi leggi il testo ad alta voce.', pt:'Ouça primeiro, depois leia em voz alta.', nl:'Luister eerst, lees dan hardop.', ru:'Сначала послушайте, затем прочтите вслух.', pl:'Najpierw posłuchaj, potem czytaj na głos.', sv:'Lyssna först, läs sedan högt.'}},
+      {text:'Listen and identify the main idea: "Our team will meet on Tuesday to discuss the new marketing plan."', pronunciation:'Focus on WHO, WHAT, WHEN, WHERE.', translation:{es:'Concéntrese en QUIÉN, QUÉ, CUÁNDO, DÓNDE.', fr:'Concentrez-vous sur QUI, QUOI, QUAND, OÙ.', de:'Konzentrieren Sie sich auf WER, WAS, WANN, WO.', it:'Concentrati su CHI, COSA, QUANDO, DOVE.', pt:'Foque em QUEM, O QUÊ, QUANDO, ONDE.', nl:'Let op WIE, WAT, WANNEER, WAAR.', ru:'Обратите внимание на КТО, ЧТО, КОГДА, ГДЕ.', pl:'Skup się na KTO, CO, KIEDY, GDZIE.', sv:'Fokusera på VEM, VAD, NÄR, VAR.'}},
+      {text:'Listen for numbers: "Room 512, floor 3, check-out at 11 a.m."', pronunciation:'Numbers are often the key detail.', translation:{es:'Los números suelen ser el detalle clave.', fr:'Les chiffres sont souvent le détail clé.', de:'Zahlen sind oft das entscheidende Detail.', it:'I numeri sono spesso il dettaglio chiave.', pt:'Os números são muitas vezes o detalhe chave.', nl:'Getallen zijn vaak het belangrijkste detail.', ru:'Цифры часто являются ключевой деталью.', pl:'Liczby są często kluczowym szczegółem.', sv:'Siffror är ofta den viktigaste detaljen.'}},
+      {text:'Listen for tone: "That\'s fine." — friendly vs annoyed.', pronunciation:'Tone changes meaning.', translation:{es:'El tono cambia el significado.', fr:'Le ton change le sens.', de:'Der Ton ändert die Bedeutung.', it:'Il tono cambia il significato.', pt:'O tom muda o significado.', nl:'Toon verandert de betekenis.', ru:'Тон меняет значение.', pl:'Ton zmienia znaczenie.', sv:'Tonläget förändrar betydelsen.'}},
+      {text:'Listen for reductions: "Whaddaya wanna do?" = "What do you want to do?"', pronunciation:'Native speakers often reduce words.', translation:{es:'Los nativos a menudo reducen palabras.', fr:'Les locuteurs natifs réduisent souvent les mots.', de:'Muttersprachler verkürzen oft Wörter.', it:'I madrelingua spesso riducono le parole.', pt:'Os nativos frequentemente reduzem palavras.', nl:'Moedertaalsprekers verkorten vaak woorden.', ru:'Носители часто сокращают слова.', pl:'Native speakerzy często skracają słowa.', sv:'Modersmålstalare förkortar ofta ord.'}},
+      {text:'Listen for contractions: "I\'d\'ve gone" = "I would have gone".', pronunciation:'Contractions are common in fast speech.', translation:{es:'Las contracciones son comunes en el habla rápida.', fr:'Les contractions sont courantes dans la parole rapide.', de:'Kontraktionen sind in schneller Sprache üblich.', it:'Le contrazioni sono comuni nel parlato veloce.', pt:'As contrações são comuns na fala rápida.', nl:'Samentrekkingen komen veel voor in snelle spraak.', ru:'Сокращения распространены в быстрой речи.', pl:'Skróty są powszechne w szybkiej mowie.', sv:'Sammandragningar är vanliga i snabbt tal.'}},
+      {text:'Listen for emphasis: "I said the BLUE one, not the red one."', pronunciation:'Stress highlights the key word.', translation:{es:'El énfasis destaca la palabra clave.', fr:'L\'accent met en évidence le mot clé.', de:'Die Betonung hebt das Schlüsselwort hervor.', it:'L\'enfasi evidenzia la parola chiave.', pt:'A ênfase destaca a palavra-chave.', nl:'Nadruk benadrukt het sleutelwoord.', ru:'Ударение выделяет ключевое слово.', pl:'Akcent podkreśla kluczowe słowo.', sv:'Betoning framhäver nyckelordet.'}},
+      {text:'Listen for connected speech: \\"I\'m gonna\\" = \\"I am going to\\".', pronunciation:'Fast speech often links words together.', translation:{es:'Escuche el habla conectada: \\"I\'m gonna\\" = \\"I am going to\\".', fr:'Repérez le discours lié : « I\'m gonna » = « I am going to ».', de:'Achten Sie auf verbundene Aussprache: „I\'m gonna“ = „I am going to“.', it:'Ascolta il parlato collegato: \\"I\'m gonna\\" = \\"I am going to\\".', pt:'Preste atenção à fala ligada: \\"I\'m gonna\\" = \\"I am going to\\".', nl:'Let op verbonden spraak: \\"I\'m gonna\\" = \\"I am going to\\".', ru:'Слушайте слитную речь: «I\'m gonna» = «I am going to».', pl:'Słuchaj mowy łączonej: „I\'m gonna” = „I am going to”.', sv:'Lyssna efter sammanbundet tal: \\"I\'m gonna\\" = \\"I am going to\\".'}},
+      {text:'Listen for the question intonation rising at the end: \\"You\'re coming, right?\\"', pronunciation:'Rising pitch often signals a question or a check.', translation:{es:'Escuche la entonación de pregunta que sube al final: \\"You\'re coming, right?\\"', fr:'Repérez l\'intonation montante de la question à la fin : « You\'re coming, right ? »', de:'Achten Sie auf die steigende Frageintonation am Ende: „You\'re coming, right?“', it:'Ascolta l\'intonazione della domanda che sale alla fine: \\"You\'re coming, right?\\"', pt:'Preste atenção à entonação de pergunta que sobe no final: \\"You\'re coming, right?\\"', nl:'Let op de stijgende vraagintonatie aan het einde: \\"You\'re coming, right?\\"', ru:'Слушайте восходящую интонацию вопроса в конце: «You\'re coming, right?»', pl:'Słuchaj wznoszącej się intonacji pytania na końcu: „You\'re coming, right?”', sv:'Lyssna efter den stigande frågeintonationen i slutet: \\"You\'re coming, right?\\"'}}
+    ]
+  },
+{
+    id:'writing', label:'Business Writing',
+    items:[
+      {text:'Dear Mr. Smith, I am writing to confirm your reservation for March 14th at 3 p.m.', pronunciation:'formal greeting + purpose + date/time', translation:{es:'Saludo formal + propósito + fecha/hora', fr:'Salutation formelle + objet + date/heure', de:'Formelle Anrede + Zweck + Datum/Uhrzeit', it:'Saluto formale + scopo + data/ora', pt:'Saudação formal + objetivo + data/hora', nl:'Formele aanhef + doel + datum/tijd', ru:'Формальное приветствие + цель + дата/время', pl:'Formalne powitanie + cel + data/godzina', sv:'Formell hälsning + syfte + datum/tid'}},
+      {text:'Please find attached the updated contract for your review. Kindly sign and return by Friday.', pronunciation:'polite request + deadline', translation:{es:'Solicitud cortés + fecha límite', fr:'Demande polie + date limite', de:'Höfliche Bitte + Frist', it:'Richiesta cortese + scadenza', pt:'Pedido educado + prazo', nl:'Beleefd verzoek + deadline', ru:'Вежливая просьба + срок', pl:'Uprzejma prośba + termin', sv:'Artig begäran + deadline'}},
+      {text:'I apologize for the delay in responding. I will follow up with the full report tomorrow morning.', pronunciation:'apology + next step', translation:{es:'Disculpa + siguiente paso', fr:'Excuse + étape suivante', de:'Entschuldigung + nächster Schritt', it:'Scuse + passo successivo', pt:'Desculpa + próximo passo', nl:'Verontschuldiging + volgende stap', ru:'Извинение + следующий шаг', pl:'Przeprosiny + następny krok', sv:'Ursäkt + nästa steg'}},
+      {text:'Thank you for your patience. We look forward to working with you.', pronunciation:'closing on a warm note', translation:{es:'Cierre cálido', fr:'Clôture chaleureuse', de:'Warmer Abschluss', it:'Chiusura calorosa', pt:'Fecho caloroso', nl:'Warme afsluiting', ru:'Тёплое завершение', pl:'Ciepłe zakończenie', sv:'Varm avslutning'}},
+      {text:'I am writing to express my interest in the position advertised on your website.', pronunciation:'cover letter opening', translation:{es:'Carta de presentación — apertura', fr:'Lettre de motivation — ouverture', de:'Anschreiben — Einleitung', it:'Lettera di presentazione — apertura', pt:'Carta de apresentação — abertura', nl:'Sollicitatiebrief — opening', ru:'Сопроводительное письмо — вступление', pl:'List motywacyjny — otwarcie', sv:'Personligt brev — inledning'}},
+      {text:'Please do not hesitate to contact me if you require any further information.', pronunciation:'professional closing', translation:{es:'Cierre profesional', fr:'Formule de politesse', de:'Professioneller Abschluss', it:'Chiusura professionale', pt:'Fecho profissional', nl:'Professionele afsluiting', ru:'Профессиональное завершение', pl:'Profesjonalne zakończenie', sv:'Professionellt avslut'}},
+      {text:'I would like to schedule a meeting to discuss the proposal in more detail.', pronunciation:'meeting request', translation:{es:'Solicitud de reunión', fr:'Demande de réunion', de:'Besprechungsanfrage', it:'Richiesta di riunione', pt:'Pedido de reunião', nl:'Verzoek om vergadering', ru:'Запрос на встречу', pl:'Prośba o spotkanie', sv:'Begäran om möte'}},
+      {text:'We regret to inform you that your application was not successful on this occasion.', pronunciation:'rejection letter', translation:{es:'Carta de rechazo', fr:'Lettre de refus', de:'Absage', it:'Lettera di rifiuto', pt:'Carta de recusa', nl:'Afwijzingsbrief', ru:'Письмо с отказом', pl:'List odmowny', sv:'Avslagsbrev'}},
+      {text:'Congratulations! We are delighted to offer you the position starting on April 1st.', pronunciation:'job offer', translation:{es:'Oferta de trabajo', fr:'Offre d\'emploi', de:'Stellenangebot', it:'Offerta di lavoro', pt:'Oferta de emprego', nl:'Baanaanbod', ru:'Предложение работы', pl:'Oferta pracy', sv:'Jobberbjudande'}}
+    ]
+  },
+{
+    id:'presentations', label:'Presentations',
+    items:[
+      {text:'Good morning everyone. Today I will cover three points: the current status, the risks, and the next steps.', pronunciation:'signposting + structure', translation:{es:'Señalización + estructura', fr:'Signalisation + structure', de:'Wegweiser + Struktur', it:'Segnalazione + struttura', pt:'Sinalização + estrutura', nl:'Structuur + wegwijzers', ru:'Структура + указатели', pl:'Struktura + drogowskazy', sv:'Struktur + vägvisare'}},
+      {text:'As you can see on this slide, revenue grew by twelve percent this quarter.', pronunciation:'referring to visuals', translation:{es:'Referirse a lo visual', fr:'Se référer aux visuels', de:'Auf visuelle Inhalte verweisen', it:'Riferirsi agli elementi visivi', pt:'Referir o visual', nl:'Verwijzen naar het beeld', ru:'Ссылка на визуальные материалы', pl:'Odniesienie do wizualizacji', sv:'Hänvisa till bilden'}},
+      {text:'Let me now turn to the biggest challenge we are facing.', pronunciation:'transition phrase', translation:{es:'Frase de transición', fr:'Phrase de transition', de:'Übergangsphrase', it:'Frase di transizione', pt:'Frase de transição', nl:'Overgangszin', ru:'Переходная фраза', pl:'Zdanie przejściowe', sv:'Övergångsfras'}},
+      {text:'To summarize, we have three priorities for the next quarter.', pronunciation:'summarizing', translation:{es:'Resumir', fr:'Résumer', de:'Zusammenfassen', it:'Riassumere', pt:'Resumir', nl:'Samenvatten', ru:'Резюмировать', pl:'Podsumować', sv:'Sammanfatta'}},
+      {text:'I\'d be happy to take any questions now.', pronunciation:'inviting questions', translation:{es:'Invitar a preguntas', fr:'Inviter aux questions', de:'Zu Fragen einladen', it:'Invitare alle domande', pt:'Convidar a perguntas', nl:'Uitnodigen tot vragen', ru:'Приглашение к вопросам', pl:'Zaproszenie do pytań', sv:'Bjuda in till frågor'}},
+      {text:'Before I go further, let me give you some background.', pronunciation:'providing context', translation:{es:'Proporcionar contexto', fr:'Fournir du contexte', de:'Kontext liefern', it:'Fornire contesto', pt:'Fornecer contexto', nl:'Context geven', ru:'Дать контекст', pl:'Podanie kontekstu', sv:'Ge bakgrund'}},
+      {text:'This brings me to my next point.', pronunciation:'transition', translation:{es:'Transición', fr:'Transition', de:'Übergang', it:'Transizione', pt:'Transição', nl:'Overgang', ru:'Переход', pl:'Przejście', sv:'Övergång'}},
+      {text:'In conclusion, our strategy is on track and delivering results.', pronunciation:'conclusion', translation:{es:'Conclusión', fr:'Conclusion', de:'Fazit', it:'Conclusione', pt:'Conclusão', nl:'Conclusie', ru:'Заключение', pl:'Wniosek', sv:'Slutsats'}}
+    ]
+  },
+{
+    id:'negotiation', label:'Negotiation',
+    items:[
+      {text:'If you can extend the deadline by two days, we can deliver a higher-quality result.', pronunciation:'conditional offer', translation:{es:'Oferta condicional', fr:'Offre conditionnelle', de:'Bedingtes Angebot', it:'Offerta condizionale', pt:'Oferta condicional', nl:'Voorwaardelijk aanbod', ru:'Условное предложение', pl:'Oferta warunkowa', sv:'Villkorligt erbjudande'}},
+      {text:'I understand your position, but our budget is fixed for this quarter.', pronunciation:'acknowledge + constraint', translation:{es:'Reconocer + restricción', fr:'Reconnaître + contrainte', de:'Anerkennen + Einschränkung', it:'Riconoscere + vincolo', pt:'Reconhecer + restrição', nl:'Erkenning + beperking', ru:'Признание + ограничение', pl:'Uznanie + ograniczenie', sv:'Erkännande + begränsning'}},
+      {text:'Would you be open to a 50/50 split on the cost?', pronunciation:'proposing a compromise', translation:{es:'Proponer un compromiso', fr:'Proposer un compromis', de:'Einen Kompromiss vorschlagen', it:'Proporre un compromesso', pt:'Propor um compromisso', nl:'Een compromis voorstellen', ru:'Предложить компромисс', pl:'Zaproponować kompromis', sv:'Föreslå en kompromiss'}},
+      {text:'Let\'s find a solution that works for both sides.', pronunciation:'collaborative tone', translation:{es:'Tono colaborativo', fr:'Ton collaboratif', de:'Kollaborativer Ton', it:'Tono collaborativo', pt:'Tom colaborativo', nl:'Samenwerkende toon', ru:'Совместный тон', pl:'Ton współpracy', sv:'Samarbetande ton'}},
+      {text:'That\'s a bit outside our range. Is there any flexibility on price?', pronunciation:'polite pushback', translation:{es:'Rechazo cortés', fr:'Refus poli', de:'Höfliche Ablehnung', it:'Rifiuto cortese', pt:'Recusa educada', nl:'Beleefd afwijzen', ru:'Вежливый отказ', pl:'Uprzejma odmowa', sv:'Artigt avböjande'}},
+      {text:'What if we meet in the middle?', pronunciation:'compromise', translation:{es:'Compromiso', fr:'Compromis', de:'Kompromiss', it:'Compromesso', pt:'Compromisso', nl:'Compromis', ru:'Компромисс', pl:'Kompromis', sv:'Kompromiss'}},
+      {text:'I\'m afraid that won\'t work for us. Here\'s an alternative.', pronunciation:'counter-offer', translation:{es:'Contraoferta', fr:'Contre-offre', de:'Gegenangebot', it:'Controproposta', pt:'Contraproposta', nl:'Tegenaanbod', ru:'Контрпредложение', pl:'Kontroferta', sv:'Motbud'}},
+      {text:'If we sign today, can you include free delivery?', pronunciation:'closing condition', translation:{es:'Condición de cierre', fr:'Condition de clôture', de:'Abschlussbedingung', it:'Condizione di chiusura', pt:'Condição de fecho', nl:'Afsluitende voorwaarde', ru:'Условие закрытия', pl:'Warunek zamknięcia', sv:'Avslutande villkor'}}
+    ]
+  }
+];
+
+/* --- Part 1 ends here. Paste Part 2 immediately below this line. --- */
+
+/* ============================================================
+   MOUTH OUTLINE — static shape that fills red while speaking
+   ============================================================ */
+function getMouthOutlinePaths(){
+  var W=0.52,thU=0.16,thL=0.18,N=60;
+  function upperOuter(u){var x=u*W;var fall=1-Math.pow(Math.abs(u),2.0);var bow=0.040*Math.exp(-Math.pow(u/0.22,2))-0.012*Math.exp(-Math.pow(u/0.06,2));var off=thU*(1-Math.pow(Math.abs(u),2.2)*0.45);return[x,(0.02*fall+bow)+off];}
+  function upperInner(u){var x=u*W;var fall=1-Math.pow(Math.abs(u),2.0);var bow=0.040*Math.exp(-Math.pow(u/0.22,2))-0.012*Math.exp(-Math.pow(u/0.06,2));return[x,0.02*fall+bow];}
+  function lowerInner(u){var x=u*W;var fall=1-Math.pow(Math.abs(u),2.0);var belly=0.022*Math.exp(-Math.pow(u/0.45,2));return[x,-0.02*fall-belly];}
+  function lowerOuter(u){var x=u*W;var fall=1-Math.pow(Math.abs(u),2.0);var belly=0.022*Math.exp(-Math.pow(u/0.45,2));var off=thL*(1-Math.pow(Math.abs(u),2.2)*0.45);return[x,(-0.02*fall-belly)-off];}
+  var upperPath=[],lowerPath=[],innerCenterPath=[];
+  for(var i=0;i<=N;i++){var u=-1+2*i/N;upperPath.push(upperOuter(u));}
+  for(var j=N;j>=0;j--){var u2=-1+2*j/N;upperPath.push(upperInner(u2));innerCenterPath.push(upperInner(u2));}
+  for(var k=0;k<=N;k++){var u3=-1+2*k/N;lowerPath.push(lowerInner(u3));innerCenterPath.push(lowerInner(u3));}
+  for(var l=N;l>=0;l--){var u4=-1+2*l/N;lowerPath.push(lowerOuter(u4));}
+  return{upper:upperPath,lower:lowerPath,center:innerCenterPath};
+}
+
+/* ============================================================
+   STATE
+   ============================================================ */
+var state='idle';
+var amp=0,ampTarget=0;
+var flashUntil=0, flashColor='green';
+
+function setState(s){state=s;document.getElementById('stateTxt').textContent=s;}
+
+var stage=document.querySelector('.lips-float');
+var canvas=document.getElementById('scene');
+var ctx=canvas.getContext('2d');
+var DPR=Math.min(window.devicePixelRatio||1,1.5);
+
+function resize(){var r=stage.getBoundingClientRect();canvas.width=Math.round(r.width*DPR);canvas.height=Math.round(r.height*DPR);}
+window.addEventListener('resize',resize);
+window.addEventListener('load',resize);
+
+var mouthPaths=getMouthOutlinePaths();
+
+function drawMouth(){
+  var W=canvas.width,H=canvas.height;
+  var S=H/1.85;
+  var cx=W*0.5;
+  var cy=H*0.52;
+
+  ctx.clearRect(0,0,W,H);
+  var fillColor=null;
+
+  if(state==='speaking' || state==='listening'){
+    var intensity = clamp(amp, 0.15, 1);
+    var r = Math.round(220 - intensity * 40);
+    var g = Math.round(38  + intensity * 20);
+    var b = Math.round(38  + intensity * 20);
+    fillColor = 'rgba(' + r + ',' + g + ',' + b + ',' + (0.55 + intensity * 0.35) + ')';
+  }
+
+  if(performance.now() < flashUntil){
+    var progress = (flashUntil - performance.now()) / 1200;
+    var alpha = 0.55 + progress * 0.35;
+    fillColor = flashColor==='green' ? 'rgba(4, 120, 87, ' + alpha + ')' : 'rgba(185, 28, 28, ' + alpha + ')';
+  }
+
+  if(fillColor){
+    ctx.fillStyle = fillColor;
+    ctx.beginPath();
+    for(var c=0;c<mouthPaths.center.length;c++){
+      var pxC=cx+mouthPaths.center[c][0]*S;
+      var pyC=cy-mouthPaths.center[c][1]*S;
+      if(c===0)ctx.moveTo(pxC,pyC);else ctx.lineTo(pxC,pyC);
+    }
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  ctx.strokeStyle='#064e3b';
+  ctx.lineWidth=3.2*DPR;
+  ctx.shadowBlur=0;
+
+  function renderPath(pts){
+    ctx.beginPath();
+    for(var i=0;i<pts.length;i++){
+      var px=cx+pts[i][0]*S;
+      var py=cy-pts[i][1]*S;
+      if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+    }
+    ctx.closePath();
+    ctx.stroke();
+  }
+  renderPath(mouthPaths.upper);
+  renderPath(mouthPaths.lower);
+}
+
+/* ============================================================
+   WAVEFORM
+   ============================================================ */
+var waveCanvas=document.getElementById('waveform');
+var waveCtx=waveCanvas.getContext('2d');
+var waveDPR=Math.min(window.devicePixelRatio||1,1.5);
+var waveOffset=0;
+var waveIntensity=0;
+var waveCurrentIntensity=0;
+var waveColor='grey';
+
+function resizeWave(){var r=waveCanvas.getBoundingClientRect();waveCanvas.width=Math.round(r.width*waveDPR);waveCanvas.height=Math.round(r.height*waveDPR);}
+window.addEventListener('resize',resizeWave);
+
+function drawWaveform(){
+  var W=waveCanvas.width, H=waveCanvas.height;
+  var cy=H/2;
+  waveCtx.clearRect(0,0,W,H);
+
+  waveCurrentIntensity += (waveIntensity - waveCurrentIntensity) * 0.12;
+
+  var maxAmp = (H*0.22) * waveCurrentIntensity;
+
+  var barW = 1.6 * waveDPR;
+  var gap = 3.2 * waveDPR;
+  var bars = Math.max(1, Math.floor(W / (barW + gap)));
+  var rowW = bars*(barW+gap) - gap;
+  var startX = (W - rowW) / 2;
+
+  var baseColor;
+  if(waveColor==='red')        baseColor = 'rgba(185,28,28,';
+  else if(waveColor==='green') baseColor = 'rgba(4,120,87,';
+  else                          baseColor = 'rgba(100,116,139,';
+
+  for(var i=0;i<bars;i++){
+    var t = bars>1 ? i / (bars-1) : 0.5;
+    var edge = Math.abs(t-0.5)*2;
+    var env = Math.pow(edge, 1.35);
+    var a = Math.sin((t*6) + waveOffset) * 0.5
+          + Math.sin((t*13) + waveOffset*1.7) * 0.3
+          + Math.sin((t*2.4) - waveOffset*0.9) * 0.4;
+    var h = Math.abs(a) * maxAmp * env;
+    h = Math.max(h, 1.0 * waveDPR * env);
+
+    var x = startX + i * (barW + gap);
+    var alpha = (0.4 + 0.6*waveCurrentIntensity) * env;
+    waveCtx.fillStyle = baseColor + alpha + ')';
+    waveCtx.fillRect(x, cy-h, barW, h*2);
+  }
+
+  waveOffset += 0.08 + waveCurrentIntensity*0.35;
+  requestAnimationFrame(drawWaveform);
+}
+resizeWave();
+requestAnimationFrame(drawWaveform);
+
+setInterval(function(){
+  if(state==='speaking' || state==='listening'){
+    waveIntensity = 0.55 + Math.sin(Date.now()*0.012)*0.35 + Math.random()*0.1;
+    waveColor = 'green';
+  } else if(state==='success'){ waveIntensity = 0.9; waveColor = 'green'; }
+  else if(state==='fail')    { waveIntensity = 0.9; waveColor = 'red'; }
+  else                       { waveIntensity = 0.04; waveColor = 'grey'; }
+}, 100);
+
+/* ============================================================
+   ANIMATION LOOP
+   ============================================================ */
+var last=0;
+function frame(ts){
+  var dt=last?Math.min(ts-last,48):16;last=ts;
+  amp+=(ampTarget-amp)*clamp(dt/140,0,1);
+  drawMouth();
+  requestAnimationFrame(frame);
+}
+resize();
+requestAnimationFrame(frame);
+
+setInterval(function(){
+  ampTarget=(state==='speaking'||state==='listening')?(0.3+Math.sin(Date.now()*0.012)*0.4+Math.random()*0.3):0;
+},100);
+
+/* ============================================================
+   SCORING
+   ============================================================ */
+function normalize(s){
+  return s.toLowerCase()
+    .replace(/[.,!?;:"'¿¡—–\-\(\)\[\]]/g,' ')
+    .replace(/\s+/g,' ')
+    .trim();
+}
+function levenshtein(a,b){
+  if(a===b) return 0;
+  if(!a.length) return b.length;
+  if(!b.length) return a.length;
+  var v0=[],v1=[];
+  for(var i=0;i<=b.length;i++) v0[i]=i;
+  for(var i=0;i<a.length;i++){
+    v1[0]=i+1;
+    for(var j=0;j<b.length;j++){
+      var cost = (a[i]===b[j]) ? 0 : 1;
+      v1[j+1] = Math.min(v1[j]+1, v0[j+1]+1, v0[j]+cost);
+    }
+    var tmp=v0; v0=v1; v1=tmp;
+  }
+  return v0[b.length];
+}
+function wordsMatch(a,b){
+  if(a===b) return true;
+  var maxDist = Math.max(1, Math.floor(Math.max(a.length, b.length) / 3));
+  return levenshtein(a,b) <= maxDist;
+}
+function scoreAttempt(targetText, heardText){
+  var tWords = normalize(targetText).split(' ').filter(Boolean);
+  var hWords = normalize(heardText).split(' ').filter(Boolean);
+  if(!tWords.length) return {score:0,matched:0,total:0,missed:[],heard:hWords};
+
+  var usedHeard = new Array(hWords.length).fill(false);
+  var matched=0, missed=[];
+  for(var i=0;i<tWords.length;i++){
+    var tw = tWords[i];
+    var found = false;
+    var tryOrder = [];
+    if(i < hWords.length) tryOrder.push(i);
+    for(var k=1;k<hWords.length;k++){
+      if(i-k >= 0) tryOrder.push(i-k);
+      if(i+k < hWords.length) tryOrder.push(i+k);
+    }
+    for(var k=0;k<hWords.length;k++) if(tryOrder.indexOf(k)<0) tryOrder.push(k);
+    for(var ti=0;ti<tryOrder.length;ti++){
+      var hi=tryOrder[ti];
+      if(usedHeard[hi]) continue;
+      if(wordsMatch(tw, hWords[hi])){ usedHeard[hi]=true; matched++; found=true; break; }
+    }
+    if(!found) missed.push(tw);
+  }
+  return {score:Math.round((matched/tWords.length)*100), matched:matched, total:tWords.length, missed:missed, heard:hWords};
+}
+
+/* ============================================================
+   VOICES — two distinct English voices for A/B dialogues
+   ============================================================ */
+var VOICES = { primary:null, secondary:null };
+
+function pickVoices(){
+  if(!('speechSynthesis' in window)) return;
+  var all = speechSynthesis.getVoices() || [];
+  var english = all.filter(function(v){ return v.lang && v.lang.toLowerCase().indexOf('en')===0; });
+  if(!english.length){ VOICES.primary = null; VOICES.secondary = null; return; }
+
+  var femaleNames = ['samantha','zira','victoria','karen','moira','tessa','fiona','serena','ava','allison','susan','jenny','aria'];
+  var maleNames   = ['alex','daniel','david','fred','tom','oliver','george','rishi','ryan','guy','mark'];
+
+  var female = english.find(function(v){
+    var n = (v.name||'').toLowerCase();
+    return femaleNames.some(function(f){ return n.indexOf(f) !== -1; });
+  });
+  var male = english.find(function(v){
+    var n = (v.name||'').toLowerCase();
+    return maleNames.some(function(m){ return n.indexOf(m) !== -1; });
+  });
+
+  if(female && male){
+    VOICES.primary = female;
+    VOICES.secondary = male;
+  } else if(english.length >= 2){
+    VOICES.primary = english[0];
+    VOICES.secondary = english[1];
+  } else {
+    VOICES.primary = english[0];
+    VOICES.secondary = english[0];
+  }
+}
+
+if('speechSynthesis' in window){
+  speechSynthesis.onvoiceschanged = pickVoices;
+  pickVoices();
+}
+
+/* ============================================================
+   STATE FOR RENDERING
+   ============================================================ */
+var currentLang='en';
+var currentLevelId='words';
+var openSections={words:true};
+var lastSpokenItem=null;
+var lastHeardText='';
+var currentAttempt = { target:null, heard:'' };
+var isPracticing = false;
+
+var levelsContainer=document.getElementById('levelsContainer');
+var subtitleEl=document.getElementById('subtitle');
+var statelineEl=document.getElementById('stateline');
+var micBtn=document.getElementById('micBtn');
+var replayBtn=document.getElementById('replayBtn');
+var freeTalkBtn=document.getElementById('freeTalkBtn');
+var freeTalking=false, freeTalkRecog=null, freeTalkFinalText='';
+var lastFreeTalkText='';
+var subtitleMode='idle'; // 'idle' | 'item' | 'freetalk' — drives what a nav-language click re-renders
+
+function getTranslation(item){
+  if(currentLang==='en') return null;
+  if(!item.translation) return null;
+  return item.translation[currentLang] || null;
+}
+
+/* ============================================================
+   RENDER LEFT PANEL
+   ============================================================ */
+function renderLeftPanel(){
+  levelsContainer.innerHTML='';
+  LEVELS.forEach(function(level,idx){
+    var section=document.createElement('div');
+    section.className='level-section'+(openSections[level.id]?' open':'');
+    section.dataset.levelId=level.id;
+
+    var header=document.createElement('button');
+    header.className='level-header';
+    header.type='button';
+    header.innerHTML='<span>L'+(idx+1)+' · '+level.label+'</span><span class="arrow">▶</span>';
+    header.addEventListener('click',function(e){
+      e.stopPropagation();
+      openSections[level.id]=!openSections[level.id];
+      section.classList.toggle('open',openSections[level.id]);
+    });
+
+    var body=document.createElement('div');
+    body.className='level-body';
+    var list=document.createElement('div');
+    list.className='dept-list';
+
+    level.items.forEach(function(item){
+      var btn=document.createElement('button');
+      btn.className='dept';
+      btn.type='button';
+
+      var mainSpan=document.createElement('span');
+      var displayText=item.text.length>42?item.text.slice(0,39)+'…':item.text;
+      mainSpan.textContent=displayText;
+      btn.appendChild(mainSpan);
+
+      var tr=getTranslation(item);
+      if(tr){
+        var trSpan=document.createElement('span');
+        trSpan.className='dept-trans';
+        trSpan.textContent=tr.length>38?tr.slice(0,35)+'…':tr;
+        btn.appendChild(trSpan);
+      }
+
+      btn.setAttribute('aria-pressed','false');
+      btn.addEventListener('click',function(e){
+        e.stopPropagation();
+        document.querySelectorAll('.dept').forEach(function(b){b.setAttribute('aria-pressed','false');});
+        btn.setAttribute('aria-pressed','true');
+        currentLevelId=level.id;
+        lastSpokenItem=item;
+        isPracticing=false;
+        speak(item);
+        statelineEl.textContent='Now click "Try it" to practise this phrase.';
+      });
+      list.appendChild(btn);
+    });
+
+    body.appendChild(list);
+    section.appendChild(header);
+    section.appendChild(body);
+    levelsContainer.appendChild(section);
+  });
+}
+
+/* ============================================================
+   SUBTITLE BUILDER
+   ============================================================ */
+function buildSubtitle(item, mode, attemptData){
+  var words=item.text.split(/\s+/);
+  var tr=getTranslation(item);
+  var trLine=tr?'<div class="translation-sub">'+LANGS[currentLang].flag+' '+tr+'</div>':'';
+
+  var wordHtml;
+  if(mode==='result' && attemptData){
+    var missedSet = new Set(attemptData.missed);
+    wordHtml = words.map(function(w){
+      var clean = normalize(w);
+      if(missedSet.has(clean)) return '<span class="missed">'+w+'</span>';
+      return '<span>'+w+'</span>';
+    }).join(' ');
+  } else {
+    wordHtml = words.map(function(w,i){return '<span data-i="'+i+'">'+w+'</span>';}).join(' ');
+  }
+
+  var fb='';
+  if(mode==='result' && attemptData){
+    var cls = attemptData.score>=80 ? 'good' : (attemptData.score>=50 ? 'mid' : 'bad');
+    var icon = attemptData.score>=80 ? '✅' : (attemptData.score>=50 ? '⚠️' : '❌');
+    var msg;
+    if(attemptData.score>=90) msg='Excellent!';
+    else if(attemptData.score>=80) msg='Great job!';
+    else if(attemptData.score>=50) msg='Good attempt — keep practising.';
+    else msg='Try again — listen to the model first.';
+    fb = '<div class="feedback '+cls+'">'+
+         '<span class="score">'+attemptData.score+'%</span> '+icon+' '+msg+
+         ' &nbsp;('+attemptData.matched+'/'+attemptData.total+' words matched)'+
+         '<div class="heard">You said: "'+(attemptData.heardRaw||'')+'"</div>'+
+         '</div>';
+  }
+
+  subtitleEl.innerHTML='<div>'+wordHtml+'</div>'+
+    '<div class="pronunciation-sub">🗣 '+item.pronunciation+'</div>'+
+    trLine + fb;
+}
+
+/* ============================================================
+   SPEECH — with A/B voice alternation for dialogues
+   ============================================================ */
+function speak(item){
+  lastSpokenItem=item;
+  subtitleMode='item';
+  buildSubtitle(item,'speaking',null);
+  var spans=subtitleEl.querySelectorAll('div:first-child span');
+
+  if(!('speechSynthesis' in window)){
+    statelineEl.textContent='Speech synthesis unavailable — subtitles active.';
+    setState('speaking');
+    var wi0=0;
+    var iv=setInterval(function(){
+      if(wi0>0&&spans[wi0-1])spans[wi0-1].className='said';
+      if(wi0>=spans.length){clearInterval(iv);setState('idle');return;}
+      spans[wi0].className='now';wi0++;
+    },260);
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+
+  var text = item.text;
+  var abMatch = text.match(/^(A:\s*.+?)\s+B:\s*(.+)$/);
+  var hasAB = !!abMatch;
+
+  setState('speaking');
+  statelineEl.textContent = hasAB ? 'Speaking (two voices)…' : 'Model is speaking…';
+
+  var wi=0;
+  var startTime = performance.now();
+  var wordsPerSecond = hasAB ? 3.2 : 2.8;
+  var highlightTimer = setInterval(function(){
+    var elapsed = (performance.now() - startTime) / 1000;
+    var target = Math.floor(elapsed * wordsPerSecond);
+    while(wi < Math.min(target, spans.length)){
+      if(wi > 0 && spans[wi-1]) spans[wi-1].className='said';
+      if(spans[wi]) spans[wi].className='now';
+      wi++;
+    }
+  }, 120);
+
+  function finishAll(){
+    clearInterval(highlightTimer);
+    Array.prototype.forEach.call(spans,function(s){s.className='said';});
+    setState('idle');
+    statelineEl.textContent='Model finished. Click "Try it" to record yourself.';
+  }
+
+  if(hasAB){
+    var partA = abMatch[1].replace(/^A:\s*/,'');
+    var partB = abMatch[2];
+
+    var uA = new SpeechSynthesisUtterance(partA);
+    uA.lang='en-US'; uA.rate=0.95;
+    if(VOICES.primary) uA.voice = VOICES.primary;
+    uA.pitch = 1.05;
+
+    var uB = new SpeechSynthesisUtterance(partB);
+    uB.lang='en-US'; uB.rate=0.95;
+    if(VOICES.secondary) uB.voice = VOICES.secondary;
+    uB.pitch = 0.85;
+
+    uA.onend = function(){ setTimeout(function(){ window.speechSynthesis.speak(uB); }, 180); };
+    uB.onend = function(){ finishAll(); };
+    uA.onerror = uB.onerror = function(){ finishAll(); };
+
+    window.speechSynthesis.speak(uA);
+  } else {
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang='en-US'; u.rate=0.95;
+    if(VOICES.primary) u.voice = VOICES.primary;
+    u.onend = function(){ finishAll(); };
+    u.onerror = function(){ finishAll(); };
+    window.speechSynthesis.speak(u);
+  }
+}
+
+/* ============================================================
+   PRACTICE — listen + score
+   ============================================================ */
+var recognizing=false,recog=null;
+
+function startPractice(){
+  if(!lastSpokenItem){
+    statelineEl.textContent='Pick a phrase on the left first.';
+    return;
+  }
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    statelineEl.textContent='Speech recognition unavailable on this browser.';
+    return;
+  }
+
+  var target=lastSpokenItem;
+  currentAttempt={ target:target, heard:'' };
+  isPracticing=true;
+
+  buildSubtitle(target,'listening',null);
+
+  recog=new SR();
+  recog.lang='en-US';
+  recog.interimResults=true;
+  recog.maxAlternatives=1;
+
+  recog.onstart=function(){
+    recognizing=true;
+    setState('listening');
+    micBtn.textContent='● Stop';
+    freeTalkBtn.disabled=true;
+    statelineEl.textContent='Listening… speak now.';
+  };
+
+  recog.onresult=function(ev){
+    var interim='', final='';
+    for(var i=ev.resultIndex;i<ev.results.length;i++){
+      var r=ev.results[i];
+      if(r.isFinal) final += r[0].transcript;
+      else interim += r[0].transcript;
+    }
+    if(interim || final){
+      lastHeardText = (final || interim).trim();
+      statelineEl.textContent='Heard: "'+lastHeardText+'"';
+    }
+    if(final){
+      finishPractice(final.trim());
+    }
+  };
+
+  recog.onend=function(){
+    recognizing=false;
+    micBtn.textContent='🎙 Try it';
+    freeTalkBtn.disabled=false;
+    if(isPracticing && currentAttempt.heard===''){
+      if(lastHeardText){
+        finishPractice(lastHeardText);
+      } else {
+        setState('idle');
+        statelineEl.textContent='No speech detected. Try again.';
+        isPracticing=false;
+      }
+    }
+  };
+
+  recog.onerror=function(e){
+    recognizing=false;
+    micBtn.textContent='🎙 Try it';
+    freeTalkBtn.disabled=false;
+    setState('idle');
+    isPracticing=false;
+    statelineEl.textContent = (e.error==='not-allowed')
+      ? 'Microphone access denied.'
+      : 'Recognition error: '+e.error;
+  };
+
+  lastHeardText='';
+  recog.start();
+}
+
+function finishPractice(heardText){
+  isPracticing=false;
+  var target = currentAttempt.target;
+  if(!target) return;
+
+  var result = scoreAttempt(target.text, heardText);
+  result.heardRaw = heardText;
+  currentAttempt.heard = heardText;
+
+  flashColor = result.score>=80 ? 'green' : 'red';
+  flashUntil = performance.now() + 1200;
+
+  setState(result.score>=80 ? 'success' : 'fail');
+  buildSubtitle(target,'result',result);
+
+  if(result.score>=90) statelineEl.textContent='🏆 Excellent! '+result.score+'%';
+  else if(result.score>=80) statelineEl.textContent='✅ Great! '+result.score+'%';
+  else if(result.score>=50) statelineEl.textContent='⚠️ '+result.score+'% — try again.';
+  else statelineEl.textContent='❌ '+result.score+'% — listen to the model and try again.';
+
+  setTimeout(function(){
+    if(state==='success'||state==='fail') setState('idle');
+  }, 1300);
+}
+
+/* ============================================================
+   FREE TALK — dictation only, no target, no score. Say anything
+   and it's written into the subtitle box as you speak.
+   ============================================================ */
+function speakRaw(text){
+  if(!('speechSynthesis' in window) || !text) return;
+  window.speechSynthesis.cancel();
+  var u=new SpeechSynthesisUtterance(text);
+  u.lang='en-US'; u.rate=0.95;
+  if(VOICES.primary) u.voice=VOICES.primary;
+  window.speechSynthesis.speak(u);
+}
+
+function translateFreeText(text, targetLang){
+  var url='https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl='+targetLang+'&dt=t&q='+encodeURIComponent(text);
+  return fetch(url).then(function(r){
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    return r.json();
+  }).then(function(data){
+    var segs = data && data[0];
+    if(!segs || !segs.length) throw new Error('empty translation');
+    var out='';
+    for(var i=0;i<segs.length;i++){ if(segs[i] && segs[i][0]) out+=segs[i][0]; }
+    if(!out) throw new Error('empty translation');
+    return out;
+  });
+}
+
+function renderFreeTalk(finalText, interimText){
+  var body = '<div>'+(finalText ? finalText : '<span style="color:#94a3b8">Listening…</span>')+
+             (interimText ? ' <span style="color:#94a3b8;font-style:italic">'+interimText+'</span>' : '')+
+             '</div>';
+  subtitleEl.innerHTML = '<div class="pronunciation-sub" style="margin-top:0;margin-bottom:8px">🗣 FREE TALK — say anything</div>' + body;
+}
+
+function renderFreeTalkResult(said){
+  var trBlock = (currentLang==='en') ? '' :
+    '<div class="translation-sub" id="freeTalkTranslation">Translating…</div>';
+  subtitleEl.innerHTML =
+    '<div class="pronunciation-sub" style="margin-top:0;margin-bottom:8px">🗣 FREE TALK</div>' +
+    '<div>'+said+'</div>' + trBlock;
+}
+
+function showFreeTalkResult(said){
+  renderFreeTalkResult(said);
+  if(currentLang!=='en'){
+    translateFreeText(said, currentLang).then(function(t){
+      var el=document.getElementById('freeTalkTranslation');
+      if(el) el.textContent = LANGS[currentLang].flag+' '+t;
+    }).catch(function(err){
+      console.error('Free Talk translation failed:', err);
+      var el=document.getElementById('freeTalkTranslation');
+      if(el) el.textContent = 'Translation unavailable right now.';
+    });
+  }
+}
+
+function startFreeTalk(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    statelineEl.textContent='Speech recognition unavailable on this browser.';
+    return;
+  }
+  freeTalking=true;
+  micBtn.disabled=true; replayBtn.disabled=true;
+  freeTalkBtn.classList.add('active');
+  freeTalkBtn.textContent='● Stop';
+  setState('listening');
+  statelineEl.textContent='Free talk — say anything, I\'ll write it above.';
+
+  freeTalkFinalText='';
+  subtitleMode='freetalk';
+  renderFreeTalk('', '');
+
+  freeTalkRecog=new SR();
+  freeTalkRecog.lang='en-US';
+  freeTalkRecog.interimResults=true;
+  freeTalkRecog.continuous=true;
+  freeTalkRecog.maxAlternatives=1;
+
+  freeTalkRecog.onresult=function(ev){
+    var interim='';
+    for(var i=ev.resultIndex;i<ev.results.length;i++){
+      var r=ev.results[i];
+      if(r.isFinal) freeTalkFinalText += (freeTalkFinalText ? ' ' : '') + r[0].transcript.trim();
+      else interim += r[0].transcript;
+    }
+    renderFreeTalk(freeTalkFinalText, interim);
+  };
+
+  freeTalkRecog.onerror=function(e){
+    statelineEl.textContent = (e.error==='not-allowed')
+      ? 'Microphone access denied.'
+      : 'Recognition error: '+e.error;
+    stopFreeTalk();
+  };
+
+  freeTalkRecog.onend=function(){
+    if(freeTalking) stopFreeTalk();
+  };
+
+  freeTalkRecog.start();
+}
+
+function stopFreeTalk(){
+  freeTalking=false;
+  if(freeTalkRecog){ try{ freeTalkRecog.stop(); }catch(e){} }
+  micBtn.disabled=false; replayBtn.disabled=false;
+  freeTalkBtn.classList.remove('active');
+  freeTalkBtn.textContent='🗣 Free Talk';
+  setState('idle');
+
+  var said=freeTalkFinalText.trim();
+  if(!said){
+    subtitleMode='idle';
+    if(statelineEl.textContent.indexOf('Free talk')===0) statelineEl.textContent='Ready.';
+    return;
+  }
+
+  lastFreeTalkText=said;
+  speakRaw(said);
+  statelineEl.textContent='Here\'s what I heard — speaking it back now.';
+  showFreeTalkResult(said);
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+micBtn.addEventListener('click',function(){
+  if(freeTalking) return;
+  if(recognizing){ recog.stop(); return; }
+  startPractice();
+});
+
+replayBtn.addEventListener('click',function(){
+  if(freeTalking) return;
+  if(!lastSpokenItem){statelineEl.textContent='Nothing to hear yet — pick a phrase first.';return;}
+  speak(lastSpokenItem);
+});
+
+freeTalkBtn.addEventListener('click',function(){
+  if(recognizing) return;
+  if(freeTalking){ stopFreeTalk(); return; }
+  startFreeTalk();
+});
+
+/* ============================================================
+   LANGUAGE SWITCH
+   ============================================================ */
+document.getElementById('langMenu').addEventListener('click',function(e){
+  var btn=e.target.closest('.lang-item');
+  if(!btn)return;
+  var lang=btn.dataset.lang;
+  if(!LANGS[lang]) return;
+  if(lang===currentLang)return;
+  currentLang=lang;
+  document.querySelectorAll('.lang-item').forEach(function(b){b.classList.toggle('active',b.dataset.lang===lang);});
+  renderLeftPanel();
+  if(subtitleMode==='freetalk' && lastFreeTalkText){
+    showFreeTalkResult(lastFreeTalkText);
+  } else if(lastSpokenItem && !isPracticing){
+    buildSubtitle(lastSpokenItem,'idle',null);
+  }
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+renderLeftPanel();
+setState('idle');
+
+})();
+</script>
+</body>
+</html>
