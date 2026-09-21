@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Language Lips — Practical English Suite (Demo)</title>
+<style>
+  :root{
+    --bg-main:#f8fafc;
+    --panel-bg:#ffffff;
+    --panel-border:#cbd5e1;
+    --text-primary:#090d16;
+    --text-secondary:#334155;
+    --brand-green:#064e3b;
+    --brand-green-accent:#047857;
+    --gumroad-pink:#ff90e8;
+    --gumroad-dark:#000000;
+    --font-main:Arial,Helvetica,sans-serif;
+    --shadow-sm:0 1px 3px rgba(0,0,0,.06);
+    --shadow-md:0 4px 12px rgba(0,0,0,.08);
+    --shadow-lg:0 10px 30px rgba(0,0,0,.10);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg-main);
+    color:var(--text-primary);
+    font-family:var(--font-main);
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+
+  /* ========== TOP BRAND BAR ========== */
+  .topbar{
+    background:#ffffff;
+    border-bottom:1.5px solid var(--panel-border);
+    box-shadow:var(--shadow-sm);
+  }
+  .topbar-inner{
+    max-width:1200px;
+    margin:0 auto;
+    padding:14px 24px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .topbar-actions{
+    margin-left:auto;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .guide-link{
+    font-family:var(--font-main);
+    font-size:14px;font-weight:800;
+    color:var(--brand-green);
+    text-decoration:none;
+    padding:9px 16px;
+    border:1.5px solid var(--brand-green);
+    border-radius:6px;
+    transition:all 0.15s ease;
+    white-space:nowrap;
+  }
+  .guide-link:hover{background:var(--brand-green);color:#fff}
+  .gumroad-btn{
+    font-family:var(--font-main);
+    font-size:14px;font-weight:800;
+    color:var(--gumroad-dark);
+    background:var(--gumroad-pink);
+    text-decoration:none;
+    padding:9px 16px;
+    border:1.5px solid var(--gumroad-dark);
+    border-radius:6px;
+    transition:all 0.15s ease;
+    white-space:nowrap;
+  }
+  .gumroad-btn:hover{
+    transform:translateY(-1px);
+    box-shadow:2px 2px 0px var(--gumroad-dark);
+  }
+  .logo-mark{
+    width:44px;height:44px;flex-shrink:0;
+    border-radius:50%;
+    background:linear-gradient(135deg,#064e3b 0%,#047857 100%);
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;
+    box-shadow:var(--shadow-sm);
+  }
+  .logo-text{display:flex;flex-direction:column;line-height:1.1}
+  .logo-title{
+    font-size:20px;font-weight:900;color:var(--brand-green);
+    letter-spacing:0.02em;
+  }
+
+  /* ========== HERO ========== */
+  .hero{
+    max-width:1200px;
+    margin:0 auto;
+    padding:40px 24px 20px;
+    text-align:center;
+  }
+  .hero h1{
+    font-size:42px;
+    font-weight:900;
+    color:var(--brand-green);
+    margin:0 0 16px;
+    letter-spacing:-0.01em;
+    line-height:1.15;
+  }
+  .hero .tagline{
+    font-size:19px;
+    font-weight:600;
+    color:var(--text-secondary);
+    margin:0 auto 8px;
+    max-width:720px;
+    line-height:1.5;
+  }
+  .hero .sub{
+    font-size:15px;
+    font-weight:500;
+    color:#64748b;
+    margin:0 auto;
+    max-width:640px;
+    line-height:1.6;
+  }
+
+  /* ========== DEMO NOTICE BANNER ========== */
+  .demo-banner{
+    max-width:1200px;
+    margin:24px auto 32px;
+    padding:0 24px;
+  }
+  .demo-card{
+    background:#f0fdf4;
+    border:2px solid var(--brand-green-accent);
+    border-radius:10px;
+    padding:20px 24px;
+    box-shadow:var(--shadow-sm);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .demo-card-text{
+    flex:1;
+    min-width:280px;
+  }
+  .demo-card-text h3{
+    margin:0 0 4px;
+    font-size:16px;
+    font-weight:900;
+    color:var(--brand-green);
+  }
+  .demo-card-text p{
+    margin:0;
+    font-size:14px;
+    color:var(--text-secondary);
+    line-height:1.4;
+  }
+
+  /* ========== AUDIENCE / USE-CASE SECTION ========== */
+  .audience{
+    max-width:1200px;
+    margin:0 auto 48px;
+    padding:0 24px;
+  }
+  .audience-title{
+    font-size:22px;
+    font-weight:900;
+    color:var(--brand-green);
+    margin:0 0 20px;
+    text-align:center;
+  }
+  .audience-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));
+    gap:24px;
+  }
+  .audience-card{
+    background:#ffffff;
+    border:1.5px solid var(--panel-border);
+    border-radius:12px;
+    padding:28px 28px;
+    box-shadow:var(--shadow-sm);
+  }
+  .audience-card .badge{
+    display:inline-block;
+    font-size:12px;
+    font-weight:900;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--brand-green-accent);
+    background:#ecfdf5;
+    padding:4px 10px;
+    border-radius:6px;
+    margin-bottom:12px;
+  }
+  .audience-card h3{
+    font-size:20px;
+    font-weight:900;
+    color:var(--brand-green);
+    margin:0 0 12px;
+  }
+  .audience-card p{
+    font-size:15px;
+    line-height:1.6;
+    color:var(--text-secondary);
+    margin:0 0 16px;
+  }
+  .audience-list{
+    margin:0;
+    padding:0 0 0 20px;
+    color:var(--text-secondary);
+    font-size:14px;
+    line-height:1.6;
+  }
+  .audience-list li{
+    margin-bottom:8px;
+  }
+
+  /* ========== SECTOR GRID ========== */
+  .sectors{
+    max-width:1200px;
+    margin:0 auto;
+    padding:0 24px 48px;
+  }
+  .sectors-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:24px;
+    flex-wrap:wrap;
+  }
+  .sectors-head h2{
+    font-size:22px;
+    font-weight:900;
+    color:var(--brand-green);
+    margin:0;
+  }
+  .sectors-head .count{
+    font-size:13px;
+    font-weight:700;
+    color:#94a3b8;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+  }
+
+  .sector-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));
+    gap:20px;
+  }
+
+  .sector-card{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    background:#ffffff;
+    border:1.5px solid var(--panel-border);
+    border-radius:12px;
+    padding:22px 24px;
+    text-decoration:none;
+    color:var(--text-primary);
+    transition:all 0.2s ease;
+    box-shadow:var(--shadow-sm);
+    position:relative;
+    overflow:hidden;
+  }
+  
+  /* Active Card Hover Effects */
+  .sector-card.active::before{
+    content:"";
+    position:absolute;
+    top:0;left:0;
+    width:100%;height:4px;
+    background:linear-gradient(90deg,#064e3b 0%,#047857 100%);
+    transform:scaleX(0);
+    transform-origin:left;
+    transition:transform 0.25s ease;
+  }
+  .sector-card.active:hover{
+    transform:translateY(-4px);
+    box-shadow:var(--shadow-lg);
+    border-color:var(--brand-green-accent);
+  }
+  .sector-card.active:hover::before{
+    transform:scaleX(1);
+  }
+
+  /* Locked Card Styling */
+  .sector-card.locked{
+    background:#f8fafc;
+    border-style:dashed;
+    opacity:0.85;
+  }
+  .sector-card.locked:hover{
+    opacity:1;
+    border-color:var(--text-secondary);
+    background:#ffffff;
+  }
+
+  .sector-icon{
+    width:52px;height:52px;
+    border-radius:12px;
+    background:#f0fdf4;
+    border:1px solid #d1fae5;
+    display:flex;align-items:center;justify-content:center;
+    font-size:26px;
+  }
+  .sector-card.locked .sector-icon{
+    background:#f1f5f9;
+    border-color:#e2e8f0;
+  }
+
+  .sector-title{
+    font-size:18px;
+    font-weight:900;
+    color:var(--brand-green);
+    margin:0;
+    line-height:1.2;
+  }
+  .sector-card.locked .sector-title{
+    color:var(--text-secondary);
+  }
+
+  .sector-desc{
+    font-size:14px;
+    font-weight:500;
+    color:var(--text-secondary);
+    line-height:1.5;
+    margin:0;
+    flex:1;
+  }
+
+  .sector-meta{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding-top:12px;
+    border-top:1px dashed #e2e8f0;
+    margin-top:4px;
+  }
+  .sector-meta .levels{
+    font-size:11px;
+    font-weight:800;
+    color:#94a3b8;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+  }
+  .sector-meta .badge-active{
+    font-size:11px;
+    font-weight:800;
+    color:#047857;
+    background:#d1fae5;
+    padding:3px 8px;
+    border-radius:4px;
+  }
+  .sector-meta .badge-locked{
+    font-size:11px;
+    font-weight:800;
+    color:#64748b;
+    background:#e2e8f0;
+    padding:3px 8px;
+    border-radius:4px;
+  }
+
+  /* ========== FOOTER ========== */
+  footer{
+    border-top:1.5px solid var(--panel-border);
+    background:#ffffff;
+    margin-top:24px;
+    padding:32px 24px;
+  }
+  .footer-inner{
+    max-width:1200px;
+    margin:0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .footer-text{
+    font-size:13px;
+    font-weight:600;
+    color:var(--text-secondary);
+    line-height:1.5;
+  }
+  .footer-text strong{color:var(--brand-green);font-weight:900;}
+  .footer-mark{
+    display:flex;align-items:center;gap:10px;
+    font-size:14px;font-weight:800;color:var(--brand-green);
+    letter-spacing:0.02em;
+  }
+  .footer-mark .logo-mark{width:30px;height:30px;font-size:15px}
+  .footer-copyright{
+    font-size:12px;font-weight:500;color:#94a3b8;
+    margin-top:4px;
+  }
+
+  /* ========== RESPONSIVE ========== */
+  @media (max-width:720px){
+    .hero{padding:32px 20px 16px;}
+    .hero h1{font-size:30px;}
+    .hero .tagline{font-size:16px;}
+    .demo-banner{padding:0 20px;}
+    .demo-card{flex-direction:column;align-items:stretch;text-align:center;}
+    .audience{padding:0 20px 32px;}
+    .sectors{padding:0 20px 40px;}
+    .sector-card{padding:18px 20px;}
+    .topbar-inner{padding:12px 18px;}
+    .topbar-actions{width:100%;justify-content:space-between;}
+    .footer-inner{flex-direction:column;text-align:center;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== TOP BRAND ========== -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="logo-mark">👄</div>
+    <div class="logo-text">
+      <span class="logo-title">Language Lips</span>
+    </div>
+    <div class="topbar-actions">
+      <a class="guide-link" href="guide.html">📖 User Guide</a>
+      <a class="gumroad-btn" href="https://tonybrownie.gumroad.com" target="_blank" rel="noopener">Buy Full Suite 🛍️</a>
+    </div>
+  </div>
+</div>
+
+<!-- ========== HERO ========== -->
+<div class="hero">
+  <h1>Language Lips</h1>
+  <p class="tagline">Practical English for Every Sector — Direct Browser Application</p>
+  <p class="sub">Eleven self-contained practice modules designed to build real workplace fluency. Master high-impact phrases with real-time Web Speech voice evaluation and scoring.</p>
+</div>
+
+<!-- ========== DEMO NOTICE BANNER ========== -->
+<div class="demo-banner">
+  <div class="demo-card">
+    <div class="demo-card-text">
+      <h3>Interactive Web Demo</h3>
+      <p>You can test the live speech scoring and phonetics on our <strong>General English</strong> sector below. To unlock all 11 workplace sectors for offline local use, purchase the full suite on Gumroad.</p>
+    </div>
+    <a class="gumroad-btn" href="https://tonybrownie.gumroad.com" target="_blank" rel="noopener">Get Full Suite →</a>
+  </div>
+</div>
+
+<!-- ========== AUDIENCE / USE-CASE SECTION ========== -->
+<div class="audience">
+  <h2 class="audience-title">Built For Tutors &amp; Career Learners</h2>
+  <div class="audience-grid">
+    
+    <!-- Card 1: Tutors -->
+    <div class="audience-card">
+      <span class="badge">For Online &amp; Remote Tutors</span>
+      <h3>Zero-Prep Teaching Suite</h3>
+      <p>Eliminate hours of lesson planning. Language Lips provides ready-to-run modules across 11 specific industries, giving you a structured, professional curriculum for your private adult students.</p>
+      <ul class="audience-list">
+        <li><strong>Teach ESP (English for Specific Purposes):</strong> Seamlessly switch between Medical, IT, Retail, and Logistics lessons in back-to-back student calls.</li>
+        <li><strong>Offline &amp; Portable:</strong> Runs entirely in any web browser without subscriptions, software installations, or required internet.</li>
+        <li><strong>Live Voice Scoring:</strong> Give students real-time feedback on pronunciation and sentence clarity during live remote video sessions.</li>
+      </ul>
+    </div>
+
+    <!-- Card 2: Students -->
+    <div class="audience-card">
+      <span class="badge">For Self-Study &amp; Professionals</span>
+      <h3>Real-World Job Readiness</h3>
+      <p>Skip generic textbook grammar and master the exact vocabulary, idioms, and phrases used daily in international companies and specialized work environments.</p>
+      <ul class="audience-list">
+        <li><strong>11 Industry Sectors:</strong> Focus strictly on the vocabulary needed for your specific job or upcoming interview.</li>
+        <li><strong>Interactive Speech Practice:</strong> Speak directly into your device microphone and get instant accuracy ratings and phonetic scoring.</li>
+        <li><strong>One-Time Purchase:</strong> Keep the lightweight 0.5 MB file forever on your laptop or USB drive with zero ongoing fees.</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========== SECTOR GRID ========== -->
+<div class="sectors">
+  <div class="sectors-head">
+    <h2>Choose a Sector</h2>
+    <span class="count">1 Live Demo · 10 Locked Sectors</span>
+  </div>
+
+  <div class="sector-grid">
+
+    <!-- Active Demo: General English -->
+    <a class="sector-card active" href="general.html">
+      <div class="sector-icon">📚</div>
+      <h3 class="sector-title">General English</h3>
+      <p class="sector-desc">The primary practice module. Test speech scoring, phonetics, and dialogue exercises across everyday workplace scenarios.</p>
+      <div class="sector-meta">
+        <span class="levels">15 Levels</span>
+        <span class="badge-active">TRY LIVE DEMO →</span>
+      </div>
+    </a>
+
+    <!-- Locked: Business -->
+    <a class="sector-card locked" href="https://tonybrownie.gumroad.com" target="_blank" rel="noopener">
+      <div class="sector-icon">💼</div>
+      <h3 class="sector-title">Business English</h3>
+      <p class="sector-desc">Meetings, emails, presentations, negotiations, telephone calls, and executive phrases.</p>
+      <div class="sector-meta">
+        <span class="levels">15 Levels</span>
+        <span class="badge-locked">🔒 Full Suite</span>
+      </div>
+    </a>
+
+    <!-- Locked: Medical -->
+    <a class="sector-card locked" href="https://tonybrownie.gumroad.com" target="_blank" rel="noopener">
+      <div class="sector-icon">🩺</div>
+      <h3 class="sector-title">Medical English</h3>
+      <p class="sector-desc">Patient conversations, symptoms, examinations, prescriptions, and bedside communication.</p>
+      <div class="sector-meta">
+        <span class="levels">15 Levels</span>
+        <span class="badge-locked">🔒 Full Suite</span>
+      </div>
+    </a>
+
+    <!-- Locked: Retail -->
+    <a class="sector-card locked" href="https://tonybrownie.gumroad.com" target="_blank" rel="noopener">
+      <div class="sector-icon">🛍️</div>
+      <h3 class="sector-title">Retail English</h3>
+      <p class="sector-desc">Serving customers, sizing, fitting rooms, returns, exchanges, and register transactions.</p>
+      <div class="sector-meta">
+        <span class="levels">15 Levels</span>
+        <span class="badge-locked">🔒 Full Suite</span>
+      </div>
+    </a>
+
+    <!-- Locked: Food & Beverage -->
+    <a class="sector-card locked" href="https://tonybrownie.gumroad.com" target="_blank" rel="noopener">
+      <div class="sector-icon">🍽️</div>
+      <h3 class="sector-title">Food &amp; Beverage</h3>
+      <p class="sector-desc">Greeting guests, taking orders, describing dishes, dietary needs, and handling payments.</p>
+      <div class="sector-meta">
+        <span class="levels">15 Levels</span>
+        <span class="badge-locked">🔒 Full Suite</span>
+      </div>
+    </a>
+
+    <!-- Locked: Hospitality -->
+    <a class="sector-card locked" href="https://tonybrownie.gumroad.com" target="_blank" rel="noopener">
+      <div class="sector-icon">🏨</div>
+      <h3 class="sector-title">Hospitality English</h3>
+      <p class="sector-desc">Check-in, room descriptions, housekeeping, concierge requests, and guest resolution.</p>
+      <div class="sector-meta">
+        <span class="levels">15 Levels</span>
+        <span class="badge-locked">🔒 Full Suite</span>
+      </div>
+    </a>
+
+    <!-- Locked: Office -->
+    <a class="sector-card locked" href="https://tonybrownie.gumroad.com" target="_blank" rel="noopener">
+      <div class="sector-icon">📞</div>
+      <h3 class="sector-title">Office English</h3>
+      <p class="sector-desc">Phone calls, scheduling, filing, administrative coordination, and office banter.</p>
+      <div class="sector-meta">
+        <span class="levels">15 Levels</span>
+        <span class="badge-locked">🔒 Full Suite</span>
+      </div>
+    </a>
+
+    <!-- Locked: IT -->
+    <a class="sector-card locked" href="https://tonybrownie.gumroad.com" target="_blank" rel="noopener">
+      <div class="sector-icon">💻</div>
+      <h3 class="sector-title">IT &amp; Tech Support</h3>
+      <p class="sector-desc">Helpdesk ticketing, software troubleshooting, hardware, passwords, and security.</p>
+      <div class="sector-meta">
+        <span class="levels">15 Levels</span>
+        <span class="badge-locked">🔒 Full Suite</span>
+      </div>
+    </a>
+
+    <!-- Locked: Logistics -->
+    <a class="sector-card locked" href="https://tonybrownie.gumroad.com" target="_blank" rel="noopener">
+      <div class="sector-icon">📦</div>
+      <h3 class="sector-title">Logistics &amp; Supply Chain</h3>
+      <p class="sector-desc">Shipments, warehouses, pallets, containers, customs documentation, and tracking.</p>
+      <div class="sector-meta">
+        <span class="levels">15 Levels</span>
+        <span class="badge-locked">🔒 Full Suite</span>
+      </div>
+    </a>
+
+    <!-- Locked: Academic -->
+    <a class="sector-card locked" href="https://tonybrownie.gumroad.com" target="_blank" rel="noopener">
+      <div class="sector-icon">🎓</div>
+      <h3 class="sector-title">Academic English</h3>
+      <p class="sector-desc">Lectures, seminars, research essays, academic presentations, and exam prep.</p>
+      <div class="sector-meta">
+        <span class="levels">15 Levels</span>
+        <span class="badge-locked">🔒 Full Suite</span>
+      </div>
+    </a>
+
+    <!-- Locked: Travel -->
+    <a class="sector-card locked" href="https://tonybrownie.gumroad.com" target="_blank" rel="noopener">
+      <div class="sector-icon">✈️</div>
+      <h3 class="sector-title">Travel &amp; Airport</h3>
+      <p class="sector-desc">Airports, transit, taxis, directions, sightseeing, and essential travel phrases.</p>
+      <div class="sector-meta">
+        <span class="levels">15 Levels</span>
+        <span class="badge-locked">🔒 Full Suite</span>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<!-- ========== FOOTER ========== -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-text">
+      <strong>Language Lips</strong> — Practical English Suite. Each module operates standalone, offline, in any modern web browser.
+    </div>
+    <div>
+      <div class="footer-mark">
+        <div class="logo-mark">👄</div>
+        Language Lips
+      </div>
+      <div class="footer-copyright">© 2026 Language Lips. All rights reserved.</div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
